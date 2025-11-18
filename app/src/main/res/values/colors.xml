@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Modern palette: indigo, violet, green -->
+    <color name="indigo_900">#1E293B</color>
+    <color name="indigo_700">#4338CA</color>
+    <color name="indigo_600">#4F46E5</color>
+    <color name="indigo_200">#C7D2FE</color>
+
+    <color name="violet_900">#4C1D95</color>
+    <color name="violet_700">#7C3AED</color>
+    <color name="violet_500">#8B5CF6</color>
+    <color name="violet_200">#DDD6FE</color>
+
+    <color name="green_900">#064E3B</color>
+    <color name="green_700">#15803D</color>
+    <color name="green_500">#22C55E</color>
+    <color name="green_200">#BBF7D0</color>
+    <color name="green_900_alpha">#33064E3B</color>
+
+    <!-- Surfaces -->
+    <color name="surface_light">#F7F7F9</color>
+    <color name="on_surface_light">#1F2937</color>
+    <color name="surface_variant_light">#E6E8EF</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>

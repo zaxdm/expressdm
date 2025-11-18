@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Top App Bar styling overlay -->
+    <style name="Widget.Expresdm.TopAppBar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="subtitleTextColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Primary button (Elevated) -->
+    <style name="Widget.Expresdm.ButtonPrimary" parent="Widget.Material3.Button.ElevatedButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="rippleColor">@color/indigo_200</item>
+        <item name="backgroundTint">@color/indigo_600</item>
+        <item name="iconTint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!-- Secondary button (Outlined) -->
+    <style name="Widget.Expresdm.ButtonSecondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="strokeColor">@color/surface_variant_light</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="rippleColor">@color/violet_200</item>
+    </style>
+</resources>

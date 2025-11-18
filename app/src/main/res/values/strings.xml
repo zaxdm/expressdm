@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">expresdm</string>
+    <string name="google_maps_key">AIzaSyBTUHtwoGqrBC1GZjGXgUoWxR0GKTdIymI</string>
+    <string name="favoritos">Favoritos</string>
+    <string name="alertas">Alertas</string>
+    <string name="menu">Menú</string>
+    <string name="buscar_rutas">Buscar rutas</string>
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Tema principal de la app: basado en MaterialComponents (hereda de AppCompat) -->
+    <style name="Theme.Expresdm" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Material 3 color scheme -->
+        <item name="colorPrimary">@color/indigo_600</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/indigo_200</item>
+        <item name="colorOnPrimaryContainer">@color/indigo_900</item>
+
+        <item name="colorSecondary">@color/green_500</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/green_200</item>
+        <item name="colorOnSecondaryContainer">@color/green_900</item>
+
+        <item name="colorTertiary">@color/violet_500</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorTertiaryContainer">@color/violet_200</item>
+        <item name="colorOnTertiaryContainer">@color/violet_900</item>
+
+        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorOnSurface">@color/on_surface_light</item>
+        <item name="colorSurfaceVariant">@color/surface_variant_light</item>
+
+        <!-- Component shapes and styles -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Expresdm.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Expresdm.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Expresdm.Large</item>
+
+        <!-- Default component styles overrides -->
+        <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
+        <item name="floatingActionButtonStyle">@style/Widget.Material3.FloatingActionButton.Primary</item>
+    </style>
+
+    <style name="ShapeAppearance.Expresdm.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.Expresdm.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="ShapeAppearance.Expresdm.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">24dp</item>
+    </style>
+
+</resources>
