@@ -8,25 +8,32 @@
     tools:context=".HomeActivity">
 
     <!-- Barra superior fija -->
+
+
+    <!-- Guía al 50% de la altura para limitar el mapa a media pantalla -->
+
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topAppBar"
+        style="@style/Widget.Expresdm.TopAppBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/Widget.Expresdm.TopAppBar"
         android:background="?attr/colorSurface"
         android:elevation="6dp"
         android:padding="8dp"
         android:title="DM"
-        app:titleCentered="true"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent"
+
         app:navigationIcon="@android:drawable/ic_menu_myplaces"
         app:navigationIconTint="?attr/colorOnSurface"
-        app:titleTextColor="?attr/colorOnSurface"
         app:popupTheme="@style/ThemeOverlay.Material3.Light"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:titleCentered="true"
+        app:titleTextColor="?attr/colorOnSurface" />
 
-    <!-- Guía al 50% de la altura para limitar el mapa a media pantalla -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/halfGuide"
         android:layout_width="wrap_content"
@@ -54,7 +61,7 @@
         app:layout_constraintTop_toBottomOf="@id/halfGuide"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toTopOf="@id/bottomNav">
 
         <LinearLayout
             android:id="@+id/contentContainer"
@@ -63,15 +70,27 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <TextView
-                android:id="@+id/sectionTitle"
+            <LinearLayout
+                android:id="@+id/headerRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tráfico pesado cerca de UPN"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:paddingBottom="8dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/sectionTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tráfico pesado cerca de UPN"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:paddingBottom="8dp" />
+
+
+
+            </LinearLayout>
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"
@@ -227,13 +246,13 @@
 
             </LinearLayout>
 
-            <!-- Contenido: Eventos Locales (placeholder) -->
             <LinearLayout
                 android:id="@+id/tabEventosContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone">
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -242,37 +261,174 @@
                     android:textColor="?attr/colorOnSurface"
                     android:paddingTop="8dp"
                     android:paddingBottom="4dp" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Sin datos por ahora"
-                    android:textColor="@color/surface_variant_light" />
-            </LinearLayout>
 
-            <!-- Contenido: Social (placeholder) -->
-            <LinearLayout
-                android:id="@+id/tabSocialContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="@color/surface_variant_light"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Feria Artesanal"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Plaza de Armas – Hoy, 10 AM – 6 PM"
+                                android:textColor="@color/surface_variant_light" />
+                        </LinearLayout>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginStart="12dp"
+                            app:srcCompat="@drawable/ic_nav_routes"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Expresdm.Small" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Reportes de usuarios"
+                    android:text="Talleres"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface"
                     android:paddingTop="8dp"
                     android:paddingBottom="4dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="@color/surface_variant_light"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Taller de Cocina Peruana"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Av. Larco – Mañana, 2 PM – 4 PM"
+                                android:textColor="@color/surface_variant_light" />
+                        </LinearLayout>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginStart="12dp"
+                            app:srcCompat="@drawable/ic_nav_routes"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Expresdm.Small" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sin datos por ahora"
-                    android:textColor="@color/surface_variant_light" />
+                    android:text="Avisos"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="4dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="12dp"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="@color/surface_variant_light"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Cierre de calle"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Av. Mansiche – 20 Julio, 8 AM – 12 PM"
+                                android:textColor="@color/surface_variant_light" />
+                        </LinearLayout>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:layout_marginStart="12dp"
+                            app:srcCompat="@drawable/ic_nav_routes"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Expresdm.Small" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
+
+            
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav" />
 
     <!-- Botón flotante de lupa para buscar rutas -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

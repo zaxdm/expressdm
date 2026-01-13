@@ -15,6 +15,11 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.view.Menu
+import android.view.MenuItem
+import android.content.Intent
+import com.peru.expresdm.social.SocialActivity
 
 /**
  * Pantalla principal (Home) de expresdm.
@@ -43,17 +48,15 @@ class HomeActivity : AppCompatActivity() {
 
         // Toolbar
         val toolbar = findViewById<MaterialToolbar>(R.id.topAppBar)
-        setSupportActionBar(toolbar)
         toolbar.title = "DM"
-        toolbar.inflateMenu(R.menu.home_menu)
+        toolbar.inflateMenu(R.menu.top_app_bar_menu)
         toolbar.setNavigationOnClickListener {
             Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
             // TODO: Navegar a pantalla de perfil
         }
         toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_menu) {
-                Toast.makeText(this, "Menú", Toast.LENGTH_SHORT).show()
-                // TODO: Abrir menú / opciones
+            if (item.itemId == R.id.action_profile) {
+                Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
                 true
             } else false
         }
@@ -74,19 +77,17 @@ class HomeActivity : AppCompatActivity() {
         val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
         val autobuses = tabLayout.newTab().setText("Autobuses")
         val eventos = tabLayout.newTab().setText("Eventos Locales")
-        val social = tabLayout.newTab().setText("Social")
         tabLayout.addTab(autobuses, true)
         tabLayout.addTab(eventos)
-        tabLayout.addTab(social)
 
         val autobusesContent = findViewById<android.view.View>(R.id.tabAutobusesContent)
         val eventosContent = findViewById<android.view.View>(R.id.tabEventosContent)
-        val socialContent = findViewById<android.view.View>(R.id.tabSocialContent)
+        
+
 
         fun showContent(index: Int) {
             autobusesContent.visibility = if (index == 0) android.view.View.VISIBLE else android.view.View.GONE
             eventosContent.visibility = if (index == 1) android.view.View.VISIBLE else android.view.View.GONE
-            socialContent.visibility = if (index == 2) android.view.View.VISIBLE else android.view.View.GONE
         }
         showContent(0)
 
@@ -100,12 +101,30 @@ class HomeActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
 
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        bottomNav.selectedItemId = R.id.nav_home
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> true
+                R.id.nav_routes -> true
+                R.id.nav_social -> {
+                    startActivity(Intent(this, com.peru.expresdm.social.SocialActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
+
         // FAB Buscar
         findViewById<FloatingActionButton>(R.id.fabBuscar).setOnClickListener {
             Toast.makeText(this, getString(R.string.buscar_rutas), Toast.LENGTH_SHORT).show()
             // TODO: Abrir buscador de rutas
         }
     }
+
+    
+
+    
 
     private fun ensureLocationPermission() {
         val granted = ContextCompat.checkSelfPermission(

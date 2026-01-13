@@ -6,4 +6,12 @@
     <string name="alertas">Alertas</string>
     <string name="menu">Menú</string>
     <string name="buscar_rutas">Buscar rutas</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_routes">Rutas</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_social">Social</string>
+    <string name="social_title">Social</string>
+    <string name="comment_title">Comentar</string>
+    <string name="comment_published">Comentario publicado</string>
+    <string name="comment_empty">Escribe algo antes de publicar</string>
 </resources>
