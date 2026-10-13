@@ -179,7 +179,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/statRecorded"
+                            android:id="@+id/statRoutes"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="?attr/colorOnSurface"
@@ -188,11 +188,12 @@
                             tools:text="3" />
 
                         <TextView
+                            android:id="@+id/statRoutesLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:paddingTop="2dp"
-                            android:text="@string/profile_stat_recorded"
+                            android:text="@string/profile_stat_saved"
                             android:textAppearance="@style/TextAppearance.Expresdm.Body"
                             android:textSize="12sp" />
                     </LinearLayout>

@@ -20,7 +20,9 @@ data class Session(
     /** Foto de perfil guardada en el servidor, para verla en cualquier teléfono. */
     val avatarUrl: String? = null,
     /** Hasta cuándo es Premium la cuenta, en milisegundos; `null` si es gratuita. */
-    val premiumUntil: Long? = null
+    val premiumUntil: Long? = null,
+    /** Alertas que la cuenta ha publicado en total, vigentes o ya caducadas. */
+    val alertsPublished: Int = 0
 )
 
 /**
@@ -57,6 +59,7 @@ class SessionStore private constructor(context: Context) {
             .putBoolean(KEY_ADMIN, session.isAdmin)
             .putString(KEY_AVATAR, session.avatarUrl)
             .putLong(KEY_PREMIUM_UNTIL, session.premiumUntil ?: 0L)
+            .putInt(KEY_ALERTS_PUBLISHED, session.alertsPublished)
             .apply()
         _session.value = session
         if (previous != session.userId) userListeners.forEach { it(session.userId) }
@@ -78,7 +81,8 @@ class SessionStore private constructor(context: Context) {
             displayName = prefs.getString(KEY_NAME, "").orEmpty(),
             isAdmin = prefs.getBoolean(KEY_ADMIN, false),
             avatarUrl = prefs.getString(KEY_AVATAR, null),
-            premiumUntil = prefs.getLong(KEY_PREMIUM_UNTIL, 0L).takeIf { it > 0L }
+            premiumUntil = prefs.getLong(KEY_PREMIUM_UNTIL, 0L).takeIf { it > 0L },
+            alertsPublished = prefs.getInt(KEY_ALERTS_PUBLISHED, 0)
         )
     }
 
@@ -91,6 +95,7 @@ class SessionStore private constructor(context: Context) {
         private const val KEY_ADMIN = "is_admin"
         private const val KEY_AVATAR = "avatar_url"
         private const val KEY_PREMIUM_UNTIL = "premium_until"
+        private const val KEY_ALERTS_PUBLISHED = "alerts_published"
 
         @Volatile
         private var instance: SessionStore? = null

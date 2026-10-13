@@ -21,6 +21,8 @@ import android.view.ViewGroup
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.inputmethod.InputMethodManager
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -2092,6 +2094,7 @@ class RoutesFragment : Fragment() {
             .setIcon(AppCompatResources.getDrawable(context, AlertStyle.icon(alert.type))?.mutate()?.apply { setTint(color) })
             .setTitle(AlertStyle.label(alert.type))
             .setMessage(lines.joinToString("\n"))
+            .setView(alertPhoto(alert))
             .setPositiveButton(R.string.alert_still_there_short) { _, _ ->
                 AlertRepository.vote(alert.id, AlertVote.STILL_THERE)
                 showMessage(getString(R.string.alert_you_confirmed))
@@ -2102,6 +2105,32 @@ class RoutesFragment : Fragment() {
             }
             .setNeutralButton(R.string.alert_close, null)
             .show()
+    }
+
+    /** La foto de la alerta para su cuadro, que aparece cuando llega; `null` si no tiene. */
+    private fun alertPhoto(alert: RoadAlert): View? {
+        if (alert.imageUrl.isNullOrBlank()) return null
+        val context = requireContext()
+        val density = resources.displayMetrics.density
+        val photo = ImageView(context).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, (ALERT_PHOTO_HEIGHT_DP * density).toInt()
+            )
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            contentDescription = getString(R.string.create_alert_photo)
+            isVisible = false
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            RouteImages.load(alert.imageUrl)?.let {
+                photo.setImageBitmap(it)
+                photo.isVisible = true
+            }
+        }
+        val margin = (ALERT_PHOTO_MARGIN_DP * density).toInt()
+        return FrameLayout(context).apply {
+            setPadding(margin, margin / 2, margin, 0)
+            addView(photo)
+        }
     }
 
     /** "Ver en el mapa" desde la pestaña de alertas. */
@@ -2929,6 +2958,10 @@ class RoutesFragment : Fragment() {
 
         /** Aire debajo del título con la hoja al mínimo. */
         const val MINI_PADDING_DP = 4
+
+        /** La foto en el cuadro de una alerta del mapa. */
+        const val ALERT_PHOTO_HEIGHT_DP = 180
+        const val ALERT_PHOTO_MARGIN_DP = 24
 
         /** Una tarjeta del carrusel con su margen de arriba y el aire de debajo. */
         const val CAROUSEL_HEIGHT_DP = 156 + 8 + 16

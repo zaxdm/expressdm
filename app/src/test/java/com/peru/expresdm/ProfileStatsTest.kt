@@ -1,9 +1,7 @@
 package com.peru.expresdm
 
-import com.peru.expresdm.data.AlertType
 import com.peru.expresdm.data.BusRoute
 import com.peru.expresdm.data.ProfileStats
-import com.peru.expresdm.data.RoadAlert
 import com.peru.expresdm.data.Stop
 import com.peru.expresdm.ui.Initials
 import org.junit.Assert.assertEquals
@@ -11,7 +9,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** El resumen del perfil: rutas grabadas, alertas vivas y rutas usadas. */
+/** El resumen del perfil: rutas guardadas o grabadas, alertas publicadas y rutas usadas. */
 class ProfileStatsTest {
 
     private val now = 1_700_000_000_000L
@@ -30,48 +28,39 @@ class ProfileStatsTest {
         createdByUser = mine
     )
 
-    private fun alert(id: String, mine: Boolean, createdAt: Long = now) = RoadAlert(
-        id = id,
-        type = AlertType.TRAFFIC,
-        latitude = -8.11,
-        longitude = -79.02,
-        placeName = null,
-        comment = null,
-        createdAt = createdAt,
-        createdByMe = mine
-    )
-
     @Test
     fun `cuenta solo las rutas que grabo el usuario`() {
         val routes = listOf(route("a"), route("b", mine = true), route("c", mine = true))
-        val stats = ProfileStats.of(routes, emptyList(), emptyMap(), now)
+        val stats = ProfileStats.of(routes, emptySet(), 0, emptyMap())
         assertEquals(2, stats.recordedRoutes)
     }
 
     @Test
-    fun `cuenta solo las alertas propias y vigentes`() {
-        val alerts = listOf(
-            alert("1", mine = true),
-            alert("2", mine = false),
-            // Publicada hace días: ya caducó y no debería seguir sumando.
-            alert("3", mine = true, createdAt = now - 5L * 24 * 60 * 60 * 1000)
-        )
-        val stats = ProfileStats.of(emptyList(), alerts, emptyMap(), now)
-        assertEquals(1, stats.activeAlerts)
+    fun `cuenta las rutas guardadas que siguen en el catalogo`() {
+        val stats = ProfileStats.of(listOf(route("a"), route("b")), setOf("a", "b", "borrada"), 0, emptyMap())
+        assertEquals(2, stats.savedRoutes)
+    }
+
+    @Test
+    fun `las alertas son todas las publicadas, no solo las vigentes`() {
+        val stats = ProfileStats.of(emptyList(), emptySet(), 7, emptyMap())
+        assertEquals(7, stats.publishedAlerts)
     }
 
     @Test
     fun `una ruta borrada deja de contar como usada`() {
         val routes = listOf(route("a"))
         val uses = mapOf("a" to 4, "borrada" to 9)
-        val stats = ProfileStats.of(routes, emptyList(), uses, now)
+        val stats = ProfileStats.of(routes, emptySet(), 0, uses)
         assertEquals(1, stats.usedRoutes)
     }
 
     @Test
     fun `sin nada hecho el resumen esta vacio`() {
-        assertTrue(ProfileStats.of(listOf(route("a")), emptyList(), emptyMap(), now).isEmpty)
-        assertFalse(ProfileStats.of(listOf(route("a", mine = true)), emptyList(), emptyMap(), now).isEmpty)
+        assertTrue(ProfileStats.of(listOf(route("a")), emptySet(), 0, emptyMap()).isEmpty)
+        assertFalse(ProfileStats.of(listOf(route("a", mine = true)), emptySet(), 0, emptyMap()).isEmpty)
+        assertFalse(ProfileStats.of(listOf(route("a")), setOf("a"), 0, emptyMap()).isEmpty)
+        assertFalse(ProfileStats.of(listOf(route("a")), emptySet(), 1, emptyMap()).isEmpty)
     }
 
     @Test

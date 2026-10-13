@@ -134,7 +134,10 @@ object AlertRepository {
                 if (alert == null) {
                     PublishResult.Failed(needsSignIn = false)
                 } else {
-                    withContext(Dispatchers.Main) { add(alert) }
+                    withContext(Dispatchers.Main) {
+                        add(alert)
+                        AccountRepository.noteAlertPublished()
+                    }
                     PublishResult.Published(alert)
                 }
             }

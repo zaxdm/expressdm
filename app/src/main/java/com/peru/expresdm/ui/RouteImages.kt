@@ -47,6 +47,13 @@ object RouteImages {
         }
     }
 
+    /** La foto de [url], de la memoria o de la red. `null` si no hay o no se pudo traer. */
+    suspend fun load(url: String?): Bitmap? {
+        if (url.isNullOrBlank() || !url.startsWith("https://")) return null
+        cache.get(url)?.let { return it }
+        return withContext(Dispatchers.IO) { download(url) }?.also { cache.put(url, it) }
+    }
+
     private fun download(url: String): Bitmap? {
         var connection: HttpURLConnection? = null
         return try {

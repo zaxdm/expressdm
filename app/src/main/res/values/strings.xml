@@ -319,9 +319,10 @@
     <string name="profile_about_body">Subo usa mapas y búsquedas de OpenStreetMap, un proyecto abierto y gratuito.</string>
     <string name="profile_activity">Tu actividad</string>
     <string name="profile_stat_recorded">Rutas grabadas</string>
-    <string name="profile_stat_alerts">Alertas activas</string>
+    <string name="profile_stat_saved">Rutas guardadas</string>
+    <string name="profile_stat_alerts">Alertas enviadas</string>
     <string name="profile_stat_used">Rutas usadas</string>
-    <string name="profile_activity_empty">Aquí irá saliendo lo que hagas: las rutas que grabes, las alertas que publiques y las rutas que consultes.</string>
+    <string name="profile_activity_empty">Aquí irá saliendo lo que hagas: las rutas que guardes, las alertas que publiques y las rutas que consultes.</string>
     <string name="action_save">Guardar</string>
     <string name="profile_edit_name">Cambiar nombre</string>
     <string name="profile_name_saved">Listo, ese es tu nombre ahora</string>

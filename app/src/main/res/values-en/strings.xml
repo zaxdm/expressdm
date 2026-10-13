@@ -321,9 +321,10 @@
     <string name="profile_about_body">Subo uses OpenStreetMap maps and search, an open and free mapping project.</string>
     <string name="profile_activity">Your activity</string>
     <string name="profile_stat_recorded">Routes recorded</string>
-    <string name="profile_stat_alerts">Active alerts</string>
+    <string name="profile_stat_saved">Routes saved</string>
+    <string name="profile_stat_alerts">Alerts sent</string>
     <string name="profile_stat_used">Routes used</string>
-    <string name="profile_activity_empty">What you do shows up here: the routes you record, the alerts you post and the routes you check.</string>
+    <string name="profile_activity_empty">What you do shows up here: the routes you save, the alerts you post and the routes you check.</string>
     <string name="action_save">Save</string>
     <string name="profile_edit_name">Change name</string>
     <string name="profile_name_saved">Done, that is your name now</string>

@@ -127,11 +127,18 @@ object AccountRepository {
                 val updated = current.copy(
                     isAdmin = isAdminRole(result.data),
                     avatarUrl = avatarOf(result.data),
-                    premiumUntil = premiumOf(result.data)
+                    premiumUntil = premiumOf(result.data),
+                    alertsPublished = result.data.optInt("alertsPublished", current.alertsPublished)
                 )
                 if (updated != current) store.save(updated)
             }
         }
+    }
+
+    /** La cuenta acaba de publicar una alerta: el resumen del perfil la cuenta sin esperar al servidor. */
+    fun noteAlertPublished() {
+        val current = session.value ?: return
+        store.save(current.copy(alertsPublished = current.alertsPublished + 1))
     }
 
     /**

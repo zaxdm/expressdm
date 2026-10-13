@@ -254,8 +254,12 @@ class ProfileFragment : Fragment() {
     /** Tres números con lo que el usuario lleva aportado. */
     private fun renderStats(stats: ProfileStats) {
         val binding = _binding ?: return
-        binding.statRecorded.text = stats.recordedRoutes.toString()
-        binding.statAlerts.text = stats.activeAlerts.toString()
+        // Grabar rutas es cosa de quien administra el catálogo: a los demás
+        // les dice más cuántas tienen guardadas.
+        val records = AccountRepository.session.value?.isAdmin == true
+        binding.statRoutes.text = (if (records) stats.recordedRoutes else stats.savedRoutes).toString()
+        binding.statRoutesLabel.setText(if (records) R.string.profile_stat_recorded else R.string.profile_stat_saved)
+        binding.statAlerts.text = stats.publishedAlerts.toString()
         binding.statUsed.text = stats.usedRoutes.toString()
         // Tres ceros no dicen nada: se explica de dónde saldrán.
         binding.emptyActivity.isVisible = stats.isEmpty

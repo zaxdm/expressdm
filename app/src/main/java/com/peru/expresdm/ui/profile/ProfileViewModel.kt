@@ -4,11 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.peru.expresdm.R
-import com.peru.expresdm.data.AlertRepository
 import com.peru.expresdm.data.FrequentRoutes
 import com.peru.expresdm.data.ProfileStats
 import com.peru.expresdm.data.RouteRepository
 import com.peru.expresdm.data.RouteUsageStore
+import com.peru.expresdm.data.SavedRoutes
 import com.peru.expresdm.data.net.AccountRepository
 import com.peru.expresdm.data.net.ApiFailure
 import com.peru.expresdm.data.net.ApiResult
@@ -43,8 +43,10 @@ class ProfileViewModel(app: Application) : AndroidViewModel(app) {
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val stats: StateFlow<ProfileStats> =
-        combine(RouteRepository.routes, AlertRepository.alerts, usage.uses) { routes, alerts, uses ->
-            ProfileStats.of(routes, alerts, uses, System.currentTimeMillis())
+        combine(
+            RouteRepository.routes, SavedRoutes.get(app).ids, AccountRepository.session, usage.uses
+        ) { routes, saved, session, uses ->
+            ProfileStats.of(routes, saved, session?.alertsPublished ?: 0, uses)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ProfileStats.EMPTY)
 
     /** Evita que dos toques seguidos manden el nombre dos veces. */
