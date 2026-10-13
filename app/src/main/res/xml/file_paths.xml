@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lo que la app presta a otras: las fotos que toma la cámara y la versión nueva para el instalador. -->
+<paths>
+    <cache-path
+        name="fotos"
+        path="fotos/" />
+    <cache-path
+        name="actualizacion"
+        path="actualizacion/" />
+</paths>

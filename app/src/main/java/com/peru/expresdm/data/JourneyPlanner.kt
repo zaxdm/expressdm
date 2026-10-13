@@ -79,6 +79,12 @@ data class Journey(
  * paradas por línea. Si el punto cae junto a una parada conocida se usa esa,
  * que tiene nombre.
  *
+ * Una línea de un solo sentido no se acaba en su último paradero: el mismo
+ * micro sigue con el recorrido de vuelta. Por eso cada recorrido se prueba
+ * también unido al final del que lo precede y al principio del que lo sigue:
+ * así quien está cerca del paradero final puede subir al micro que llega y
+ * seguir en él de vuelta, aunque la vuelta no pase por su calle.
+ *
  * Lógica pura, sin Android, para poder probarla directamente.
  */
 object JourneyPlanner {
@@ -126,12 +132,21 @@ object JourneyPlanner {
     /** Los puntos del recorrido más juntos que esto no aportan al calcular. */
     private const val TRACK_MIN_GAP_METERS = 40.0
 
+    /** Lo más que se separan el final de un recorrido y el principio del que lo continúa. */
+    private const val LINK_GAP_METERS = 250.0
+
+    /** Cuánto del recorrido vecino se une al propio: hasta ahí compensa pasar por el paradero final. */
+    private const val LINK_REACH_METERS = 3_000.0
+
+    /** Lo que tiene que acercar el recorrido unido para preferirlo al propio. */
+    private const val LINK_GAIN_METERS = 50.0
+
     fun plan(
         origin: UserPosition,
         destination: GeoCoordinate,
         routes: List<BusRoute> = RouteRepository.all()
     ): List<Journey> {
-        val usable = routes.filter { it.stops.size >= 2 }
+        val usable = linesOf(routes)
         val walking = walkingOption(origin, destination)
 
         // Si ningún micro pasa a una distancia cómoda, se enseña el que deja más
@@ -148,7 +163,7 @@ object JourneyPlanner {
     private fun ridingOptions(
         origin: UserPosition,
         destination: GeoCoordinate,
-        routes: List<BusRoute>,
+        routes: List<Line>,
         maxWalk: Double
     ): List<Journey> {
         val direct = directOptions(origin, destination, routes, maxWalk)
@@ -206,28 +221,28 @@ object JourneyPlanner {
     private fun directOptions(
         origin: UserPosition,
         destination: GeoCoordinate,
-        routes: List<BusRoute>,
+        routes: List<Line>,
         maxWalk: Double
-    ): List<Journey> = routes.mapNotNull { route ->
-        val track = trackOf(route)
-        val board = track.access(origin.latitude, origin.longitude, maxWalk) ?: return@mapNotNull null
-        val exit = track.access(destination.latitude, destination.longitude, maxWalk)
-            ?: return@mapNotNull null
-        buildJourney(origin, destination, listOf(Hop(track, board, exit)), maxWalk)
+    ): List<Journey> = routes.flatMap { line ->
+        // Con el recorrido propio y con el unido a sus vecinos: luego se queda el más corto.
+        listOfNotNull(line.own, line.linked).mapNotNull { track ->
+            val board = track.access(origin.latitude, origin.longitude, maxWalk) ?: return@mapNotNull null
+            val exit = track.access(destination.latitude, destination.longitude, maxWalk)
+                ?: return@mapNotNull null
+            buildJourney(origin, destination, listOf(Hop(track, board, exit)), maxWalk)
+        }
     }
 
     /** Dos micros, cambiando donde sus recorridos pasan cerca uno del otro. */
     private fun transferOptions(
         origin: UserPosition,
         destination: GeoCoordinate,
-        routes: List<BusRoute>,
+        routes: List<Line>,
         maxWalk: Double
     ): List<Journey> {
-        val tracks = routes.map { trackOf(it) }
-
         /** Los micros que pasan cerca de un punto, primero los que menos hacen caminar. */
-        fun candidates(latitude: Double, longitude: Double) = tracks
-            .mapNotNull { track -> track.access(latitude, longitude, maxWalk)?.let { track to it } }
+        fun candidates(latitude: Double, longitude: Double) = routes
+            .mapNotNull { line -> line.access(latitude, longitude, maxWalk) }
             .sortedBy { (track, access) ->
                 val point = track.pointAt(access.along)
                 distance(latitude, longitude, point.latitude, point.longitude)
@@ -356,15 +371,28 @@ object JourneyPlanner {
     /**
      * El recorrido de una ruta como línea medible: su trazado grabado si lo
      * tiene y, si no, la unión de sus paradas.
+     *
+     * Con [before] y [after] se le unen el final del recorrido que lo precede y
+     * el principio del que lo sigue, y [neighbourStops] son las paradas de esos.
      */
-    private class Track(val route: BusRoute) {
+    private class Track(
+        val route: BusRoute,
+        before: List<GeoCoordinate> = emptyList(),
+        after: List<GeoCoordinate> = emptyList(),
+        neighbourStops: List<Stop> = emptyList()
+    ) {
 
         private val points: List<GeoCoordinate>
+
+        private val stops = route.stops + neighbourStops
 
         /** Metros recorridos desde el principio hasta cada punto. */
         private val alongs: DoubleArray
 
         val length: Double
+
+        /** Lo que mide el recorrido de la ruta, sin lo que se le haya unido. */
+        private val ownLength: Double
 
         /** El rectángulo que encierra el recorrido. */
         private val south: Double
@@ -373,18 +401,9 @@ object JourneyPlanner {
         private val east: Double
 
         init {
-            val raw = route.path?.takeIf { it.size >= 2 }
-                ?: route.stops.map { GeoCoordinate(it.latitude, it.longitude) }
-            // Un trazado grabado trae miles de puntos casi pegados: para medir
-            // sobran, y calcular con todos sería lento.
-            val kept = mutableListOf<GeoCoordinate>()
-            raw.forEachIndexed { index, point ->
-                val last = kept.lastOrNull()
-                val far = last == null ||
-                    distance(last.latitude, last.longitude, point.latitude, point.longitude) >= TRACK_MIN_GAP_METERS
-                if (far || index == raw.lastIndex) kept += point
-            }
-            points = kept
+            val lead = thin(before)
+            val own = thin(lineOf(route))
+            points = lead + own + thin(after)
             alongs = DoubleArray(points.size)
             for (i in 1 until points.size) {
                 alongs[i] = alongs[i - 1] + distance(
@@ -392,6 +411,7 @@ object JourneyPlanner {
                 )
             }
             length = alongs.lastOrNull() ?: 0.0
+            ownLength = if (own.isEmpty()) 0.0 else alongs[lead.size + own.lastIndex] - alongs[lead.size]
             south = points.minOf { it.latitude }
             north = points.maxOf { it.latitude }
             west = points.minOf { it.longitude }
@@ -440,7 +460,7 @@ object JourneyPlanner {
             kind = if (nearest.meters <= NEAR_STOP_METERS) RidePoint.NEAR_STOP else RidePoint.ON_ROUTE
         )
 
-        private fun nearestStop(point: GeoCoordinate): StopDistance? = route.stops
+        private fun nearestStop(point: GeoCoordinate): StopDistance? = stops
             .map { StopDistance(it, distance(it.latitude, it.longitude, point.latitude, point.longitude)) }
             .minByOrNull { it.meters }
 
@@ -467,8 +487,8 @@ object JourneyPlanner {
 
         /** El tiempo de la ruta completa, repartido según lo que se recorre de ella. */
         fun rideMinutes(rideMeters: Double): Int {
-            if (length <= 0) return route.durationMinutes.coerceAtLeast(1)
-            return ceil(route.durationMinutes * rideMeters / length).toInt().coerceAtLeast(1)
+            if (ownLength <= 0) return route.durationMinutes.coerceAtLeast(1)
+            return ceil(route.durationMinutes * rideMeters / ownLength).toInt().coerceAtLeast(1)
         }
 
         /** El punto del recorrido más cercano a una posición. */
@@ -506,12 +526,101 @@ object JourneyPlanner {
 
     private class Projection(val point: GeoCoordinate, val along: Double, val meters: Double)
 
-    /** Preparar un recorrido cuesta: se guarda mientras la ruta no cambie. */
-    private val tracks = HashMap<String, Track>()
+    /**
+     * Una ruta con sus dos recorridos: el [own] y, si es de un solo sentido y
+     * tiene por dónde seguir, el [linked], unido a sus vecinos.
+     */
+    private class Line(val own: Track, val linked: Track?) {
 
-    private fun trackOf(route: BusRoute): Track = synchronized(tracks) {
-        tracks[route.id]?.takeIf { it.route === route }
-            ?: Track(route).also { tracks[route.id] = it }
+        /** Por dónde llegar a un punto: por el recorrido unido solo si acerca de verdad. */
+        fun access(latitude: Double, longitude: Double, limit: Double): Pair<Track, Access>? {
+            fun walk(access: Access) =
+                distance(latitude, longitude, access.stop.latitude, access.stop.longitude)
+
+            val near = own.access(latitude, longitude, limit)
+            val far = linked?.access(latitude, longitude, limit)
+            return when {
+                linked == null || far == null -> near?.let { own to it }
+                near == null || walk(far) + LINK_GAIN_METERS < walk(near) -> linked to far
+                else -> own to near
+            }
+        }
+    }
+
+    /** Preparar los recorridos cuesta: se guardan mientras el catálogo no cambie. */
+    private var prepared: Pair<List<BusRoute>, List<Line>>? = null
+
+    private fun linesOf(routes: List<BusRoute>): List<Line> = synchronized(this) {
+        prepared?.takeIf { it.first === routes }?.second
+            ?: buildLines(routes.filter { it.stops.size >= 2 }).also { prepared = routes to it }
+    }
+
+    private fun buildLines(routes: List<BusRoute>): List<Line> {
+        // La ida y la vuelta de una línea son dos rutas con el mismo nombre.
+        val byName = routes.groupBy { it.name }
+        return routes.map { route -> Line(Track(route), linkedTrack(route, byName.getValue(route.name))) }
+    }
+
+    /**
+     * El recorrido de [route] unido al final del que acaba donde este empieza y
+     * al principio del que empieza donde este acaba. Una ruta circular se sigue
+     * a sí misma. `null` si no tiene vecinos, o si ya se recorre en los dos sentidos.
+     */
+    private fun linkedTrack(route: BusRoute, sameLine: List<BusRoute>): Track? {
+        if (route.bidirectional) return null
+        val line = lineOf(route)
+
+        /** La ruta cuyo extremo queda más cerca de [point]; de las demás antes que ella misma. */
+        fun neighbour(point: GeoCoordinate, end: (List<GeoCoordinate>) -> GeoCoordinate): BusRoute? = sameLine
+            .map { other ->
+                val edge = end(lineOf(other))
+                other to distance(point.latitude, point.longitude, edge.latitude, edge.longitude)
+            }
+            .filter { (_, meters) -> meters <= LINK_GAP_METERS }
+            .minWithOrNull(compareBy({ (other, _) -> other === route }, { (_, meters) -> meters }))
+            ?.first
+
+        val previous = neighbour(line.first()) { it.last() }
+        val next = neighbour(line.last()) { it.first() }
+        if (previous == null && next == null) return null
+
+        return Track(
+            route,
+            before = previous?.let { reach(lineOf(it).asReversed()).asReversed() }.orEmpty(),
+            after = next?.let { reach(lineOf(it)) }.orEmpty(),
+            neighbourStops = listOfNotNull(previous, next).distinct().filter { it !== route }.flatMap { it.stops }
+        )
+    }
+
+    /** El trazado grabado de la ruta o, si no tiene, la unión de sus paradas. */
+    private fun lineOf(route: BusRoute): List<GeoCoordinate> =
+        route.path?.takeIf { it.size >= 2 } ?: route.stops.map { GeoCoordinate(it.latitude, it.longitude) }
+
+    /** El principio de [line], hasta [LINK_REACH_METERS]. */
+    private fun reach(line: List<GeoCoordinate>): List<GeoCoordinate> {
+        var meters = 0.0
+        return line.filterIndexed { index, point ->
+            if (index > 0) {
+                val last = line[index - 1]
+                meters += distance(last.latitude, last.longitude, point.latitude, point.longitude)
+            }
+            meters <= LINK_REACH_METERS
+        }
+    }
+
+    /**
+     * Un trazado grabado trae miles de puntos casi pegados: para medir sobran,
+     * y calcular con todos sería lento.
+     */
+    private fun thin(raw: List<GeoCoordinate>): List<GeoCoordinate> {
+        val kept = mutableListOf<GeoCoordinate>()
+        raw.forEachIndexed { index, point ->
+            val last = kept.lastOrNull()
+            val far = last == null ||
+                distance(last.latitude, last.longitude, point.latitude, point.longitude) >= TRACK_MIN_GAP_METERS
+            if (far || index == raw.lastIndex) kept += point
+        }
+        return kept
     }
 
     // --- Medidas ---

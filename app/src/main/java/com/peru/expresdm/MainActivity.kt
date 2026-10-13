@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.peru.expresdm.data.AppUpdates
 import com.peru.expresdm.data.Premium
 import com.peru.expresdm.data.RouteRepository
 import com.peru.expresdm.data.SavedRoutes
@@ -21,6 +22,8 @@ import com.peru.expresdm.databinding.ActivityMainBinding
 import com.peru.expresdm.tracking.ArrivalAlarmService
 import com.peru.expresdm.tracking.BackgroundAccess
 import com.peru.expresdm.tracking.PushRegistration
+import com.peru.expresdm.tracking.UpdateWatchWorker
+import com.peru.expresdm.ui.UpdatePrompt
 import com.peru.expresdm.ui.routes.RouteDetailFragment
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -43,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         // adb shell am start -n <paquete>/com.peru.expresdm.MainActivity --ez debug_premium true
         if (BuildConfig.DEBUG) {
             Premium.debugForced = intent.getBooleanExtra(EXTRA_DEBUG_PREMIUM, Premium.debugForced)
+            // … --ez debug_update true: ofrece la versión de la web como si esta fuera vieja.
+            AppUpdates.debugPretendOld = intent.getBooleanExtra(EXTRA_DEBUG_UPDATE, AppUpdates.debugPretendOld)
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -69,6 +74,8 @@ class MainActivity : AppCompatActivity() {
         // abrir la app se pregunta cómo está la cuenta.
         if (savedInstanceState == null) lifecycleScope.launch { AccountRepository.refresh() }
 
+        if (savedInstanceState == null) offerUpdate(asked = intent.getBooleanExtra(UpdateWatchWorker.EXTRA_OFFER_UPDATE, false))
+
         // Al activar un aviso de bajada se pide, una vez, que el teléfono no
         // cierre la app por ahorrar batería: sin eso el aviso no llega.
         lifecycleScope.launch {
@@ -93,6 +100,18 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         openSharedRoute(intent)
+        if (intent.getBooleanExtra(UpdateWatchWorker.EXTRA_OFFER_UPDATE, false)) offerUpdate(asked = true)
+    }
+
+    /**
+     * Si en la web hay una versión más nueva, la ofrece. Al abrir la app, una
+     * vez al día; con [asked] (se tocó el aviso), siempre.
+     */
+    private fun offerUpdate(asked: Boolean) {
+        lifecycleScope.launch {
+            val update = AppUpdates.check() ?: return@launch
+            if (asked || AppUpdates.shouldOffer(this@MainActivity, update)) UpdatePrompt.offer(this@MainActivity, update)
+        }
     }
 
     /** Si la app se abrió desde un enlace compartido, enseña la ficha de ese micro. */
@@ -127,6 +146,7 @@ class MainActivity : AppCompatActivity() {
 
     private companion object {
         const val EXTRA_DEBUG_PREMIUM = "debug_premium"
+        const val EXTRA_DEBUG_UPDATE = "debug_update"
 
         val TOP_LEVEL_DESTINATIONS = setOf(
             R.id.routesFragment,

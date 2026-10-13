@@ -14,6 +14,7 @@ import android.view.WindowManager
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -22,11 +23,13 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.peru.expresdm.R
 import com.peru.expresdm.ai.ModerationService
 import com.peru.expresdm.ai.ModerationVerdict
 import com.peru.expresdm.data.AlertRepository
 import com.peru.expresdm.data.AlertType
+import com.peru.expresdm.data.AppUpdates
 import com.peru.expresdm.data.PlaceSearch
 import com.peru.expresdm.data.PublishResult
 import com.peru.expresdm.data.RoadAlert
@@ -43,6 +46,7 @@ import com.peru.expresdm.ui.hasAnyLocationPermission
 import com.peru.expresdm.ui.isLocationEnabled
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.io.File
 
 /**
  * Hoja para publicar una alerta.
@@ -77,6 +81,19 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         }
     }
 
+    /** Dónde va a dejar la cámara la foto que se está tomando. */
+    private var cameraTarget: Uri? = null
+
+    /** La cámara del teléfono: la foto se toma desde su app, así que no hace falta permiso. */
+    private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { taken ->
+        val target = cameraTarget
+        cameraTarget = null
+        if (taken && target != null) {
+            photo = target
+            renderPhoto()
+        }
+    }
+
     private val requestLocation = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { locate() }
@@ -101,9 +118,9 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         renderRouteChoice()
         // Las fotos se revisan en el servidor: sin él o sin sesión no hay a quién mandarlas.
         binding.photoRow.isVisible = ApiClient.isConfigured && AccountRepository.isSignedIn
-        binding.btnAddPhoto.setOnClickListener {
-            pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }
+        // La app de la cámara puede hacer que el sistema cierre esta mientras se toma la foto.
+        cameraTarget = savedInstanceState?.getString(STATE_CAMERA_TARGET)?.let(Uri::parse)
+        binding.btnAddPhoto.setOnClickListener { askPhotoSource() }
         binding.btnRemovePhoto.setOnClickListener {
             photo = null
             renderPhoto()
@@ -134,6 +151,7 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(STATE_TYPE, selectedType?.name)
+        outState.putString(STATE_CAMERA_TARGET, cameraTarget?.toString())
     }
 
     private fun buildTypeChips() {
@@ -176,6 +194,44 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         if (!asks) {
             selectedRouteId = null
             binding.routeInput.setText("", false)
+        }
+    }
+
+    /** Quien avisa de algo lo tiene delante: lo normal es tomarle la foto en el momento. */
+    private fun askPhotoSource() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setItems(
+                arrayOf(getString(R.string.create_alert_photo_take), getString(R.string.create_alert_photo_pick))
+            ) { _, which ->
+                if (which == 0) {
+                    openCamera()
+                } else {
+                    pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
+            }
+            .show()
+    }
+
+    private fun openCamera() {
+        val context = requireContext()
+        try {
+            val folder = File(context.cacheDir, PHOTO_FOLDER).apply { mkdirs() }
+            // Las de alertas anteriores ya se subieron o se descartaron; la que
+            // se está enseñando sigue hasta que la nueva la sustituya.
+            val shown = photo?.lastPathSegment
+            folder.listFiles()?.filterNot { it.name == shown }?.forEach { it.delete() }
+            val target = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}${AppUpdates.FILES_AUTHORITY_SUFFIX}",
+                File(folder, "alerta-${System.currentTimeMillis()}.jpg")
+            )
+            cameraTarget = target
+            takePhoto.launch(target)
+        } catch (e: Exception) {
+            // Un teléfono sin app de cámara, o sin sitio donde dejar la foto.
+            cameraTarget = null
+            binding.photoError.setText(R.string.create_alert_photo_no_camera)
+            binding.photoError.isVisible = true
         }
     }
 
@@ -354,6 +410,10 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
     companion object {
         private const val TAG = "create_alert"
         private const val STATE_TYPE = "type"
+        private const val STATE_CAMERA_TARGET = "camera_target"
+
+        /** Tiene que coincidir con `file_paths.xml`. */
+        private const val PHOTO_FOLDER = "fotos"
 
         const val RESULT_KEY = "alert_published"
         const val RESULT_ALERT_ID = "alert_id"

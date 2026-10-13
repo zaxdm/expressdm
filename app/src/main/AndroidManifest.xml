@@ -28,6 +28,9 @@
     <!-- Voz (Premium): preguntarle al asistente hablando. La app funciona sin él. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- Actualizarse sola: abrir el instalador con la versión nueva que la app descarga. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <uses-feature
         android:name="android.hardware.location.gps"
         android:required="false" />
@@ -82,6 +85,20 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
+        <!--
+          Presta archivos de la app a otras: a la cámara, donde dejar la foto de
+          una alerta; al instalador de Android, la versión nueva descargada.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.archivos"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <!-- Avisos al momento de alertas nuevas. Solo trabaja si la app se compiló con Firebase. -->
         <service

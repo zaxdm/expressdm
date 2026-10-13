@@ -38,7 +38,8 @@ object RecentPlaces {
  */
 class RecentPlaceStore private constructor(context: Context) {
 
-    private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val account = AccountPrefs(context, PREFS_NAME)
+    private val prefs get() = account.current
 
     /** Un punto tocado en el mapa o "mi ubicación" no tienen nombre propio: no sirven como recientes. */
     private val genericNames: Set<String> = context.applicationContext.run {
@@ -47,6 +48,11 @@ class RecentPlaceStore private constructor(context: Context) {
 
     private val _places = MutableStateFlow(load())
     val places: StateFlow<List<Place>> = _places.asStateFlow()
+
+    init {
+        // Cada cuenta tiene sus búsquedas.
+        account.onAccountChanged { _places.value = load() }
+    }
 
     fun remember(place: Place) {
         if (place.name.isBlank() || place.name in genericNames) return

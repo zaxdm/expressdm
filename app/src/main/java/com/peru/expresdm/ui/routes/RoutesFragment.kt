@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -2614,6 +2615,12 @@ class RoutesFragment : Fragment() {
             }
         })
         sheetBehavior = behavior
+        // Subida del todo, la hoja empieza más abajo que la pantalla pero mide lo
+        // mismo: lo que le sobra queda fuera, por debajo. Sin este hueco no se
+        // alcanza a ver el final de las listas.
+        val hidden = behavior.expandedOffset
+        binding.routesRecycler.updatePadding(bottom = binding.routesRecycler.paddingBottom + hidden)
+        binding.routePanel.updatePadding(bottom = binding.routePanel.paddingBottom + hidden)
         // Se empieza en reposo; la altura mínima es para quien quiera ver solo el mapa.
         behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }

@@ -22,9 +22,15 @@ class SavedPlaceStore private constructor(context: Context) {
 
     data class Favorite(val kind: Kind, val place: Place)
 
-    private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val account = AccountPrefs(context, PREFS_NAME)
+    private val prefs get() = account.current
 
     private val _favorites = MutableStateFlow(load())
+
+    init {
+        // Cada cuenta tiene sus lugares.
+        account.onAccountChanged { _favorites.value = load() }
+    }
 
     /** Los favoritos, en el orden en que se añadieron. */
     val favorites: StateFlow<List<Favorite>> = _favorites.asStateFlow()

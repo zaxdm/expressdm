@@ -33,12 +33,13 @@ object FrequentRoutes {
  *
  * Abrir el detalle de una ruta es la señal más clara de que se usa; las
  * favoritas salen solas de este registro con [FrequentRoutes]. Se guarda en el
- * teléfono y no sale de él.
+ * teléfono, aparte para cada cuenta, y no sale de él.
  */
 class RouteUsageStore private constructor(context: Context) {
 
     private val appContext = context.applicationContext
-    private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val account = AccountPrefs(appContext, PREFS_NAME)
+    private val prefs get() = account.current
 
     private val _uses = MutableStateFlow<Map<String, Int>>(emptyMap())
     val uses: StateFlow<Map<String, Int>> = _uses.asStateFlow()
@@ -46,6 +47,8 @@ class RouteUsageStore private constructor(context: Context) {
     init {
         migrateManualFavorites()
         _uses.value = load()
+        // Cada cuenta tiene sus favoritas.
+        account.onAccountChanged { _uses.value = load() }
     }
 
     fun recordUse(routeId: String) {

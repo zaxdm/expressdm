@@ -40,7 +40,15 @@ class SessionStore private constructor(context: Context) {
 
     val token: String? get() = _session.value?.token
 
+    private val userListeners = mutableListOf<(String?) -> Unit>()
+
+    /** Avisa cuando entra otra cuenta o se cierra la sesión, con el id de quien queda. */
+    fun onUserChanged(listener: (userId: String?) -> Unit) {
+        userListeners += listener
+    }
+
     fun save(session: Session) {
+        val previous = _session.value?.userId
         prefs.edit()
             .putString(KEY_TOKEN, session.token)
             .putString(KEY_USER_ID, session.userId)
@@ -51,11 +59,14 @@ class SessionStore private constructor(context: Context) {
             .putLong(KEY_PREMIUM_UNTIL, session.premiumUntil ?: 0L)
             .apply()
         _session.value = session
+        if (previous != session.userId) userListeners.forEach { it(session.userId) }
     }
 
     fun clear() {
+        val previous = _session.value?.userId
         prefs.edit().clear().apply()
         _session.value = null
+        if (previous != null) userListeners.forEach { it(null) }
     }
 
     private fun read(): Session? {

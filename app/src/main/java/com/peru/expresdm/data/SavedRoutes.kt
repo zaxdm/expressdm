@@ -15,17 +15,24 @@ import org.osmdroid.util.GeoPoint
  *
  * El recorrido y los datos de todas las rutas ya quedan en el teléfono con el
  * catálogo; lo que falta sin internet es el mapa de debajo. Guardar una ruta
- * descarga las teselas por donde pasa, y solo esas: OpenStreetMap no permite
- * bajarse zonas enteras, y con el trazado basta para orientarse.
+ * descarga las teselas por donde pasa, y solo esas, cuando quien sirve el mapa
+ * lo permite. OpenStreetMap no deja descargar por adelantado: con su mapa la
+ * ruta se guarda igual, y sin conexión se ve la parte que ya se había mirado.
  *
  * Cuántas se pueden guardar depende de la cuenta: ver [Premium].
  */
 class SavedRoutes private constructor(context: Context) {
 
     private val appContext = context.applicationContext
-    private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val account = AccountPrefs(appContext, PREFS_NAME)
+    private val prefs get() = account.current
 
-    private val _ids = MutableStateFlow(prefs.getStringSet(KEY_IDS, emptySet()).orEmpty().toSet())
+    private val _ids = MutableStateFlow(load())
+
+    init {
+        // Cada cuenta tiene sus rutas guardadas.
+        account.onAccountChanged { _ids.value = load() }
+    }
 
     /** Ids de las rutas guardadas. */
     val ids: StateFlow<Set<String>> = _ids.asStateFlow()
@@ -58,8 +65,15 @@ class SavedRoutes private constructor(context: Context) {
             return
         }
 
+        // osmdroid lo comprueba en otro hilo y, si no se puede, cierra la app.
+        val source = TileSourceFactory.MAPNIK
+        if (!source.tileSourcePolicy.acceptsBulkDownload()) {
+            onDone(false)
+            return
+        }
+
         try {
-            val manager = CacheManager(TileSourceFactory.MAPNIK, SqlTileWriter(), MIN_ZOOM, MAX_ZOOM)
+            val manager = CacheManager(source, SqlTileWriter(), MIN_ZOOM, MAX_ZOOM)
             manager.downloadAreaAsync(
                 appContext, points, MIN_ZOOM, MAX_ZOOM,
                 object : CacheManager.CacheManagerCallback {
@@ -78,6 +92,8 @@ class SavedRoutes private constructor(context: Context) {
 
     /** La quita de las guardadas. Las teselas se quedan en la caché hasta que el sistema las limpie. */
     fun remove(routeId: String) = update(_ids.value - routeId)
+
+    private fun load(): Set<String> = prefs.getStringSet(KEY_IDS, emptySet()).orEmpty().toSet()
 
     private fun update(ids: Set<String>) {
         prefs.edit().putStringSet(KEY_IDS, ids).apply()

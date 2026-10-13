@@ -10,6 +10,7 @@ import com.peru.expresdm.data.net.AccountRepository
 import com.peru.expresdm.tracking.AlertWatchWorker
 import com.peru.expresdm.tracking.PushRegistration
 import com.peru.expresdm.tracking.RouteRecorderService
+import com.peru.expresdm.tracking.UpdateWatchWorker
 import org.osmdroid.config.Configuration
 
 /**
@@ -45,6 +46,7 @@ class ExpresdmApp : Application() {
         try {
             AlertWatchWorker.sync(this)
             PushRegistration.sync(this)
+            UpdateWatchWorker.sync(this)
         } catch (e: IllegalStateException) {
             // WorkManager sin iniciar (pasa en las pruebas): la app sigue sin los avisos.
             Log.w("ExpresdmApp", "No se pudo programar la revisión de alertas", e)

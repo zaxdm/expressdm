@@ -65,6 +65,51 @@ class JourneyPlannerTest {
         assertTrue(regreso.any { it.rides.size == 1 })
     }
 
+    /** La ida baja por el oeste y dobla hasta el paradero final; la vuelta sale de ahí por otra calle. */
+    private val ida = lineaNorte.copy(
+        id = "ida", name = "Circuito", bidirectional = false,
+        stops = listOf(parada("Arriba", 8_000.0, 0.0), parada("Esquina", 0.0, 0.0), parada("Paradero", 0.0, 1_500.0))
+    )
+    private val vuelta = lineaNorte.copy(
+        id = "vuelta", name = "Circuito", bidirectional = false,
+        stops = listOf(parada("Paradero", 0.0, 1_500.0), parada("Arriba Este", 8_000.0, 1_500.0))
+    )
+
+    @Test
+    fun `cerca del paradero final se sube al micro que llega y se sigue en el de vuelta`() {
+        // La vuelta no pasa por aquí: sale del paradero, a 1,2 km. La ida sí, ya terminando.
+        val viaje = JourneyPlanner.plan(posicion(0.0, 300.0), punto(7_000.0, 1_500.0), listOf(ida, vuelta))
+            .single { !it.walkingOnly }
+        val tramo = viaje.rides.single()
+
+        assertEquals("vuelta", tramo.route.id)
+        // Sube donde está, no caminando hasta el paradero.
+        assertTrue("camina ${viaje.walkMeters} m", viaje.walkMeters < 100.0)
+        assertEquals(punto(0.0, 300.0).longitude, tramo.from.longitude, 1e-4)
+        // 1,2 km hasta el paradero y 7 km de vuelta, a 8 km en 40 min: unos 41 min.
+        assertTrue("dijo ${tramo.minutes} min", tramo.minutes in 39..43)
+        // Un solo pasaje: es el mismo micro.
+        assertEquals(2.0, viaje.fare, 0.001)
+    }
+
+    @Test
+    fun `una linea circular se toma tambien pasando por su paradero`() {
+        // Un cuadrado de un solo sentido que empieza y acaba en el mismo sitio.
+        val circular = lineaNorte.copy(
+            id = "circular", bidirectional = false,
+            stops = listOf(
+                parada("Inicio", 0.0, 0.0), parada("Norte", 3_000.0, 0.0), parada("Noreste", 3_000.0, 3_000.0),
+                parada("Este", 0.0, 3_000.0), parada("Inicio", 0.0, 0.0)
+            )
+        )
+        // De poco antes del paradero a poco después: hay que pasar por él.
+        val tramo = JourneyPlanner.plan(posicion(0.0, 1_600.0), punto(1_600.0, 0.0), listOf(circular))
+            .first { !it.walkingOnly }.rides.single()
+
+        assertEquals("circular", tramo.route.id)
+        assertTrue("dijo ${tramo.minutes} min", tramo.minutes in 9..12)
+    }
+
     @Test
     fun `busca otro enlace si el par mas cercano no sirve para cambiar`() {
         val primera = lineaNorte.copy(stops = listOf(
