@@ -25,17 +25,16 @@ import java.util.concurrent.TimeUnit
 /**
  * Avisa de que hay una versión nueva de la app.
  *
- * Unas cuantas veces al día, con la app cerrada, mira la versión que hay en la
- * web y, si es más nueva, manda una notificación: una sola por versión. Al
- * tocarla se abre la app ofreciendo descargarla.
+ * El servidor lo dice al momento a los teléfonos apuntados a los avisos
+ * ([PushService]). Para los demás, unas cuantas veces al día y con la app
+ * cerrada se mira la versión que hay en la web. En los dos casos, si es más
+ * nueva sale una notificación, una sola por versión; al tocarla se abre la app
+ * ofreciendo descargarla.
  */
 class UpdateWatchWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val update = AppUpdates.check() ?: return Result.success()
-        if (AlertNotifier.canNotify(applicationContext) && AppUpdates.shouldNotify(applicationContext, update)) {
-            notify(applicationContext, update)
-        }
+        checkNow(applicationContext)
         return Result.success()
     }
 
@@ -53,6 +52,12 @@ class UpdateWatchWorker(context: Context, params: WorkerParameters) : CoroutineW
                 .build()
             WorkManager.getInstance(context.applicationContext)
                 .enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+        }
+
+        /** Mira si hay versión nueva y, si no se había avisado de ella, avisa. */
+        suspend fun checkNow(context: Context) {
+            val update = AppUpdates.check() ?: return
+            if (AlertNotifier.canNotify(context) && AppUpdates.shouldNotify(context, update)) notify(context, update)
         }
 
         private fun notify(context: Context, update: AppUpdate) {

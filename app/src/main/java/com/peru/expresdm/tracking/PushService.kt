@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 /**
  * Recibe los avisos al momento: el servidor manda uno en cuanto alguien publica
  * una alerta cerca de donde anda este teléfono o en una ruta que usa, y cuando
- * cambia una ruta que el usuario tiene guardada (Premium).
+ * cambia una ruta que el usuario tiene guardada (Premium). También cuando sale
+ * una versión nueva de la app.
  *
  * Llegan solo los datos; la notificación se arma aquí, en el idioma del
  * teléfono y respetando lo que el usuario eligió en Ajustes.
@@ -28,6 +29,11 @@ class PushService : FirebaseMessagingService() {
         val data = message.data
         if (data["kind"] == KIND_ROUTE_CHANGE) {
             onRouteChanged(data)
+            return
+        }
+        if (data["kind"] == KIND_APP_UPDATE) {
+            // Se comprueba contra la web: quien ya la tiene puesta no recibe nada.
+            scope.launch { UpdateWatchWorker.checkNow(applicationContext) }
             return
         }
         val id = data["alertId"]?.takeIf { it.isNotBlank() } ?: return
@@ -66,6 +72,7 @@ class PushService : FirebaseMessagingService() {
 
     private companion object {
         const val KIND_ROUTE_CHANGE = "route_change"
+        const val KIND_APP_UPDATE = "app_update"
 
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     }

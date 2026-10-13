@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.content.FileProvider
 import com.peru.expresdm.BuildConfig
+import com.peru.expresdm.data.net.ApiClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
@@ -33,7 +34,8 @@ data class AppUpdate(
  *
  * Subo no se reparte por una tienda: el instalador está en la web, junto a un
  * archivo (`descargas/version.json`) que dice cuál es la última versión. La app
- * lo mira al abrirse y de vez en cuando con ella cerrada; si hay una más nueva
+ * lo mira al abrirse, cuando el servidor avisa y de vez en cuando con ella
+ * cerrada; si hay una más nueva
  * la ofrece, la baja y se la pasa al instalador de Android, que comprueba que
  * venga firmada como la que ya está puesta.
  */
@@ -74,11 +76,19 @@ object AppUpdates {
                     disconnect()
                 }
             }
-            parse(text, installedCode, folderUrl, Locale.getDefault().language)
+            parse(text, installedCode, folderUrl, Locale.getDefault().language)?.also { announce(it) }
         } catch (e: IOException) {
             Log.i(TAG, "No se pudo mirar si hay versión nueva", e)
             null
         }
+    }
+
+    /**
+     * Le cuenta al servidor que hay versión nueva, para que avise al momento a
+     * los demás teléfonos. Él comprueba que sea verdad y avisa una sola vez.
+     */
+    private suspend fun announce(update: AppUpdate) {
+        if (ApiClient.isConfigured) ApiClient.post("/api/app/update", JSONObject().put("versionCode", update.versionCode))
     }
 
     /**
