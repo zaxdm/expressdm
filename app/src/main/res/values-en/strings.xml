@@ -67,6 +67,7 @@
     <string name="location_action_settings">Settings</string>
     <string name="nearby_walk">%1$s · %2$d min walk · %3$s</string>
     <string name="nearby_far">%1$s · %2$s</string>
+    <string name="nearby_here">passes right where you are</string>
     <string name="distance_meters">%1$d m</string>
     <string name="distance_km">%1$.1f km</string>
     <string name="stop_marker">Landmark: %1$s</string>
@@ -109,6 +110,7 @@
     <!-- Ruta elegida, trazada en el mapa del inicio -->
     <string name="selected_walk">Walk %1$s · %2$d min to %3$s</string>
     <string name="selected_walk_far">The closest point of the route is %2$s, %1$s away</string>
+    <string name="selected_here">The bus passes right where you are: you can wait for it here</string>
     <string name="selected_no_location">Turn on location to see where to walk to the route</string>
     <string name="selected_board_here">GET ON HERE</string>
     <string name="selected_close">Close route</string>

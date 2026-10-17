@@ -65,6 +65,7 @@
     <string name="location_action_settings">Ajustes</string>
     <string name="nearby_walk">%1$s · %2$d min a pie · %3$s</string>
     <string name="nearby_far">%1$s · %2$s</string>
+    <string name="nearby_here">pasa por donde estás</string>
     <string name="distance_meters">%1$d m</string>
     <string name="distance_km">%1$.1f km</string>
     <string name="stop_marker">Punto de referencia: %1$s</string>
@@ -107,6 +108,7 @@
     <!-- Ruta elegida, trazada en el mapa del inicio -->
     <string name="selected_walk">Camina %1$s · %2$d min hasta %3$s</string>
     <string name="selected_walk_far">El punto más cercano del recorrido es %2$s, a %1$s</string>
+    <string name="selected_here">El micro pasa por donde estás: puedes esperarlo aquí</string>
     <string name="selected_no_location">Activa tu ubicación para ver por dónde caminar hasta el recorrido</string>
     <string name="selected_board_here">SUBES AQUÍ</string>
     <string name="selected_close">Cerrar ruta</string>

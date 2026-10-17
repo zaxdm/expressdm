@@ -1,6 +1,7 @@
 package com.peru.expresdm.ui.routes
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -126,9 +127,9 @@ class RouteAdapter(
                 // Sin ubicación no se sabe dónde subir: se dice cuánto dura el recorrido.
                 nearby == null -> if (wide) null else duration
                 wide -> context.getString(
-                    R.string.nearby_far, context.formatDistance(nearby.distanceMeters), nearby.nearestStop.name
+                    R.string.nearby_far, context.formatDistance(nearby.distanceMeters), context.boardingName(nearby)
                 )
-                else -> nearby.nearestStop.name
+                else -> context.boardingName(nearby)
             }
             binding.routeStop.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 if (nearby != null) R.drawable.ic_place_small else 0, 0, 0, 0
@@ -140,7 +141,7 @@ class RouteAdapter(
                 nearby?.let {
                     context.getString(
                         R.string.nearby_walk,
-                        context.formatDistance(it.distanceMeters), it.walkingMinutes, it.nearestStop.name
+                        context.formatDistance(it.distanceMeters), it.walkingMinutes, context.boardingName(it)
                     )
                 }
             ).joinToString(". ")
@@ -178,10 +179,10 @@ class RouteAdapter(
                 val distance = context.formatDistance(nearby.distanceMeters)
                 binding.nearbyText.text = if (nearby.distanceMeters <= NearbyRoutes.WALKABLE_METERS) {
                     context.getString(
-                        R.string.nearby_walk, distance, nearby.walkingMinutes, nearby.nearestStop.name
+                        R.string.nearby_walk, distance, nearby.walkingMinutes, context.boardingName(nearby)
                     )
                 } else {
-                    context.getString(R.string.nearby_far, distance, nearby.nearestStop.name)
+                    context.getString(R.string.nearby_far, distance, context.boardingName(nearby))
                 }
             }
 
@@ -201,4 +202,14 @@ class RouteAdapter(
                 old == new
         }
     }
+}
+
+/**
+ * Por dónde se sube, en palabras: el punto de referencia si se sube en él, y si
+ * no, el sitio de la calle cerca de esa referencia.
+ */
+internal fun Context.boardingName(nearby: NearbyRoute): String = when {
+    nearby.distanceMeters <= NearbyRoutes.ON_ROUTE_METERS -> getString(R.string.nearby_here)
+    nearby.boardsAtStop || nearby.nearestStop.name.isBlank() -> nearby.nearestStop.name
+    else -> getString(R.string.journey_point_near, nearby.nearestStop.name)
 }

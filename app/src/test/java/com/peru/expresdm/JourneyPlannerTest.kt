@@ -194,12 +194,25 @@ class JourneyPlannerTest {
 
     @Test
     fun `junto a una parada conocida se usa la parada`() {
-        val tramo = JourneyPlanner.plan(posicion(150.0, 50.0), punto(4_100.0, 50.0), listOf(lineaNorte))
+        val tramo = JourneyPlanner.plan(posicion(40.0, 30.0), punto(4_030.0, 30.0), listOf(lineaNorte))
             .first { !it.walkingOnly }.rides.single()
 
         assertEquals(RidePoint.STOP, tramo.fromKind)
         assertEquals("Sur", tramo.from.name)
         assertEquals("Centro", tramo.to.name)
+    }
+
+    @Test
+    fun `en la calle de la ruta no obliga a ir hasta la parada aunque este cerca`() {
+        // A 150 m de la parada «Sur», pero a 30 m de la calle por la que pasa el micro.
+        val viaje = JourneyPlanner.plan(posicion(150.0, 30.0), punto(4_100.0, 30.0), listOf(lineaNorte))
+            .first { !it.walkingOnly }
+        val tramo = viaje.rides.single()
+
+        assertEquals(RidePoint.NEAR_STOP, tramo.fromKind)
+        assertEquals("Sur", tramo.from.name)
+        assertEquals(punto(150.0, 0.0).latitude, tramo.from.latitude, 1e-4)
+        assertTrue("camina ${viaje.walkMeters} m", viaje.walkMeters < 100.0)
     }
 
     @Test

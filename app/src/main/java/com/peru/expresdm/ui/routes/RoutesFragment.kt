@@ -1266,7 +1266,7 @@ class RoutesFragment : Fragment() {
 
                 val points = if (search is PlaceSearchState.Chosen) {
                     listOf(GeoPoint(search.place.latitude, search.place.longitude)) +
-                        state.items.mapNotNull { it.nearby?.nearestStop }.map { GeoPoint(it.latitude, it.longitude) }
+                        state.items.mapNotNull { it.nearby?.boarding }.map { GeoPoint(it.latitude, it.longitude) }
                 } else {
                     (search as PlaceSearchState.Results).places.map { GeoPoint(it.latitude, it.longitude) }
                 }
@@ -1316,15 +1316,16 @@ class RoutesFragment : Fragment() {
         }
 
         val stops = selected.route.stops
-        val boarding = selected.boarding?.nearestStop
+        // Donde sube el usuario: una referencia o cualquier punto de la calle por la que pasa.
+        val boarding = selected.boarding?.boarding
         stops.forEachIndexed { index, stop ->
             if (stop == boarding) return@forEachIndexed
             val style = if (index == 0 || index == stops.lastIndex) StopMarkerStyle.ENDPOINT else StopMarkerStyle.NORMAL
             layer.add(stopMarker(map, stop, index, color, style))
         }
-        // La parada donde sube el usuario, al final para que quede encima.
+        // Al final para que quede encima.
         if (boarding != null) {
-            layer.add(stopMarker(map, boarding, stops.indexOf(boarding), color, StopMarkerStyle.SELECTED))
+            layer.add(ridePointMarker(map, selected.route, boarding, color, StopMarkerStyle.SELECTED))
         }
 
         map.invalidate()
@@ -1814,20 +1815,23 @@ class RoutesFragment : Fragment() {
             boarding.distanceMeters > NearbyRoutes.WALKABLE_METERS -> getString(
                 R.string.selected_walk_far,
                 context.formatDistance(boarding.distanceMeters),
-                boarding.nearestStop.name
+                context.boardingName(boarding)
             )
+
+            // Está en la calle por la que pasa: no hay que ir a ningún paradero.
+            boarding.distanceMeters <= NearbyRoutes.ON_ROUTE_METERS -> getString(R.string.selected_here)
 
             else -> getString(
                 R.string.selected_walk,
                 context.formatDistance(selected.walkMeters ?: boarding.distanceMeters),
                 selected.walkMinutes ?: boarding.walkingMinutes,
-                boarding.nearestStop.name
+                context.boardingName(boarding)
             )
         }
     }
 
     private fun renderStops(selected: SelectedRoute, @ColorInt color: Int) {
-        val key = "${selected.route.id}|${selected.route.stops.size}|${selected.boarding?.nearestStop?.name}"
+        val key = "${selected.route.id}|${selected.route.stops.size}|${selected.boarding?.boarding}"
         if (key == renderedStopsKey) return
         renderedStopsKey = key
 
@@ -1841,7 +1845,7 @@ class RoutesFragment : Fragment() {
             row.stopNumber.text = (index + 1).toString()
             row.stopNumber.backgroundTintList = ColorStateList.valueOf(color)
             row.stopName.text = stop.name
-            row.stopTag.isVisible = stop == selected.boarding?.nearestStop
+            row.stopTag.isVisible = stop == selected.boarding?.boarding
             row.stopTag.backgroundTintList = ColorStateList.valueOf(primary)
             row.root.setOnClickListener { focusPoint(GeoPoint(stop.latitude, stop.longitude), STOP_ZOOM) }
             container.addView(row.root)

@@ -184,7 +184,8 @@ class RoutesViewModel(app: Application) : AndroidViewModel(app) {
                 val current = selection.value
                 val target = current.walkTarget ?: return@collect
                 val route = routes.firstOrNull { it.id == current.routeId } ?: return@collect
-                if (target !in route.stops) refreshWalk()
+                val here = position.value ?: return@collect
+                if (target != NearbyRoutes.measure(route, here).boarding) refreshWalk()
             }
         }
     }
@@ -485,9 +486,9 @@ class RoutesViewModel(app: Application) : AndroidViewModel(app) {
         if (nearby.distanceMeters > NearbyRoutes.WALKABLE_METERS) return
 
         walkJob = viewModelScope.launch {
-            val path = router.walkingPath(here, nearby.nearestStop)
+            val path = router.walkingPath(here, nearby.boarding)
             selection.update {
-                if (it.routeId == routeId) it.copy(walkPath = path, walkTarget = nearby.nearestStop) else it
+                if (it.routeId == routeId) it.copy(walkPath = path, walkTarget = nearby.boarding) else it
             }
         }
     }
@@ -638,12 +639,12 @@ class RoutesViewModel(app: Application) : AndroidViewModel(app) {
 
         if (here != null && boarding != null && boarding.distanceMeters <= NearbyRoutes.WALKABLE_METERS) {
             val userPoint = GeoCoordinate(here.latitude, here.longitude)
-            val stopPoint = GeoCoordinate(boarding.nearestStop.latitude, boarding.nearestStop.longitude)
-            val street = sel.walkPath?.takeIf { sel.walkTarget == boarding.nearestStop }
+            val stopPoint = GeoCoordinate(boarding.boarding.latitude, boarding.boarding.longitude)
+            val street = sel.walkPath?.takeIf { sel.walkTarget == boarding.boarding }
 
             if (street != null) {
                 // El camino por calles empieza y acaba en la calle más próxima:
-                // lo unimos al punto exacto del usuario y a la parada.
+                // lo unimos al punto exacto del usuario y al de subida.
                 walkLine = listOf(userPoint) + street.points + stopPoint
                 walkMeters = street.meters
                 walkMinutes = ceil(street.seconds / SECONDS_PER_MINUTE).toInt().coerceAtLeast(1)

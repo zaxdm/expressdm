@@ -9,12 +9,23 @@ import kotlin.math.sqrt
 /** Posición del usuario, sin depender de android.location para poder probarla. */
 data class UserPosition(val latitude: Double, val longitude: Double)
 
-/** Una ruta junto con la parada más cercana al usuario y lo lejos que queda. */
+/**
+ * Una ruta junto con por dónde subir a ella y lo lejos que queda.
+ *
+ * El micro se para en cualquier punto de su recorrido, no solo en los puntos
+ * de referencia: [boarding] es el punto del trazado más cercano al usuario, y
+ * lleva el nombre de [nearestStop], la referencia conocida más próxima a él.
+ */
 data class NearbyRoute(
     val route: BusRoute,
     val nearestStop: Stop,
-    val distanceMeters: Double
+    val distanceMeters: Double,
+    val boarding: Stop = nearestStop
 ) {
+    /** Se sube justo en el punto de referencia, y no en otro sitio de la calle. */
+    val boardsAtStop: Boolean
+        get() = boarding == nearestStop
+
     /** Minutos a pie hasta esa parada, a paso normal. */
     val walkingMinutes: Int
         get() = ceil(distanceMeters / NearbyRoutes.WALKING_METERS_PER_MINUTE).toInt().coerceAtLeast(1)
@@ -30,8 +41,9 @@ data class NearbySearch(
 /**
  * Encuentra las rutas que pasan cerca del usuario.
  *
- * Mide la distancia a la parada más cercana y no al trazado: la gente sube al
- * micro en una parada, y además los trazados del catálogo son aproximados.
+ * Mide la distancia al trazado y no a los puntos de referencia: en Trujillo el
+ * micro para donde se le pide, así que quien está en una calle por la que
+ * pasa la ruta ya puede subir ahí mismo.
  *
  * Es lógica pura, sin Android, para poder probarla directamente.
  */
@@ -54,20 +66,23 @@ object NearbyRoutes {
 
     private const val EARTH_RADIUS_METERS = 6_371_008.8
 
-    /** La parada de [route] más cercana a [position]. */
+    /** Más cerca que esto del recorrido, el micro pasa por donde está el usuario. */
+    const val ON_ROUTE_METERS = 40.0
+
+    /** A esta distancia de un punto de referencia, se sube en él. */
+    const val AT_STOP_METERS = 60.0
+
+    /** El punto del recorrido de [route] más cercano a [position], y la referencia que tiene al lado. */
     fun measure(route: BusRoute, position: UserPosition): NearbyRoute {
         require(route.stops.isNotEmpty()) { "La ruta ${route.id} no tiene paradas" }
 
-        var nearest = route.stops.first()
-        var best = distanceMeters(position, nearest)
-        for (stop in route.stops.drop(1)) {
-            val distance = distanceMeters(position, stop)
-            if (distance < best) {
-                best = distance
-                nearest = stop
-            }
-        }
-        return NearbyRoute(route, nearest, best)
+        val here = GeoCoordinate(position.latitude, position.longitude)
+        val (point, meters) = DropOffPicker.nearestOnLine(here, DropOffPicker.lineOf(route))
+        val nearest = route.stops.minBy { distanceMeters(point.latitude, point.longitude, it.latitude, it.longitude) }
+        // Junto a la referencia se sube en ella, que es un sitio que la gente conoce.
+        val atStop = distanceMeters(point.latitude, point.longitude, nearest.latitude, nearest.longitude) <= AT_STOP_METERS
+        val boarding = if (atStop) nearest else Stop(nearest.name, point.latitude, point.longitude)
+        return NearbyRoute(route, nearest, if (atStop) distanceMeters(position, nearest) else meters, boarding)
     }
 
     /** Rutas cercanas a [position], de la más próxima a la más lejana. */
@@ -90,9 +105,8 @@ object NearbyRoutes {
     const val PLACE_RADIUS_METERS = 600.0
 
     /**
-     * Rutas que pasan cerca de un lugar: alguna parada, o algún punto de su
-     * trazado grabado, a menos de [radiusMeters]. La distancia que se devuelve
-     * es a la parada más cercana, que es donde se sube.
+     * Rutas que pasan cerca de un lugar: algún punto de su recorrido a menos
+     * de [radiusMeters]. La distancia que se devuelve es a ese punto.
      */
     fun passingNear(
         latitude: Double,
@@ -103,13 +117,8 @@ object NearbyRoutes {
         val place = UserPosition(latitude, longitude)
         return routes
             .filter { it.stops.isNotEmpty() }
-            .mapNotNull { route ->
-                val nearest = measure(route, place)
-                val pathDistance = route.path
-                    ?.minOfOrNull { distanceMeters(latitude, longitude, it.latitude, it.longitude) }
-                    ?: Double.MAX_VALUE
-                if (minOf(nearest.distanceMeters, pathDistance) <= radiusMeters) nearest else null
-            }
+            .map { measure(it, place) }
+            .filter { it.distanceMeters <= radiusMeters }
             .sortedBy { it.distanceMeters }
     }
 

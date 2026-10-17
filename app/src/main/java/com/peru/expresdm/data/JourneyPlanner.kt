@@ -113,8 +113,12 @@ object JourneyPlanner {
 
     const val MAX_RESULTS = 4
 
-    /** Un punto del recorrido a menos de esto de una parada se da por la parada. */
-    const val SNAP_TO_STOP_METERS = 200.0
+    /**
+     * Un punto del recorrido a menos de esto de una parada se da por la parada.
+     * Es poco a propósito: quien está en la calle por la que pasa el micro lo
+     * toma ahí mismo, sin andar hasta el punto de referencia.
+     */
+    const val SNAP_TO_STOP_METERS = NearbyRoutes.AT_STOP_METERS
 
     /** Hasta aquí tiene sentido decir "cerca de" una parada. */
     const val NEAR_STOP_METERS = 700.0

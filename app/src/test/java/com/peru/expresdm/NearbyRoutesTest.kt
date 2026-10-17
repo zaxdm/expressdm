@@ -60,6 +60,22 @@ class NearbyRoutesTest {
     }
 
     @Test
+    fun `en la calle por la que pasa el micro se sube ahi mismo y no en el paradero`() {
+        // Dos referencias a unos 2 km; el usuario está a mitad de la calle que las une.
+        val route = RouteRepository.all().first().copy(
+            id = "recta",
+            stops = listOf(Stop("Inicio", -8.1000, -79.0300), Stop("Final", -8.1180, -79.0300)),
+            path = null
+        )
+        val nearby = NearbyRoutes.measure(route, UserPosition(-8.1090, -79.0300))
+
+        assertEquals(0.0, nearby.distanceMeters, 1.0)
+        assertFalse(nearby.boardsAtStop)
+        assertEquals(-8.1090, nearby.boarding.latitude, 0.0001)
+        assertTrue(NearbyRoutes.find(UserPosition(-8.1090, -79.0300), listOf(route)).anyWithinRadius)
+    }
+
+    @Test
     fun `lejos de todo muestra igualmente las rutas mas proximas`() {
         val result = NearbyRoutes.find(lima)
 
