@@ -20,11 +20,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.peru.expresdm.R
 import com.peru.expresdm.data.AppSettings
 import com.peru.expresdm.data.Premium
+import com.peru.expresdm.databinding.AlertasItemSuggestionBinding
 import com.peru.expresdm.databinding.FragmentAssistantBinding
 import com.peru.expresdm.ui.MapRouteRequests
 import com.peru.expresdm.ui.account.PremiumSheet
@@ -90,6 +90,8 @@ class AssistantSheet : BottomSheetDialogFragment() {
         binding.messagesRecycler.adapter = adapter
 
         setUpSuggestions()
+        binding.premiumTag.isVisible = Premium.active
+        binding.btnCloseTrip.setOnClickListener { dismiss() }
 
         binding.btnSend.setOnClickListener { sendCurrentInput() }
         binding.btnVoice.setOnClickListener { onVoiceClicked() }
@@ -114,6 +116,9 @@ class AssistantSheet : BottomSheetDialogFragment() {
             if (said.isBlank()) listen() else viewModel.send(said, byVoice = true)
         }
     }
+
+    /** Fondo arena, como en la maqueta: la burbuja y las filas blancas resaltan. */
+    override fun getTheme(): Int = R.style.ThemeOverlay_Alertas_BottomSheetDialog
 
     override fun onStart() {
         super.onStart()
@@ -145,15 +150,13 @@ class AssistantSheet : BottomSheetDialogFragment() {
         )
 
         suggestions.forEach { resId ->
-            val chip = Chip(requireContext()).apply {
-                text = getString(resId)
-                isCheckable = false
-                setOnClickListener {
-                    binding.messageInput.setText(getString(resId))
-                    sendCurrentInput()
-                }
+            val row = AlertasItemSuggestionBinding.inflate(layoutInflater, binding.suggestions, false)
+            row.suggestionText.setText(resId)
+            row.root.setOnClickListener {
+                binding.messageInput.setText(getString(resId))
+                sendCurrentInput()
             }
-            binding.suggestions.addView(chip)
+            binding.suggestions.addView(row.root)
         }
     }
 
@@ -249,7 +252,7 @@ class AssistantSheet : BottomSheetDialogFragment() {
 
     private fun renderListening(listening: Boolean) {
         val binding = _binding ?: return
-        binding.btnVoice.setImageResource(if (listening) R.drawable.ic_close else R.drawable.ic_mic)
+        binding.btnVoice.setImageResource(if (listening) R.drawable.alertas_ic_close else R.drawable.alertas_ic_mic)
         binding.btnVoice.contentDescription =
             getString(if (listening) R.string.voice_stop else R.string.voice_ask)
         binding.messageInput.hint = getString(

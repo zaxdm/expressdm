@@ -1,6 +1,8 @@
 package com.peru.expresdm.ui.routes
 
 import android.content.Intent
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -57,9 +59,28 @@ class RouteInfoPanel(
     private val context get() = binding.root.context
 
     init {
+        adoptHostCards()
         binding.btnShare.setOnClickListener { route?.let { onShare?.invoke(it) ?: share(it) } }
         binding.btnSaveOffline.setOnClickListener { route?.let { toggleSaved(it) } }
         binding.btnRate.setOnClickListener { route?.let { askForRating(it) } }
+    }
+
+    /**
+     * Pone en sus huecos de la ficha las tarjetas que trae quien la aloja
+     * (caminar y aviso de llegada en el inicio; "Por dónde pasa" en los dos
+     * sitios), para que todo quede en el orden del diseño: casillas, caminar,
+     * aviso, compartir, paradas, tarifas y calificaciones.
+     */
+    private fun adoptHostCards() {
+        val host = binding.root.parent as? ViewGroup ?: return
+        moveInto(host.findViewById(R.id.fichaTripCards), binding.tripSlot)
+        moveInto(host.findViewById(R.id.fichaStopsCard), binding.stopsSlot)
+    }
+
+    private fun moveInto(view: View?, slot: ViewGroup) {
+        if (view == null || view.parent === slot) return
+        (view.parent as? ViewGroup)?.removeView(view)
+        slot.addView(view)
     }
 
     /**
@@ -94,8 +115,9 @@ class RouteInfoPanel(
     private fun render(route: BusRoute) {
         val color = ContextCompat.getColor(context, RouteAccent.colorFor(route.accentIndex))
 
+        // La foto solo sale si alguien la subió; sin ella, la ficha va directa a los datos.
         binding.detailImageCard.setCardBackgroundColor(color)
-        binding.detailWatermark.text = route.letter
+        binding.detailImageCard.isVisible = !route.imageUrl.isNullOrBlank()
         if (binding.detailImage.tag != route.imageUrl) {
             RouteImages.show(binding.detailImage, route.imageUrl, route.vehicleName.ifBlank { route.name })
         }
@@ -105,8 +127,14 @@ class RouteInfoPanel(
         binding.detailDescription.text = description
         binding.detailDescription.isVisible = description.isNotEmpty()
 
-        binding.detailSchedule.text = route.schedule
-        binding.detailDuration.text = context.getString(R.string.duration_minutes, route.durationMinutes)
+        val noData = context.getString(R.string.ficha_no_data)
+        binding.detailSchedule.text = route.schedule.ifBlank { noData }
+        binding.detailDuration.text = if (route.durationMinutes > 0) {
+            context.getString(R.string.duration_minutes, route.durationMinutes)
+        } else {
+            noData
+        }
+        binding.detailFare.text = if (route.fare > 0) formatFare(route.fare) else noData
         binding.detailFrequency.isVisible = route.frequencyMinutes != null
         route.frequencyMinutes?.let {
             binding.detailFrequency.text = context.getString(R.string.route_detail_frequency, it)
@@ -120,7 +148,8 @@ class RouteInfoPanel(
         fares.school?.let { binding.fareSchool.text = formatFare(it) }
         fares.university?.let { binding.fareUniversity.text = formatFare(it) }
         binding.fareRegular.text = formatFare(fares.regular)
-        binding.faresNote.isVisible = fares.isIncomplete
+        // Sin ninguno de los dos, una sola fila que dice que aún no se sabe.
+        binding.rowFareReduced.isVisible = fares.school == null && fares.university == null
     }
 
     private fun formatFare(amount: Double): String =
@@ -183,7 +212,7 @@ class RouteInfoPanel(
     private fun renderSaved(route: BusRoute) {
         val saved = SavedRoutes.get(context)
         binding.btnSaveOffline.setText(
-            if (saved.isSaved(route.id)) R.string.route_detail_saved else R.string.route_detail_save
+            if (saved.isSaved(route.id)) R.string.route_detail_saved else R.string.ficha_offline
         )
         binding.saveOfflineNote.text = if (Premium.active) {
             context.getString(R.string.route_save_count, saved.ids.value.size, saved.limit)
@@ -203,7 +232,7 @@ class RouteInfoPanel(
 
         val average = data?.ratingAverage
         binding.ratingSummary.text = if (data == null || average == null) {
-            context.getString(R.string.route_detail_no_ratings)
+            context.getString(R.string.ficha_no_ratings)
         } else {
             resources.getQuantityString(
                 R.plurals.route_detail_rating_summary, data.ratingCount,

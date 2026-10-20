@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Profile, Subo Premium, Settings, Help and "Where to?" texts from the redesign. -->
+<resources>
+    <string name="perfil_back">Back</string>
+    <string name="perfil_tag_premium">Premium</string>
+
+    <!-- Profile -->
+    <string name="perfil_edit_profile">Edit profile</string>
+    <string name="perfil_menu_help">Help and feedback</string>
+    <string name="perfil_premium_until">Until %1$s · See benefits</string>
+    <string name="perfil_premium_invite">Offline routes, voice and more · See benefits</string>
+    <string name="perfil_footer">Subo · Version %1$s\nMaps and search by OpenStreetMap, an open and free project.</string>
+
+    <!-- Subo Premium -->
+    <string name="perfil_premium_compare">Free vs. Premium</string>
+    <string name="perfil_premium_col_feature">Feature</string>
+    <string name="perfil_premium_col_free">Free</string>
+    <string name="perfil_premium_col_premium">Premium</string>
+    <string name="perfil_premium_yes">Yes</string>
+    <string name="perfil_premium_no">—</string>
+    <string name="perfil_premium_row_offline">Routes with offline map</string>
+    <string name="perfil_premium_up_to">Up to %1$d</string>
+    <string name="perfil_premium_row_places">Favorite places</string>
+    <string name="perfil_premium_unlimited">Unlimited</string>
+    <string name="perfil_premium_row_assistant">Assistant questions</string>
+    <string name="perfil_premium_assistant_free">5 a day</string>
+    <string name="perfil_premium_no_cap">No cap</string>
+    <string name="perfil_premium_row_arrival">Arrival alert</string>
+    <string name="perfil_premium_early">+ early warning</string>
+    <string name="perfil_premium_row_tone">Choose the alert sound</string>
+    <string name="perfil_premium_row_route_alerts">Alerts when a route, fare or schedule changes</string>
+    <string name="perfil_premium_row_live">Live trip for whoever you choose</string>
+    <string name="perfil_premium_row_voice">Voice: «Subo» and spoken guidance</string>
+    <string name="perfil_premium_settings">Set up voice and alerts</string>
+
+    <!-- Settings -->
+    <string name="perfil_settings_early">Warn a few blocks earlier</string>
+    <string name="perfil_settings_test">Test alert</string>
+    <string name="perfil_settings_voice">Voice</string>
+    <string name="perfil_settings_alerts">New alerts nearby or on my routes</string>
+    <string name="perfil_theme_system">System</string>
+
+    <!-- Help -->
+    <string name="perfil_help_title">Help</string>
+    <string name="perfil_feedback_title">Feedback box</string>
+    <string name="perfil_feedback_subtitle">Help us improve Subo</string>
+    <string name="perfil_feedback_message_label">Message</string>
+    <string name="perfil_feedback_message_hint">Tell us what you would improve…</string>
+    <string name="perfil_feedback_send">Send feedback</string>
+
+    <!-- Where to? -->
+    <string name="perfil_planner_from">From</string>
+    <string name="perfil_planner_to">To</string>
+    <string name="perfil_planner_my_location">My location</string>
+    <string name="perfil_planner_ask">Don\'t know the address? Ask the assistant</string>
+    <string name="perfil_planner_more">More with Premium</string>
+    <string name="perfil_planner_note_manage">%1$s %2$s.</string>
+</resources>

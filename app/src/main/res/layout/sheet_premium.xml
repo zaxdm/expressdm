@@ -1,155 +1,267 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Subo Premium: qué trae de más, si la cuenta ya lo tiene y cómo pedirlo. -->
+<!--
+  Subo Premium, como en la maqueta: cabecera negra con la estrella y el estado
+  de la cuenta, la tabla "gratis vs. premium" y, debajo, cómo tenerlo.
+-->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/perfil_bg_sheet_sand">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="28dp">
+        android:orientation="vertical">
 
+        <!-- Cabecera negra -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:background="@drawable/perfil_bg_ink_header"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="22dp">
 
-            <FrameLayout
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_brand_badge">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_star"
-                    app:tint="@color/on_brand" />
-            </FrameLayout>
+            <ImageButton
+                android:id="@+id/btnPremiumBack"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/perfil_bg_circle_on_dark"
+                android:contentDescription="@string/perfil_back"
+                android:padding="9dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/perfil_on_ink" />
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:paddingStart="14dp">
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/premium_title"
-                    android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle" />
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/perfil_bg_tile_brand"
+                    android:importantForAccessibility="no"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_star"
+                    app:tint="@color/on_brand" />
 
-                <TextView
-                    android:id="@+id/premiumStatus"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                    tools:text="Tu cuenta es gratuita" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="14dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/premium_title"
+                        android:textColor="@color/perfil_on_ink"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <!-- El punto verde, solo con Premium activo -->
+                        <ImageView
+                            android:id="@+id/premiumActiveDot"
+                            android:layout_width="8dp"
+                            android:layout_height="8dp"
+                            android:layout_marginEnd="6dp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/perfil_dot"
+                            android:visibility="gone"
+                            app:tint="@color/perfil_active_dot"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/premiumStatus"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/perfil_on_ink_muted"
+                            android:textSize="13sp"
+                            tools:text="Activo hasta el 12 oct. 2027" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/premium_includes"
-            android:textAppearance="@style/TextAppearance.Expresdm.SectionLabel" />
-
-        <!-- Lo que trae de más; lo rellena PremiumSheet -->
         <LinearLayout
-            android:id="@+id/benefits"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:orientation="vertical" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="@string/premium_free_note"
-            android:textAppearance="@style/TextAppearance.Expresdm.Body"
-            android:textSize="13sp" />
-
-        <!-- Pagar por Yape: el plan, el QR y a nombre de quién sale. Lo rellena PremiumSheet. -->
-        <LinearLayout
-            android:id="@+id/paymentSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="28dp">
+
+            <TextView
+                style="@style/Widget.Expresdm.SettingsLabel"
+                android:layout_marginTop="0dp"
+                android:text="@string/perfil_premium_compare" />
+
+            <!-- La tabla: función, gratis y premium. Las filas las pone PremiumSheet. -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Expresdm.SettingsCard"
+                android:layout_marginTop="10dp">
+
+                <LinearLayout
+                    android:id="@+id/benefits"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_settings"
+                    android:orientation="vertical"
+                    android:paddingBottom="4dp"
+                    android:showDividers="middle">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="10dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/perfil_premium_col_feature"
+                            android:textAppearance="@style/TextAppearance.Perfil.Caps" />
+
+                        <TextView
+                            android:layout_width="58dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/perfil_premium_col_free"
+                            android:textAppearance="@style/TextAppearance.Perfil.Caps" />
+
+                        <TextView
+                            android:layout_width="96dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/perfil_premium_col_premium"
+                            android:textAppearance="@style/TextAppearance.Perfil.Caps" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/premium_pay_title"
-                android:textAppearance="@style/TextAppearance.Expresdm.SectionLabel" />
+                android:layout_marginTop="12dp"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:text="@string/premium_free_note"
+                android:textAppearance="@style/TextAppearance.Perfil.Support"
+                android:textSize="12sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/premium_pay_steps"
-                android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                android:textSize="13sp" />
-
-            <RadioGroup
-                android:id="@+id/planGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:orientation="vertical" />
-
-            <ImageView
-                android:id="@+id/qrImage"
-                android:layout_width="230dp"
-                android:layout_height="230dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
+            <!-- Pagar por Yape: el plan, el QR y a nombre de quién sale. Lo rellena PremiumSheet. -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/paymentSection"
+                style="@style/Widget.Expresdm.SettingsCard"
+                android:layout_marginTop="18dp"
                 android:visibility="gone"
-                tools:ignore="ContentDescription" />
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:text="@string/premium_pay_title"
+                        android:textAppearance="@style/TextAppearance.Expresdm.SectionLabel" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:text="@string/premium_pay_steps"
+                        android:textAppearance="@style/TextAppearance.Perfil.Support" />
+
+                    <RadioGroup
+                        android:id="@+id/planGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:orientation="vertical" />
+
+                    <ImageView
+                        android:id="@+id/qrImage"
+                        android:layout_width="220dp"
+                        android:layout_height="220dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="10dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:visibility="gone"
+                        tools:ignore="ContentDescription" />
+
+                    <TextView
+                        android:id="@+id/yapeHolder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.Perfil.RowTitle"
+                        android:textSize="13sp"
+                        tools:text="A nombre de Esteban D." />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Iniciar sesión, pedirlo o subir el pago; con Premium activo no hace falta -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPremiumAction"
+                style="@style/Widget.Expresdm.ButtonPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                app:cornerRadius="14dp"
+                tools:text="Quiero Subo Premium" />
 
             <TextView
-                android:id="@+id/yapeHolder"
+                android:id="@+id/premiumHow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                android:textStyle="bold"
-                tools:text="A nombre de Esteban D." />
+                android:textAppearance="@style/TextAppearance.Perfil.Support"
+                android:textSize="12sp"
+                tools:text="Te escribiremos para activarlo en tu cuenta" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPremiumSettings"
+                style="@style/Widget.Perfil.ButtonOutline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/perfil_premium_settings" />
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPremiumAction"
-            style="@style/Widget.Expresdm.ButtonPrimary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            tools:text="Quiero Subo Premium" />
-
-        <TextView
-            android:id="@+id/premiumHow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:textAppearance="@style/TextAppearance.Expresdm.Body"
-            android:textSize="12sp"
-            tools:text="Te escribiremos para activarlo en tu cuenta" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

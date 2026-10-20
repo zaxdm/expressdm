@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pestaña Asistente: un globo de conversación (trazo fino, como en el diseño) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+    <path android:pathData="M21,15a2,2 0,0 1,-2 2h-12l-4,4v-16a2,2 0,0 1,2 -2h14a2,2 0,0 1,2 2z"
+        android:fillColor="#00000000" android:strokeColor="@android:color/white"
+        android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" />
+</vector>

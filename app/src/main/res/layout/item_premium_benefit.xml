@@ -1,16 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Una de las cosas que trae Subo Premium. -->
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<!--
+  Una fila de la tabla "gratis vs. premium": la función, lo que trae la cuenta
+  gratuita y, en una pastilla amarilla, lo que trae Premium.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:drawablePadding="12dp"
     android:gravity="center_vertical"
-    android:minHeight="44dp"
-    android:textColor="?attr/colorOnSurface"
-    android:textSize="15sp"
-    app:drawableStartCompat="@drawable/ic_map"
-    app:drawableTint="?attr/colorSecondary"
-    tools:text="Hasta 20 rutas con su mapa para verlas sin internet" />
+    android:minHeight="48dp"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/benefitFeature"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingEnd="6dp"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="13sp"
+        tools:text="Rutas con mapa sin internet" />
+
+    <TextView
+        android:id="@+id/benefitFree"
+        android:layout_width="58dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Perfil.Support"
+        android:textSize="12sp"
+        tools:text="1" />
+
+    <FrameLayout
+        android:layout_width="96dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/benefitPremium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/perfil_bg_pill_soft"
+            android:gravity="center"
+            android:minWidth="64dp"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Hasta 20" />
+    </FrameLayout>
+</LinearLayout>

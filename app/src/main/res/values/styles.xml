@@ -21,11 +21,21 @@
         <item name="itemActiveIndicatorStyle">@style/Widget.Expresdm.NavIndicator</item>
         <item name="itemIconTint">@color/bottom_nav_icon</item>
         <item name="itemTextColor">@color/bottom_nav_item</item>
+        <!-- Como en el diseño: barra baja, iconos de 22dp y etiquetas de 11sp -->
+        <item name="itemIconSize">22dp</item>
+        <item name="android:minHeight">64dp</item>
+        <item name="itemPaddingTop">8dp</item>
+        <item name="itemPaddingBottom">8dp</item>
+        <item name="itemTextAppearanceInactive">@style/TextAppearance.Rutas.NavLabel</item>
+        <item name="itemTextAppearanceActive">@style/TextAppearance.Rutas.NavLabel.Active</item>
+        <item name="itemTextAppearanceActiveBoldEnabled">false</item>
     </style>
 
     <!-- La pestaña activa: una pastilla del amarillo de marca -->
     <style name="Widget.Expresdm.NavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/brand</item>
+        <item name="android:width">56dp</item>
+        <item name="android:height">28dp</item>
     </style>
 
     <!-- Tipografía -->
@@ -154,35 +164,37 @@
     </style>
 
     <!-- Interruptor de una lista de ajustes: el texto a la izquierda, el botón a la derecha -->
-    <style name="Widget.Expresdm.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+    <style name="Widget.Expresdm.Switch" parent="Widget.Perfil.SwitchColors">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">56dp</item>
+        <item name="android:minHeight">54dp</item>
         <item name="android:paddingStart">16dp</item>
-        <item name="android:paddingEnd">16dp</item>
-        <item name="android:paddingTop">8dp</item>
-        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
         <item name="switchPadding">16dp</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <!-- Etiqueta en mayúsculas encima de cada tarjeta de Ajustes -->
     <style name="Widget.Expresdm.SettingsLabel" parent="">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">28dp</item>
-        <item name="android:paddingStart">4dp</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:paddingStart">2dp</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">@style/TextAppearance.Expresdm.SectionLabel</item>
     </style>
 
     <!-- Icono de una fila de Ajustes o del Perfil: un cuadro redondeado de color -->
     <style name="Widget.Expresdm.SettingsIcon" parent="">
-        <item name="android:layout_width">40dp</item>
-        <item name="android:layout_height">40dp</item>
-        <item name="android:padding">10dp</item>
-        <item name="android:background">@drawable/bg_icon_tile</item>
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:padding">9dp</item>
+        <item name="android:background">@drawable/perfil_bg_tile_soft</item>
+        <item name="tint">?attr/colorOnSurface</item>
         <item name="android:importantForAccessibility">no</item>
     </style>
 
@@ -190,8 +202,8 @@
     <style name="Widget.Expresdm.SettingsCard" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">10dp</item>
-        <item name="cardCornerRadius">22dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="cardCornerRadius">18dp</item>
     </style>
 
     <!-- Línea entre filas de una tarjeta de Ajustes -->

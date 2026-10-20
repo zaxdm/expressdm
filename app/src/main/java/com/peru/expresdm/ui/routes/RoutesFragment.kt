@@ -137,7 +137,7 @@ import java.util.Locale
  *   acercar, mover y el punto del usuario no desaparece.
  *
  * Encima del mapa viven también las alertas de los usuarios, la barra de
- * grabación de una ruta nueva y la burbuja del asistente.
+ * grabación de una ruta nueva y, al pedirlo su pestaña, el asistente.
  */
 class RoutesFragment : Fragment() {
 
@@ -216,7 +216,11 @@ class RoutesFragment : Fragment() {
     /** Viaje ya encuadrado en el mapa, para no reencuadrar en cada lectura del GPS. */
     private var framedJourney: Any? = null
 
-    private val shrinkBubble = Runnable { _binding?.assistantBubble?.shrink() }
+    /**
+     * El usuario eligió "Todas" en los filtros de la hoja. Sin ubicación se ven
+     * todas igualmente, porque no se sabe cuáles pasan cerca.
+     */
+    private var showAllRoutes = false
 
     /** "Atrás" cierra primero la ruta elegida y después la búsqueda, antes de salir. */
     private val backHandler = object : OnBackPressedCallback(false) {
@@ -544,7 +548,7 @@ class RoutesFragment : Fragment() {
         setUpSheet()
         setUpSearch()
         setUpRecording()
-        setUpAssistantBubble()
+        setUpRouteFilter()
 
         binding.routesRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.routesRecycler.adapter = routeAdapter
@@ -559,6 +563,10 @@ class RoutesFragment : Fragment() {
         binding.btnCloseVoice.setOnClickListener {
             Speaker.stop()
             endMapVoice()
+        }
+        // La pestaña Asistente de la barra de abajo pide abrirlo aquí, sobre el mapa.
+        parentFragmentManager.setFragmentResultListener(REQUEST_OPEN_ASSISTANT, viewLifecycleOwner) { _, _ ->
+            AssistantSheet.show(childFragmentManager)
         }
         // Una orden dicha al asistente ("llévame a…") se cumple aquí, en el mapa.
         childFragmentManager.setFragmentResultListener(AssistantSheet.REQUEST_COMMAND, viewLifecycleOwner) { _, result ->
@@ -978,12 +986,13 @@ class RoutesFragment : Fragment() {
             journeyAdapter.submitList(state.journeys)
         } else {
             if (recycler.adapter !== routeAdapter) recycler.adapter = routeAdapter
+            val items = shownRoutes(state)
             val previousFirst = routeAdapter.currentList.firstOrNull()?.route?.id
-            routeAdapter.submitList(state.items) {
+            routeAdapter.submitList(items) {
                 // Cuando cambia la ruta de arriba (al llegar la primera posición o al
                 // moverse el usuario), DiffUtil conserva el desplazamiento y la más
                 // cercana queda oculta: volvemos al principio de la lista.
-                if (state.items.firstOrNull()?.route?.id != previousFirst) {
+                if (items.firstOrNull()?.route?.id != previousFirst) {
                     _binding?.routesRecycler?.scrollToPosition(0)
                 }
             }
@@ -998,15 +1007,46 @@ class RoutesFragment : Fragment() {
         binding.btnClosePlace.isVisible = inSearch
         binding.searchProgress.isVisible = state.mode == HomeMode.PLACE_SEARCHING
 
+        renderHeader(state)
+
+        val empty = when (state.mode) {
+            HomeMode.PLACE_SEARCHING -> null
+            HomeMode.PLACE_RESULTS -> when {
+                state.places.isNotEmpty() -> null
+                (search as? PlaceSearchState.Results)?.offline == true -> R.string.search_offline
+                else -> R.string.search_no_results
+            }
+            HomeMode.PLACE_ROUTES -> R.string.place_no_routes.takeIf { state.items.isEmpty() }
+            HomeMode.PLACE_JOURNEYS -> R.string.journey_none.takeIf { state.journeys.isEmpty() }
+            else -> R.string.empty_routes.takeIf { shownRoutes(state).isEmpty() }
+        }
+        binding.emptyState.isVisible = empty != null
+        empty?.let { binding.emptyState.setText(it) }
+    }
+
+    /** Con ubicación, el usuario elige entre las que pasan cerca y todas. */
+    private fun located(state: HomeState) =
+        state.mode == HomeMode.NEARBY || state.mode == HomeMode.NONE_NEARBY
+
+    /** Las rutas que enseña la lista: las del estado o, con "Todas", el catálogo entero. */
+    private fun shownRoutes(state: HomeState): List<RouteListItem> =
+        if (showAllRoutes && located(state)) RouteRepository.all().map { RouteListItem(it) } else state.items
+
+    /**
+     * Encabezado de la hoja como en el diseño: "Rutas" o "Líneas que pasan
+     * cerca de ti", debajo cuántas opciones hay, y los filtros Cerca de ti / Todas.
+     */
+    private fun renderHeader(state: HomeState) {
+        val binding = _binding ?: return
+        val search = state.search
+        val inSearch = search != PlaceSearchState.Idle
+        val radius = requireContext().formatDistance(NearbyRoutes.RADIUS_METERS)
+        val nearbyShown = located(state) && !showAllRoutes
+        val total = RouteRepository.all().size
+        fun options(count: Int) = resources.getQuantityString(R.plurals.routes_count, count, count)
+
+        binding.sheetLabel.isVisible = inSearch
         when (state.mode) {
-            HomeMode.NEARBY, HomeMode.NONE_NEARBY -> {
-                binding.sheetLabel.setText(R.string.nearby_label)
-                binding.sheetTitle.setText(R.string.nearby_title)
-            }
-            HomeMode.WAITING_LOCATION, HomeMode.NO_PERMISSION, HomeMode.LOCATION_OFF -> {
-                binding.sheetLabel.setText(R.string.routes_section_label)
-                binding.sheetTitle.setText(R.string.all_routes_title)
-            }
             HomeMode.PLACE_SEARCHING, HomeMode.PLACE_RESULTS -> {
                 binding.sheetLabel.setText(R.string.search_label)
                 binding.sheetTitle.text = getString(R.string.search_query_title, search.text().orEmpty())
@@ -1019,38 +1059,62 @@ class RoutesFragment : Fragment() {
                 binding.sheetLabel.setText(R.string.journey_label)
                 binding.sheetTitle.text = (search as? PlaceSearchState.Chosen)?.place?.name
             }
+            else -> binding.sheetTitle.setText(if (nearbyShown) R.string.nearby_title else R.string.rutas_title)
         }
 
-        binding.routeCount.isVisible = state.mode != HomeMode.PLACE_SEARCHING
-        binding.routeCount.text = when (state.mode) {
+        val subtitle = when (state.mode) {
+            HomeMode.PLACE_SEARCHING -> null
             HomeMode.PLACE_RESULTS ->
                 resources.getQuantityString(R.plurals.places_count, state.places.size, state.places.size)
             HomeMode.PLACE_JOURNEYS ->
                 resources.getQuantityString(R.plurals.journey_count, state.journeys.size, state.journeys.size)
-            else ->
-                resources.getQuantityString(R.plurals.routes_count, state.items.size, state.items.size)
+            HomeMode.PLACE_ROUTES -> options(state.items.size)
+            HomeMode.NEARBY ->
+                if (nearbyShown) getString(R.string.rutas_count_nearby, options(state.items.size), radius)
+                else options(total)
+            HomeMode.NONE_NEARBY ->
+                if (nearbyShown) getString(R.string.rutas_count_none, radius) else options(total)
+            HomeMode.WAITING_LOCATION -> getString(R.string.rutas_count_waiting, options(state.items.size))
+            HomeMode.NO_PERMISSION, HomeMode.LOCATION_OFF -> options(state.items.size)
         }
+        binding.sheetSubtitle.isVisible = subtitle != null
+        binding.sheetSubtitle.text = subtitle
 
-        val empty = when (state.mode) {
-            HomeMode.PLACE_SEARCHING -> null
-            HomeMode.PLACE_RESULTS -> when {
-                state.places.isNotEmpty() -> null
-                (search as? PlaceSearchState.Results)?.offline == true -> R.string.search_offline
-                else -> R.string.search_no_results
-            }
-            HomeMode.PLACE_ROUTES -> R.string.place_no_routes.takeIf { state.items.isEmpty() }
-            HomeMode.PLACE_JOURNEYS -> R.string.journey_none.takeIf { state.journeys.isEmpty() }
-            else -> R.string.empty_routes.takeIf { state.items.isEmpty() }
+        // Los filtros solo tienen sentido en el inicio, sin búsqueda.
+        binding.routeFilter.isVisible = !inSearch
+        binding.chipNearby.text = if (state.mode == HomeMode.NEARBY) {
+            getString(R.string.rutas_chip_nearby, state.items.size)
+        } else {
+            getString(R.string.rutas_chip_nearby_plain)
         }
-        binding.emptyState.isVisible = empty != null
-        empty?.let { binding.emptyState.setText(it) }
+        binding.chipAll.text = getString(R.string.rutas_chip_all, total)
+        val checked = if (nearbyShown) R.id.chipNearby else R.id.chipAll
+        if (binding.routeFilter.checkedChipId != checked) binding.routeFilter.check(checked)
+    }
+
+    private fun setUpRouteFilter() {
+        binding.routeFilter.setOnCheckedStateChangeListener { _, checkedIds ->
+            val state = lastState ?: return@setOnCheckedStateChangeListener
+            val wantsAll = checkedIds.firstOrNull() == R.id.chipAll
+            if (!located(state)) {
+                // Sin ubicación no se sabe qué pasa cerca: se ofrece activarla y
+                // se sigue viendo todo. La preferencia del usuario no cambia.
+                if (!wantsAll) {
+                    if (_binding?.btnStatusAction?.isVisible == true) onStatusAction()
+                    renderHeader(state)
+                }
+                return@setOnCheckedStateChangeListener
+            }
+            if (wantsAll == showAllRoutes) return@setOnCheckedStateChangeListener
+            showAllRoutes = wantsAll
+            renderList(state)
+        }
     }
 
     /**
-     * Las rutas se ven siempre como tarjetas con foto: con la hoja en reposo,
-     * un carrusel que se ojea de lado sin tapar el mapa; al subirla, las mismas
-     * tarjetas a lo ancho, una debajo de otra. Los lugares y los viajes son
-     * siempre lista.
+     * Las rutas y los lugares son siempre una lista, una tarjeta debajo de otra.
+     * Las formas de llegar, con la hoja en reposo, son un carrusel que se ojea
+     * de lado sin tapar el mapa; al subirla, también lista.
      */
     private fun applyListLayout() {
         val binding = _binding ?: return
@@ -1062,15 +1126,10 @@ class RoutesFragment : Fragment() {
             else -> Unit
         }
         val manager = recycler.layoutManager as? LinearLayoutManager ?: return
-        val style = if (sheetRaised) RouteAdapter.Style.CARDS else RouteAdapter.Style.CAROUSEL
-        // Las rutas y las formas de llegar se ojean de lado; los lugares son lista.
         val carousel = !sheetRaised && hasCarousel()
         val orientation = if (carousel) RecyclerView.HORIZONTAL else RecyclerView.VERTICAL
 
-        if (routeAdapter.style != style || journeyAdapter.carousel != !sheetRaised ||
-            manager.orientation != orientation
-        ) {
-            routeAdapter.style = style
+        if (journeyAdapter.carousel != !sheetRaised || manager.orientation != orientation) {
             journeyAdapter.carousel = !sheetRaised
             manager.orientation = orientation
             carouselSnap.attachToRecyclerView(if (carousel) recycler else null)
@@ -1079,11 +1138,8 @@ class RoutesFragment : Fragment() {
         fitSheet()
     }
 
-    /** Lo que hay en la lista se puede enseñar como carrusel de tarjetas. */
-    private fun hasCarousel(): Boolean {
-        val adapter = _binding?.routesRecycler?.adapter
-        return adapter === routeAdapter || adapter === journeyAdapter
-    }
+    /** Lo que hay en la lista se puede enseñar como carrusel de tarjetas: solo las formas de llegar. */
+    private fun hasCarousel(): Boolean = _binding?.routesRecycler?.adapter === journeyAdapter
 
     private fun setSheetRaised(raised: Boolean) {
         if (sheetRaised == raised) return
@@ -1120,9 +1176,8 @@ class RoutesFragment : Fragment() {
         val density = resources.displayMetrics.density
         val listShown = binding.listContent.isVisible && binding.routesRecycler.isLaidOut
 
-        val titleRow = binding.sheetTitle.parent as View
         val peek = if (listShown) {
-            binding.listContent.top + titleRow.bottom + (MINI_PADDING_DP * density).toInt()
+            binding.listContent.top + binding.sheetHeader.bottom + (MINI_PADDING_DP * density).toInt()
         } else {
             (MINI_PEEK_DP * density).toInt()
         }
@@ -1145,13 +1200,11 @@ class RoutesFragment : Fragment() {
     private fun renderStatus(state: HomeState) {
         val binding = _binding ?: return
         val context = requireContext()
-        val radius = context.formatDistance(NearbyRoutes.RADIUS_METERS)
         val search = state.search
 
+        // Con ubicación, o mientras llega, el subtítulo del encabezado ya lo dice.
         val status = when (state.mode) {
-            HomeMode.NEARBY -> getString(R.string.nearby_status_radius, radius)
-            HomeMode.NONE_NEARBY -> getString(R.string.nearby_status_none, radius)
-            HomeMode.WAITING_LOCATION -> getString(R.string.location_status_waiting)
+            HomeMode.NEARBY, HomeMode.NONE_NEARBY, HomeMode.WAITING_LOCATION -> null
             HomeMode.NO_PERMISSION -> getString(R.string.location_status_no_permission)
             HomeMode.LOCATION_OFF -> getString(R.string.location_status_off)
             HomeMode.PLACE_SEARCHING -> getString(R.string.search_searching)
@@ -2586,21 +2639,6 @@ class RoutesFragment : Fragment() {
         }
     }
 
-    // --- Asistente ---
-
-    private fun setUpAssistantBubble() {
-        val bubble = binding.assistantBubble
-        bubble.setOnClickListener { AssistantSheet.show(childFragmentManager) }
-        // La primera vez se presenta con su nombre; luego queda como burbuja
-        // para no tapar el mapa.
-        if (viewModel.assistantIntroShown) {
-            bubble.shrink()
-        } else {
-            viewModel.assistantIntroShown = true
-            bubble.postDelayed(shrinkBubble, BUBBLE_SHRINK_MS)
-        }
-    }
-
     // --- Hoja ---
 
     private fun setUpSheet() {
@@ -2644,7 +2682,6 @@ class RoutesFragment : Fragment() {
                 binding.streetViewHolder.alpha = alpha
                 binding.btnStreetView.isEnabled = alpha > 0.1f
                 binding.fabMyLocation.isEnabled = alpha > 0.1f
-                binding.assistantBubble.isEnabled = alpha > 0.1f
             }
         })
         sheetBehavior = behavior
@@ -2868,7 +2905,6 @@ class RoutesFragment : Fragment() {
         mapVoice = null
         _binding?.let { b ->
             b.voiceBar.removeCallbacks(hideVoiceBar)
-            b.assistantBubble.removeCallbacks(shrinkBubble)
             b.recordingDot.clearAnimation()
             val center = b.mapView.mapCenter
             viewModel.camera = MapCamera(
@@ -2978,7 +3014,6 @@ class RoutesFragment : Fragment() {
 
         /** Cuánto hay que subir la hoja sobre el reposo para pasar del carrusel a la lista. */
         const val RAISED_MARGIN_DP = 56
-        const val BUBBLE_SHRINK_MS = 3_500L
         const val BLINK_MS = 700L
         const val SNACKBAR_EXTRA_ELEVATION_DP = 4f
 
@@ -2986,3 +3021,6 @@ class RoutesFragment : Fragment() {
         const val FRAME_USER_MAX_METERS = 6_000.0
     }
 }
+
+/** La barra de abajo pide con esto abrir el asistente sobre el mapa (ver MainActivity). */
+internal const val REQUEST_OPEN_ASSISTANT = "routes_open_assistant"

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cuadro del icono dentro de la tarjeta petróleo -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/ficha_petrol_icon_bg" />
+    <corners android:radius="12dp" />
+</shape>

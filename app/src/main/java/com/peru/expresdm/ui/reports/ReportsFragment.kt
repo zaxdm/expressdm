@@ -13,7 +13,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.peru.expresdm.R
@@ -22,7 +21,7 @@ import com.peru.expresdm.data.AlertType
 import com.peru.expresdm.data.AlertVote
 import com.peru.expresdm.data.RoadAlert
 import com.peru.expresdm.databinding.FragmentReportsBinding
-import com.peru.expresdm.databinding.ItemFilterChipBinding
+import com.peru.expresdm.databinding.AlertasItemFilterChipBinding
 import com.peru.expresdm.ui.AlertStyle
 import com.peru.expresdm.ui.hasAnyLocationPermission
 import com.peru.expresdm.ui.showAlertOnMap
@@ -66,21 +65,15 @@ class ReportsFragment : Fragment() {
 
         binding.alertsRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.alertsRecycler.adapter = adapter
-        binding.alertsRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                // Al bajar por la lista el botón se encoge para no tapar las alertas.
-                if (dy > 0) binding.fabReport.shrink() else if (dy < 0) binding.fabReport.extend()
-            }
-        })
 
         buildFilterChips()
-        // Con servidor, las alertas son de todos; sin él, se quedan en el teléfono.
-        binding.storageNote.setText(
-            if (AlertRepository.isShared) R.string.reports_shared_note else R.string.reports_local_note
+        // Con servidor, las alertas son de todos y van "en vivo"; sin él, se quedan en el teléfono.
+        binding.subtitle.setText(
+            if (AlertRepository.isShared) R.string.alertas_subtitle_shared else R.string.alertas_subtitle_local
         )
+        binding.livePill.isVisible = AlertRepository.isShared
 
-        binding.fabReport.setOnClickListener { openCreateAlert() }
-        binding.btnEmptyReport.setOnClickListener { openCreateAlert() }
+        binding.btnReport.setOnClickListener { openCreateAlert() }
 
         childFragmentManager.setFragmentResultListener(
             CreateAlertSheet.RESULT_KEY,
@@ -111,15 +104,12 @@ class ReportsFragment : Fragment() {
         val types: List<AlertType?> = listOf<AlertType?>(null) + AlertType.entries
 
         types.forEach { type ->
-            val chip = ItemFilterChipBinding.inflate(layoutInflater, binding.filterChips, false).root
+            val chip = AlertasItemFilterChipBinding.inflate(layoutInflater, binding.filterChips, false).root
             chip.id = View.generateViewId()
             chip.tag = type
-            chip.isCheckedIconVisible = false
-            if (type != null) {
-                chip.setChipIconResource(AlertStyle.icon(type))
-                chip.chipIconTint = ColorStateList.valueOf(ContextCompat.getColor(context, AlertStyle.color(type)))
-                chip.isChipIconVisible = true
-            }
+            // Un punto del color del tipo; "Todas" lleva el amarillo de la marca.
+            val dot = if (type == null) R.color.brand else AlertStyle.color(type)
+            chip.chipIconTint = ColorStateList.valueOf(ContextCompat.getColor(context, dot))
             chip.isChecked = type == current
             binding.filterChips.addView(chip)
             filterChips[type] = chip
@@ -143,11 +133,8 @@ class ReportsFragment : Fragment() {
         val empty = state.items.isEmpty()
         val filteredOut = empty && state.filter != null && state.totalActive > 0
         binding.emptyState.isVisible = empty
-        binding.emptyTitle.setText(if (filteredOut) R.string.reports_empty_filtered else R.string.reports_empty_title)
+        binding.emptyTitle.setText(if (filteredOut) R.string.reports_empty_filtered else R.string.alertas_empty_title)
         binding.emptyBody.isVisible = !filteredOut
-        binding.btnEmptyReport.isVisible = !filteredOut
-        // Con la lista vacía ya hay un botón para reportar en el centro.
-        binding.fabReport.isVisible = !empty || filteredOut
     }
 
     private fun vote(alert: RoadAlert, vote: AlertVote) {
@@ -162,7 +149,7 @@ class ReportsFragment : Fragment() {
     }
 
     private fun showMessage(text: String) {
-        _binding?.let { Snackbar.make(it.root, text, Snackbar.LENGTH_SHORT).setAnchorView(it.fabReport).show() }
+        _binding?.let { Snackbar.make(it.root, text, Snackbar.LENGTH_SHORT).setAnchorView(it.btnReport).show() }
     }
 
     override fun onDestroyView() {

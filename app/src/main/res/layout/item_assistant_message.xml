@@ -6,35 +6,45 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp">
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
+    <!-- Burbuja blanca de esquinas grandes; la del usuario va en tinta -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bubble"
+        style="@style/Widget.Alertas.Tile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="20dp">
+        app:cardCornerRadius="20dp"
+        app:strokeWidth="0dp">
 
         <TextView
             android:id="@+id/messageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="14dp"
+            android:lineSpacingExtra="3dp"
+            android:paddingStart="16dp"
+            android:paddingTop="13dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="14dp"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="14sp"
+            android:textSize="15sp"
             tools:text="Para llegar a Huanchaco toma la ruta A California." />
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Atajo a la ruta que el asistente recomienda -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOpenRoute"
-        style="@style/Widget.Material3.Button.TonalButton"
+        style="@style/Widget.Expresdm.ButtonPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
+        android:minHeight="44dp"
         android:visibility="gone"
-        app:icon="@drawable/ic_arrow_right"
+        app:cornerRadius="100dp"
+        app:icon="@drawable/alertas_ic_arrow"
         app:iconGravity="end"
+        app:iconSize="18dp"
         tools:text="Ver California"
         tools:visibility="visible" />
 

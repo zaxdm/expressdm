@@ -19,8 +19,7 @@
             android:id="@+id/feedbackHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.Expresdm.Body"
-            android:textSize="12sp"
+            android:textAppearance="@style/TextAppearance.Perfil.Caps"
             tools:text="Rutas · Resuelta" />
 
         <TextView
@@ -28,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
-            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="@style/TextAppearance.Perfil.RowText"
             android:textSize="14sp"
             tools:text="Falta la ruta a Moche" />
 
@@ -37,11 +36,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bg_search_field"
-            android:backgroundTint="?attr/colorPrimaryContainer"
+            android:background="@drawable/perfil_bg_info"
             android:padding="12dp"
-            android:textColor="?attr/colorOnPrimaryContainer"
-            android:textSize="14sp"
+            android:textColor="@color/perfil_info_text"
+            android:textSize="13sp"
             android:visibility="gone"
             tools:text="Respuesta: ya la agregamos, gracias."
             tools:visibility="visible" />

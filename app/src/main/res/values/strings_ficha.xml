@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ficha de un micro (pantalla propia y panel de la ruta elegida en el inicio) -->
+    <string name="ficha_trip">Recorrido</string>
+    <string name="ficha_fare">Pasaje</string>
+    <string name="ficha_schedule">Horario</string>
+    <string name="ficha_no_data">Sin dato</string>
+    <string name="ficha_fare_reduced">Escolar / universitario</string>
+    <string name="ficha_fare_missing">Aún sin dato</string>
+    <string name="ficha_arrival_title">Avísame al llegar</string>
+    <string name="ficha_arrival_idle">Suena cuando estés cerca de donde bajas</string>
+    <string name="ficha_offline">Sin conexión</string>
+    <string name="ficha_back">Volver</string>
+    <string name="ficha_no_ratings">Aún nadie la califica. Sé el primero.</string>
+    <string name="ficha_route_subtitle">%1$s → %2$s</string>
+    <!-- Para partir "Camina 540 m · 8 min hasta Av. España" en dos renglones -->
+    <string name="ficha_walk_split">" hasta "</string>
+    <string name="ficha_walk_to_stop">%1$s hasta tu paradero</string>
+</resources>

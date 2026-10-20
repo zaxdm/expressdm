@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Estilos de la pantalla Rutas (inicio), de sus filas y de la barra de abajo. -->
+<resources>
+
+    <!-- Insignia de una ruta: cuadro redondeado del color de la ruta con la letra en blanco -->
+    <style name="Widget.Rutas.RouteBadge" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">@drawable/rutas_bg_badge</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <!-- Filtro en pastilla: el elegido en tinta, los demás blancos con borde -->
+    <style name="Widget.Rutas.FilterChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/rutas_chip_bg</item>
+        <item name="chipStrokeColor">@color/rutas_chip_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipCornerRadius">18dp</item>
+        <item name="chipMinHeight">36dp</item>
+        <item name="chipStartPadding">6dp</item>
+        <item name="chipEndPadding">6dp</item>
+        <item name="chipIconSize">14dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="android:textColor">@color/rutas_chip_text</item>
+        <item name="android:textAppearance">@style/TextAppearance.Rutas.Chip</item>
+        <item name="rippleColor">@color/rutas_chip_stroke</item>
+    </style>
+
+    <style name="TextAppearance.Rutas.Chip" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/rutas_chip_text</item>
+    </style>
+
+    <!-- Encabezado de la hoja: "Rutas" y, debajo, cuántas opciones hay -->
+    <style name="TextAppearance.Rutas.SheetTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <style name="TextAppearance.Rutas.Support" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <!-- Etiquetas de la barra de abajo -->
+    <style name="TextAppearance.Rutas.NavLabel" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">11sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <style name="TextAppearance.Rutas.NavLabel.Active">
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

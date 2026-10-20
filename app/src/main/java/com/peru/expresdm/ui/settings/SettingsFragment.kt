@@ -14,6 +14,7 @@ import android.widget.CompoundButton
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -62,10 +63,11 @@ class SettingsFragment : Fragment() {
         500 to R.string.settings_arrival_500
     )
 
-    private val themes = listOf(
-        ThemeMode.SYSTEM to R.string.settings_theme_system,
-        ThemeMode.LIGHT to R.string.settings_theme_light,
-        ThemeMode.DARK to R.string.settings_theme_dark
+    /** Qué botón del selector de tema corresponde a cada modo. */
+    private val themeButtons = mapOf(
+        ThemeMode.SYSTEM to R.id.themeSystem,
+        ThemeMode.LIGHT to R.id.themeLight,
+        ThemeMode.DARK to R.id.themeDark
     )
 
     private val languages = listOf(
@@ -109,11 +111,10 @@ class SettingsFragment : Fragment() {
 
         settings = AppSettings.get(requireContext())
 
-        binding.toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
+        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
 
         setUpRow(binding.rowArrivalDistance, R.drawable.ic_place, R.string.settings_arrival_distance)
         setUpRow(binding.rowArrivalTone, R.drawable.ic_arrival_alarm, R.string.settings_arrival_tone)
-        setUpRow(binding.rowTheme, R.drawable.ic_palette, R.string.settings_theme)
         setUpRow(binding.rowLanguage, R.drawable.ic_language, R.string.settings_language)
 
         renderCurrentSelection()
@@ -190,12 +191,15 @@ class SettingsFragment : Fragment() {
 
         binding.btnTestArrival.setOnClickListener { testArrival() }
 
-        binding.rowTheme.root.setOnClickListener {
-            val selected = themes.indexOfFirst { it.first == settings.themeMode }
-            pickOne(R.string.settings_theme, themes.map { getString(it.second) }, selected) {
-                settings.themeMode = themes[it].first
-            }
+        // El tema se elige tocando uno de los tres botones, sin abrir un selector.
+        binding.themeToggle.addOnButtonCheckedListener { _, buttonId, isChecked ->
+            if (!isChecked || bindingSelection) return@addOnButtonCheckedListener
+            val mode = themeButtons.entries.firstOrNull { it.value == buttonId }?.key
+                ?: return@addOnButtonCheckedListener
+            if (mode != settings.themeMode) settings.themeMode = mode
         }
+        // Tocar el texto también cambia el preaviso.
+        binding.arrivalEarlyLabel.setOnClickListener { binding.arrivalEarly.toggle() }
 
         binding.rowLanguage.root.setOnClickListener {
             val selected = languages.indexOfFirst { it.first == settings.language }
@@ -237,8 +241,7 @@ class SettingsFragment : Fragment() {
             VoiceInput.hasPermission(requireContext())
         binding.alertNotifications.isChecked = settings.alertNotifications
 
-        themes.firstOrNull { it.first == settings.themeMode }
-            ?.let { binding.rowTheme.settingSummary.setText(it.second) }
+        themeButtons[settings.themeMode]?.let { binding.themeToggle.check(it) }
         languages.firstOrNull { it.first == settings.language }
             ?.let { binding.rowLanguage.settingSummary.setText(it.second) }
 
@@ -276,6 +279,8 @@ class SettingsFragment : Fragment() {
             val check = layoutInflater
                 .inflate(R.layout.item_setting_check, binding.alertTypesContainer, false) as Chip
             check.setText(AlertStyle.label(type))
+            // El punto del color del tipo, como en el mapa.
+            check.chipIconTint = ContextCompat.getColorStateList(requireContext(), AlertStyle.color(type))
             check.isChecked = type in enabled
             // Sin id propio, Android restauraría todos los chips con el estado del último.
             check.isSaveEnabled = false

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Alertas -->
+    <string name="alertas_live">En vivo</string>
+    <string name="alertas_subtitle_shared">Lo que pasa ahora en las calles. Las ven todos los usuarios y cada alerta caduca sola.</string>
+    <string name="alertas_subtitle_local">Lo que pasa ahora en las calles. Por ahora se guardan solo en este teléfono y cada alerta caduca sola.</string>
+    <string name="alertas_empty_title">Todo tranquilo por ahora</string>
+    <string name="alertas_empty_body">¿Ves tráfico, un choque u obras? Avisa a los demás y aparecerá en el mapa.</string>
+    <string name="alertas_report">Reportar algo</string>
+
+    <!-- Crear alerta -->
+    <string name="alertas_create_title">¿Qué está pasando?</string>
+    <string name="alertas_create_subtitle">Elige un tipo. Tu aviso caduca solo.</string>
+    <string name="alertas_close">Cerrar</string>
+    <string name="alertas_where">Dónde</string>
+    <string name="alertas_my_location">Mi ubicación actual</string>
+    <string name="alertas_my_location_at">Mi ubicación: %1$s</string>
+    <string name="alertas_refresh_location">Actualizar</string>
+    <string name="alertas_detail_label">Detalle (opcional)</string>
+    <string name="alertas_detail_hint">Ej.: carril cerrado frente al paradero</string>
+    <string name="alertas_publish_traffic">Publicar alerta de tráfico</string>
+    <string name="alertas_publish_accident">Publicar alerta de accidente</string>
+    <string name="alertas_publish_overcharge">Publicar alerta de cobro de más</string>
+    <string name="alertas_publish_roadwork">Publicar alerta de obras</string>
+    <string name="alertas_publish_crowded">Publicar alerta de micro lleno</string>
+    <string name="alertas_publish_danger">Publicar alerta de zona peligrosa</string>
+
+    <!-- Asistente -->
+    <string name="alertas_assistant_title">Asistente Subo</string>
+    <string name="alertas_assistant_premium">PREMIUM</string>
+    <string name="alertas_assistant_from">Mi ubicación</string>
+    <string name="alertas_assistant_to">Destino en el mapa</string>
+    <string name="alertas_assistant_try">Prueba con</string>
+    <string name="alertas_assistant_ai_notice">Respuestas generadas por IA. Confirma los horarios antes de viajar.</string>
+</resources>

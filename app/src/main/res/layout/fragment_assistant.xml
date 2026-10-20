@@ -5,8 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
+    android:background="@color/alertas_sand">
 
+    <!-- Encabezado: cuadro negro con el globo amarillo, nombre y "PREMIUM" -->
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="0dp"
@@ -14,48 +15,132 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="20dp"
-        android:paddingTop="20dp"
+        android:paddingTop="18dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:background="@drawable/bg_brand_badge">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                android:importantForAccessibility="no"
-                android:src="@drawable/ic_assistant"
-                app:tint="@color/on_brand" />
-        </FrameLayout>
+        <ImageView
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/alertas_bg_ink_tile"
+            android:importantForAccessibility="no"
+            android:padding="12dp"
+            android:src="@drawable/alertas_ic_chat"
+            app:tint="@color/brand" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingStart="12dp">
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/assistant_title"
-                android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle" />
+                android:text="@string/alertas_assistant_title"
+                android:textAppearance="@style/TextAppearance.Alertas.SheetTitle"
+                android:textSize="22sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/assistant_subtitle"
-                android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                android:textSize="13sp" />
+                android:textAppearance="@style/TextAppearance.Alertas.Support" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/premiumTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/alertas_bg_round_8"
+            android:backgroundTint="@color/brand"
+            android:letterSpacing="0.06"
+            android:paddingStart="9dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="9dp"
+            android:paddingBottom="4dp"
+            android:text="@string/alertas_assistant_premium"
+            android:textColor="@color/on_brand"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </LinearLayout>
+
+    <!-- De dónde a dónde: desde tu ubicación hasta un destino en el mapa -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tripRow"
+        style="@style/Widget.Alertas.Tile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:strokeWidth="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="8dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/alertas_ic_crosshair"
+                app:tint="@color/alertas_petrol" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:maxLines="1"
+                android:text="@string/alertas_assistant_from"
+                android:textAppearance="@style/TextAppearance.Alertas.Strong"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/alertas_ic_arrow"
+                app:tint="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/alertas_assistant_to"
+                android:textAppearance="@style/TextAppearance.Alertas.Strong"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btnCloseTrip"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="@drawable/alertas_bg_circle"
+                android:backgroundTint="?attr/colorSurfaceVariant"
+                android:contentDescription="@string/alertas_close"
+                android:padding="9dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/alertas_ic_close"
+                app:tint="?attr/colorOnSurface" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesRecycler"
@@ -63,13 +148,13 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:paddingStart="16dp"
-        android:paddingTop="4dp"
+        android:paddingTop="8dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
+        android:paddingBottom="4dp"
         app:layout_constraintBottom_toTopOf="@id/voiceOrb"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintTop_toBottomOf="@id/tripRow"
         tools:listitem="@layout/item_assistant_message" />
 
     <!--
@@ -91,39 +176,51 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <HorizontalScrollView
+    <!-- "PRUEBA CON" y las preguntas de ejemplo, en filas amarillo suave -->
+    <LinearLayout
         android:id="@+id/suggestionsScroll"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@id/inputRow"
+        app:layout_constraintBottom_toTopOf="@id/aiNotice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/suggestions"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleLine="true" />
-    </HorizontalScrollView>
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/alertas_assistant_try"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.Expresdm.SectionLabel" />
+
+        <LinearLayout
+            android:id="@+id/suggestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/aiNotice"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingStart="20dp"
+        android:gravity="center"
+        android:paddingStart="24dp"
         android:paddingTop="6dp"
-        android:paddingEnd="20dp"
-        android:text="@string/assistant_ai_notice"
-        android:textAppearance="@style/TextAppearance.Expresdm.Body"
+        android:paddingEnd="24dp"
+        android:text="@string/alertas_assistant_ai_notice"
+        android:textAppearance="@style/TextAppearance.Alertas.Support"
         android:textSize="11sp"
         app:layout_constraintBottom_toTopOf="@id/inputRow"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/suggestionsScroll" />
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Abajo: caja de texto en pastilla, micrófono blanco y enviar amarillo -->
     <LinearLayout
         android:id="@+id/inputRow"
         android:layout_width="0dp"
@@ -131,58 +228,52 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="16dp"
-        android:paddingTop="8dp"
+        android:paddingTop="10dp"
         android:paddingEnd="16dp"
         android:paddingBottom="14dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/messageInput"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_search_field"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp">
-
-            <EditText
-                android:id="@+id/messageInput"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@null"
-                android:hint="@string/assistant_hint"
-                android:imeOptions="actionSend"
-                android:inputType="text|textCapSentences"
-                android:maxLines="1"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:textSize="14sp" />
-        </LinearLayout>
+            android:background="@drawable/alertas_bg_field"
+            android:hint="@string/assistant_hint"
+            android:imeOptions="actionSend"
+            android:importantForAutofill="no"
+            android:inputType="text|textCapSentences"
+            android:maxLines="1"
+            android:paddingStart="20dp"
+            android:paddingEnd="16dp"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant"
+            android:textSize="15sp" />
 
         <!-- Preguntar hablando (Premium). Mientras escucha, sirve para parar. -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnVoice"
-            style="?attr/floatingActionButtonSecondaryStyle"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            style="@style/Widget.Alertas.RoundFab"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:layout_marginStart="10dp"
             android:contentDescription="@string/voice_ask"
-            app:fabCustomSize="50dp"
-            app:maxImageSize="22dp"
-            app:srcCompat="@drawable/ic_mic" />
+            app:backgroundTint="?attr/colorSurface"
+            app:srcCompat="@drawable/alertas_ic_mic"
+            app:tint="?attr/colorOnSurface" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnSend"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            style="@style/Widget.Alertas.RoundFab"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:layout_marginStart="10dp"
             android:contentDescription="@string/assistant_send"
-            app:fabCustomSize="50dp"
-            app:maxImageSize="22dp"
-            app:srcCompat="@drawable/ic_send" />
+            app:backgroundTint="@color/brand"
+            app:srcCompat="@drawable/alertas_ic_send"
+            app:tint="@color/on_brand" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

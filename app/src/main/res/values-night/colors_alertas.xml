@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="alertas_sand">@color/ink_950</color>
+    <color name="alertas_soft_yellow">#352A10</color>
+    <color name="alertas_on_soft_yellow">@color/yellow_500</color>
+    <!-- De noche la tinta se invierte: papel con texto oscuro -->
+    <color name="alertas_ink">@color/paper_100</color>
+    <color name="alertas_on_ink">@color/ink_900</color>
+    <color name="alertas_ink_tile">@color/ink_800</color>
+    <color name="alertas_petrol">#6FC0D1</color>
+    <color name="alertas_petrol_soft">#16343B</color>
+</resources>

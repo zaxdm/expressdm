@@ -25,32 +25,33 @@
         android:paddingEnd="16dp"
         android:paddingBottom="8dp">
 
+        <!-- Buscador flotante: pastilla blanca con el pin amarillo y la lupa -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/searchCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
+            app:cardCornerRadius="26dp"
+            app:cardElevation="4dp"
             app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="8dp"
-                android:paddingEnd="4dp">
+                android:paddingEnd="6dp">
 
                 <FrameLayout
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="@drawable/bg_brand_badge">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:layout_gravity="center"
                         android:importantForAccessibility="no"
                         android:src="@drawable/ic_place"
@@ -61,7 +62,7 @@
                 <TextView
                     android:id="@+id/searchText"
                     android:layout_width="0dp"
-                    android:layout_height="54dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:gravity="center_vertical"
@@ -76,17 +77,17 @@
 
                 <ImageView
                     android:id="@+id/searchIcon"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:importantForAccessibility="no"
                     android:scaleType="center"
                     android:src="@drawable/ic_search"
-                    app:tint="?attr/colorPrimary" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <ImageButton
                     android:id="@+id/btnClearSearch"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/search_clear"
                     android:src="@drawable/ic_close"
@@ -368,7 +369,7 @@
         android:id="@+id/sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_sheet"
+        android:background="@drawable/rutas_bg_sheet"
         android:elevation="12dp"
         android:orientation="vertical"
         app:behavior_expandedOffset="88dp"
@@ -381,7 +382,8 @@
         <com.google.android.material.bottomsheet.BottomSheetDragHandleView
             android:id="@+id/dragHandle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-14dp" />
 
         <!-- ===== Lista: rutas cercanas, lugares encontrados o micros que pasan por un lugar ===== -->
         <LinearLayout
@@ -396,36 +398,68 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingStart="20dp"
-                android:paddingEnd="12dp">
+                android:paddingEnd="16dp">
 
+                <!-- Solo al buscar: qué se está mirando (BÚSQUEDA, CÓMO LLEGAR…) -->
+                <TextView
+                    android:id="@+id/sheetLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:textAppearance="@style/TextAppearance.Expresdm.SectionLabel"
+                    android:visibility="gone"
+                    tools:text="CÓMO LLEGAR" />
+
+                <!-- Encabezado: título y cuántas opciones hay; a la derecha, agregar ruta -->
                 <LinearLayout
+                    android:id="@+id/sheetHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/sheetLabel"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textAppearance="@style/TextAppearance.Expresdm.SectionLabel"
-                        tools:text="CERCA DE TI" />
+                        android:orientation="vertical"
+                        android:paddingEnd="8dp">
 
+                        <TextView
+                            android:id="@+id/sheetTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:textAppearance="@style/TextAppearance.Rutas.SheetTitle"
+                            tools:text="Rutas" />
+
+                        <TextView
+                            android:id="@+id/sheetSubtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textAppearance="@style/TextAppearance.Rutas.Support"
+                            tools:text="133 opciones · buscando tu ubicación…" />
+                    </LinearLayout>
+
+                    <!-- Pastilla amarilla suave, solo para administradores -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnAddRoute"
-                        style="@style/Widget.Material3.Button.TonalButton.Icon"
+                        style="@style/Widget.Material3.Button.UnelevatedButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="36dp"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
-                        android:minHeight="40dp"
-                        android:paddingStart="12dp"
+                        android:minHeight="36dp"
+                        android:paddingStart="14dp"
                         android:paddingEnd="14dp"
-                        android:text="@string/add_route"
+                        android:text="@string/rutas_add_route"
+                        android:textColor="@color/on_brand"
                         android:textSize="13sp"
-                        app:icon="@drawable/ic_add"
-                        app:iconSize="18dp" />
+                        android:textStyle="bold"
+                        app:backgroundTint="@color/yellow_100"
+                        app:cornerRadius="18dp" />
 
                     <ImageButton
                         android:id="@+id/btnClosePlace"
@@ -438,41 +472,7 @@
                         app:tint="?attr/colorOnSurface" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingEnd="8dp">
-
-                    <TextView
-                        android:id="@+id/sheetTitle"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
-                        android:maxLines="2"
-                        android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
-                        tools:text="Rutas cercanas" />
-
-                    <TextView
-                        android:id="@+id/routeCount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_pill_surface"
-                        android:paddingStart="10dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="10dp"
-                        android:paddingBottom="4dp"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        tools:text="3 opciones" />
-                </LinearLayout>
-
-                <!-- Qué muestra la lista y, si falta la ubicación, cómo arreglarlo -->
+                <!-- Si falta la ubicación (o al buscar): qué pasa y cómo arreglarlo -->
                 <LinearLayout
                     android:id="@+id/statusRow"
                     android:layout_width="match_parent"
@@ -480,7 +480,6 @@
                     android:gravity="center_vertical"
                     android:minHeight="40dp"
                     android:orientation="horizontal"
-                    android:paddingEnd="8dp"
                     android:visibility="gone"
                     tools:visibility="visible">
 
@@ -490,7 +489,7 @@
                         android:layout_height="16dp"
                         android:importantForAccessibility="no"
                         android:src="@drawable/ic_my_location"
-                        app:tint="?attr/colorPrimary" />
+                        app:tint="?attr/colorOnSurfaceVariant" />
 
                     <TextView
                         android:id="@+id/statusText"
@@ -499,9 +498,8 @@
                         android:layout_weight="1"
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
-                        android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                        android:textSize="13sp"
-                        tools:text="A menos de 1,5 km de ti" />
+                        android:textAppearance="@style/TextAppearance.Rutas.Support"
+                        tools:text="Activa tu ubicación para ver solo las rutas cercanas" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnStatusAction"
@@ -513,6 +511,33 @@
                         tools:visibility="visible" />
                 </LinearLayout>
 
+                <!-- Cerca de ti / Todas: el elegido en tinta, el otro blanco con borde -->
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/routeFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:chipSpacingHorizontal="8dp"
+                    app:selectionRequired="true"
+                    app:singleLine="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipNearby"
+                        style="@style/Widget.Rutas.FilterChip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        tools:text="Cerca de ti (5)" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipAll"
+                        style="@style/Widget.Rutas.FilterChip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Todas (133)" />
+                </com.google.android.material.chip.ChipGroup>
+
                 <!--
                   Con un destino elegido (tocando el mapa o buscándolo): lo mismo
                   que ofrece el panel de una ruta, para el viaje que se ve en el
@@ -523,7 +548,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:layout_marginEnd="8dp"
                     android:baselineAligned="false"
                     android:orientation="horizontal"
                     android:visibility="gone"
@@ -560,6 +584,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
                 android:indeterminate="true"
                 android:visibility="gone"
@@ -568,6 +593,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="4dp"
                 android:layout_weight="1">
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -610,101 +636,238 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingStart="20dp"
-                android:paddingEnd="12dp">
+                android:paddingEnd="20dp">
 
+                <!-- Qué micro es: insignia cuadrada, nombre, de dónde a dónde y cerrar -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/selectedBadge"
                         style="@style/Widget.Expresdm.RouteBadge"
-                        android:background="@drawable/bg_circle_badge"
-                        tools:text="A" />
+                        android:background="@drawable/bg_brand_badge"
+                        android:importantForAccessibility="no"
+                        tools:backgroundTint="@color/route_accent_2"
+                        tools:text="P" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical"
-                        android:paddingStart="14dp">
+                        android:paddingStart="12dp"
+                        android:paddingEnd="8dp">
 
                         <TextView
                             android:id="@+id/selectedName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
+                            android:textSize="22sp"
                             tools:text="California" />
 
                         <TextView
                             android:id="@+id/selectedSubtitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextAppearance.Expresdm.Body"
+                            android:textAppearance="@style/TextAppearance.Ficha.Support"
                             tools:text="El Porvenir — Huanchaco" />
                     </LinearLayout>
 
                     <ImageButton
                         android:id="@+id/btnCloseRoute"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/ficha_bg_circle_button"
                         android:contentDescription="@string/selected_close"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
                         android:src="@drawable/ic_close"
                         app:tint="?attr/colorOnSurface" />
                 </LinearLayout>
 
-                <!-- Por dónde caminar hasta la parada -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/walkCard"
+                <!--
+                  Caminar hasta el paradero, alertas en el recorrido y el aviso de
+                  llegada. RouteInfoPanel los pasa a la ficha, debajo de las casillas.
+                -->
+                <LinearLayout
+                    android:id="@+id/fichaTripCards"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:layout_marginEnd="8dp"
-                    app:cardBackgroundColor="@color/petrol"
-                    app:cardCornerRadius="18dp"
-                    app:strokeWidth="0dp">
+                    android:orientation="vertical">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/walkCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="@color/petrol"
+                        app:cardCornerRadius="18dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:minHeight="64dp"
+                            android:orientation="horizontal"
+                            android:paddingStart="12dp"
+                            android:paddingTop="12dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="12dp">
+
+                            <ImageView
+                                style="@style/Widget.Ficha.IconTile"
+                                android:background="@drawable/ficha_bg_icon_petrol"
+                                android:src="@drawable/ic_walk"
+                                app:tint="@color/on_petrol" />
+
+                            <com.peru.expresdm.ui.routes.WalkCardText
+                                android:id="@+id/walkText"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:lineSpacingExtra="2dp"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="8dp"
+                                android:textColor="@color/on_petrol"
+                                android:textSize="15sp"
+                                tools:text="Camina 540 m · 8 min hasta Av. España" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnWalkAction"
+                                style="@style/Widget.Material3.Button.TextButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/on_petrol"
+                                android:visibility="gone"
+                                tools:text="Activar" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Alertas vigentes cerca del recorrido; al tocar, abre la pestaña de alertas -->
+                    <TextView
+                        android:id="@+id/alertsOnRoute"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical"
+                        android:minHeight="40dp"
+                        android:textColor="@color/alert_accident"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:drawableStartCompat="@drawable/ic_alert_danger"
+                        app:drawableTint="@color/alert_accident"
+                        tools:text="2 alertas activas en el recorrido"
+                        tools:visibility="visible" />
+
+                    <!-- Aviso de llegada: avisa al acercarse a la parada -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/arrivalCard"
+                        style="@style/Widget.Ficha.Card">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:minHeight="64dp"
+                            android:orientation="horizontal"
+                            android:paddingStart="12dp"
+                            android:paddingTop="12dp"
+                            android:paddingEnd="14dp"
+                            android:paddingBottom="12dp">
+
+                            <ImageView
+                                style="@style/Widget.Ficha.IconTile"
+                                android:background="@drawable/bg_icon_tile"
+                                android:src="@drawable/ic_arrival_alarm"
+                                app:tint="?attr/colorOnSurface" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="8dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/ficha_arrival_title"
+                                    android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                                    android:textSize="15sp" />
+
+                                <com.peru.expresdm.ui.routes.ArrivalCardText
+                                    android:id="@+id/arrivalText"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="1dp"
+                                    android:textAppearance="@style/TextAppearance.Ficha.Support"
+                                    android:textSize="12sp"
+                                    tools:text="Suena cuando estés cerca de donde bajas" />
+                            </LinearLayout>
+
+                            <com.peru.expresdm.ui.routes.ArrivalSwitch
+                                android:id="@+id/btnArrivalAction"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:contentDescription="@string/ficha_arrival_title" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- La ficha del micro: casillas, compartir, tarifas y calificaciones -->
+                <include
+                    android:id="@+id/routeInfo"
+                    layout="@layout/view_route_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <!-- Por dónde pasa. RouteInfoPanel la pasa a la ficha, debajo de compartir. -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/fichaStopsCard"
+                    style="@style/Widget.Ficha.Card">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:minHeight="56dp"
-                        android:orientation="horizontal"
-                        android:paddingStart="14dp"
-                        android:paddingTop="10dp"
-                        android:paddingEnd="6dp"
-                        android:paddingBottom="10dp">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/ic_walk"
-                            app:tint="@color/on_petrol" />
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingTop="14dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="8dp">
 
                         <TextView
-                            android:id="@+id/walkText"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="8dp"
-                            android:textColor="@color/on_petrol"
-                            android:textSize="14sp"
-                            android:textStyle="bold"
-                            tools:text="Camina 540 m · 8 min hasta Av. España" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnWalkAction"
-                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/on_petrol"
-                            android:visibility="gone"
-                            tools:text="Activar" />
+                            android:layout_marginBottom="4dp"
+                            android:text="@string/route_stops"
+                            android:textAppearance="@style/TextAppearance.Ficha.Section" />
+
+                        <com.peru.expresdm.ui.routes.StopTimelineLayout
+                            android:id="@+id/stopsContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical" />
+
+                        <TextView
+                            android:id="@+id/approxNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="6dp"
+                            android:text="@string/selected_approximate"
+                            android:textAppearance="@style/TextAppearance.Ficha.Support"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -714,121 +877,21 @@
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="12dp"
                     android:text="@string/route_delete"
+                    android:textAppearance="@style/TextAppearance.Expresdm.LabelLarge"
                     android:textColor="@color/alert_accident"
                     android:visibility="gone"
                     tools:visibility="visible" />
-
-                <!-- Alertas vigentes cerca del recorrido; al tocar, abre la pestaña de alertas -->
-                <TextView
-                    android:id="@+id/alertsOnRoute"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:drawablePadding="8dp"
-                    android:gravity="center_vertical"
-                    android:minHeight="40dp"
-                    android:textColor="@color/alert_accident"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    app:drawableStartCompat="@drawable/ic_alert_danger"
-                    app:drawableTint="@color/alert_accident"
-                    tools:text="2 alertas activas en el recorrido"
-                    tools:visibility="visible" />
-
-                <!-- Aviso de llegada: avisa al acercarse a la parada -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/arrivalCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                    app:cardCornerRadius="18dp"
-                    app:strokeWidth="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:minHeight="56dp"
-                        android:orientation="horizontal"
-                        android:paddingStart="14dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="6dp"
-                        android:paddingBottom="8dp">
-
-                        <ImageView
-                            android:layout_width="22dp"
-                            android:layout_height="22dp"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/ic_arrival_alarm"
-                            app:tint="?attr/colorOnSecondaryContainer" />
-
-                        <TextView
-                            android:id="@+id/arrivalText"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="8dp"
-                            android:textColor="?attr/colorOnSecondaryContainer"
-                            android:textSize="13sp"
-                            tools:text="Avísame al llegar: una notificación sin sonido cerca de mi parada" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnArrivalAction"
-                            style="@style/Widget.Material3.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            tools:text="Activar" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- La ficha del micro: foto, horario, tarifas y calificaciones -->
-                <include
-                    android:id="@+id/routeInfo"
-                    layout="@layout/view_route_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp" />
-
-                <TextView
-                    android:id="@+id/approxNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="4dp"
-                    android:text="@string/selected_approximate"
-                    android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="4dp"
-                    android:text="@string/route_stops"
-                    android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
-                    android:textSize="16sp" />
-
-                <LinearLayout
-                    android:id="@+id/stopsContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingEnd="8dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 
     <!--
-      Controles pegados a la hoja: la burbuja del asistente y el botón para
-      volver al usuario. El contenedor no es tocable, así que el mapa sigue
-      recibiendo los gestos en el hueco entre ambos.
+      El botón para volver al usuario, pegado a la hoja: un círculo amarillo
+      pequeño. El contenedor no es tocable, así que el mapa sigue recibiendo
+      los gestos alrededor. El asistente se abre desde su pestaña de abajo.
     -->
     <LinearLayout
         android:id="@+id/mapControls"
@@ -838,26 +901,20 @@
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-        android:paddingBottom="16dp"
+        android:paddingBottom="14dp"
         app:layout_anchor="@id/sheet"
         android:layout_gravity="top|end"
         app:layout_anchorGravity="top|end">
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/assistantBubble"
-            style="@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:contentDescription="@string/assistant_bubble_label"
-            android:text="@string/assistant_bubble_label"
-            app:icon="@drawable/ic_assistant" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabMyLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/my_location"
+            app:elevation="4dp"
+            app:fabCustomSize="44dp"
+            app:maxImageSize="22dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Expresdm.Circle"
             app:srcCompat="@drawable/ic_my_location" />
     </LinearLayout>
 

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  La ficha de un micro: su foto, cuándo pasa, cuánto cuesta y lo que la gente
-  dice de él. Va en el panel de la ruta elegida en el mapa y en la pantalla
-  propia de la ficha; la rellena RouteInfoPanel.
+  La ficha de un micro: cuánto dura, cuánto cuesta, cuándo pasa, compartirla,
+  por dónde pasa, sus tarifas y lo que la gente dice de él. Va en el panel de
+  la ruta elegida en el inicio y en la pantalla propia de la ficha; la rellena
+  RouteInfoPanel.
+
+  Los dos huecos (tripSlot y stopsSlot) los llena quien la aloja: RouteInfoPanel
+  mete ahí las tarjetas de caminar, del aviso de llegada y de las paradas, para
+  que todo quede en el orden del diseño.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,122 +17,72 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!-- La foto del micro; sin foto, su color con la letra de fondo -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/detailImageCard"
-        android:layout_width="match_parent"
-        android:layout_height="190dp"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="22dp"
-        app:strokeWidth="0dp"
-        tools:cardBackgroundColor="@color/route_accent_1">
-
-        <TextView
-            android:id="@+id/detailWatermark"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:alpha="0.25"
-            android:importantForAccessibility="no"
-            android:textColor="@color/white"
-            android:textSize="120sp"
-            android:textStyle="bold"
-            tools:text="B" />
-
-        <ImageView
-            android:id="@+id/detailImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Nombre de la empresa o del micro, y lo que el catálogo diga de él -->
-    <TextView
-        android:id="@+id/detailDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textAppearance="@style/TextAppearance.Expresdm.Body"
-        android:visibility="gone"
-        tools:text="Empresa California S.A."
-        tools:visibility="visible" />
-
-    <!-- Horario y duración -->
+    <!-- Recorrido, pasaje y horario: tres casillas en fila -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="16dp"
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="6dp"
-            android:layout_weight="1"
-            app:cardBackgroundColor="?attr/colorPrimaryContainer"
-            app:cardCornerRadius="18dp"
-            app:strokeWidth="0dp">
+        <LinearLayout style="@style/Widget.Ficha.Tile">
 
-            <LinearLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ficha_trip"
+                android:textAppearance="@style/TextAppearance.Ficha.TileLabel" />
+
+            <TextView
+                android:id="@+id/detailDuration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="14dp">
+                android:layout_marginTop="2dp"
+                android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                tools:text="14 min" />
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/route_schedule"
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textSize="12sp" />
+        <LinearLayout
+            style="@style/Widget.Ficha.Tile"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ficha_bg_tile_fare">
 
-                <TextView
-                    android:id="@+id/detailSchedule"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="2dp"
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="05:30 – 22:00" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ficha_fare"
+                android:textAppearance="@style/TextAppearance.Ficha.TileLabel" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="6dp"
-            android:layout_weight="1"
-            app:cardBackgroundColor="?attr/colorPrimaryContainer"
-            app:cardCornerRadius="18dp"
-            app:strokeWidth="0dp">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/detailFare"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="14dp">
+                android:layout_marginTop="2dp"
+                android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                tools:text="S/ 1.00" />
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/route_detail_trip"
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textSize="12sp" />
+        <LinearLayout style="@style/Widget.Ficha.Tile">
 
-                <TextView
-                    android:id="@+id/detailDuration"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="2dp"
-                    android:textColor="?attr/colorOnPrimaryContainer"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="38 min" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ficha_schedule"
+                android:textAppearance="@style/TextAppearance.Ficha.TileLabel" />
+
+            <TextView
+                android:id="@+id/detailSchedule"
+                android:layout_width="match_parent"
+                android:layout_height="22dp"
+                android:layout_marginTop="2dp"
+                android:maxLines="1"
+                app:autoSizeMaxTextSize="16sp"
+                app:autoSizeMinTextSize="11sp"
+                app:autoSizeTextType="uniform"
+                android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                tools:text="Sin dato" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Cada cuánto pasa, cuando el catálogo lo sabe -->
@@ -135,11 +90,10 @@
         android:id="@+id/detailFrequency"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="15sp"
+        android:textAppearance="@style/TextAppearance.Ficha.Support"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_clock"
         app:drawableTint="?attr/colorOnSurfaceVariant"
@@ -155,13 +109,21 @@
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
         android:textColor="@color/alert_accident"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_alert_danger"
         app:drawableTint="@color/alert_accident"
         tools:text="Esta semana: 3 reportes de cobro de más"
         tools:visibility="visible" />
 
+    <!-- Hueco para caminar hasta el paradero y el aviso de llegada (los pone quien aloja la ficha) -->
+    <LinearLayout
+        android:id="@+id/tripSlot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <!-- Compartir y guardar para ver sin internet -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -170,50 +132,176 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnShare"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.Ficha.ButtonOutlined"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="5dp"
             android:layout_weight="1"
             android:text="@string/route_detail_share"
-            app:icon="@drawable/ic_send"
-            app:iconGravity="textStart" />
+            app:icon="@drawable/ficha_ic_share" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveOffline"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="@style/Widget.Ficha.ButtonStrong"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="5dp"
             android:layout_weight="1"
-            android:text="@string/route_detail_save"
-            app:icon="@drawable/ic_map"
-            app:iconGravity="textStart" />
+            android:text="@string/ficha_offline"
+            app:icon="@drawable/ic_map" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/saveOfflineNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textAppearance="@style/TextAppearance.Expresdm.Body"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.Ficha.Support"
         android:textSize="12sp"
-        tools:text="2 de 5 rutas guardadas sin conexión" />
+        tools:text="0 de 20 rutas guardadas para ver sin conexión" />
+
+    <!-- Hueco para "Por dónde pasa" (lo pone quien aloja la ficha) -->
+    <LinearLayout
+        android:id="@+id/stopsSlot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
 
     <!-- Tarifas -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="22dp"
         android:text="@string/route_detail_fares"
-        android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
-        android:textSize="17sp" />
+        android:textAppearance="@style/TextAppearance.Ficha.Section" />
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:cardCornerRadius="22dp">
+        style="@style/Widget.Ficha.Card"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/Widget.Ficha.FareRow">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/route_detail_fare_regular"
+                    android:textAppearance="@style/TextAppearance.Ficha.Row" />
+
+                <TextView
+                    android:id="@+id/fareRegular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                    android:textSize="15sp"
+                    tools:text="S/ 1.00" />
+            </LinearLayout>
+
+            <!-- Escolar y universitario por separado, cuando alguien cargó alguno -->
+            <LinearLayout
+                android:id="@+id/rowFareSchool"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    style="@style/Widget.Ficha.Divider"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp" />
+
+                <LinearLayout style="@style/Widget.Ficha.FareRow">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/route_detail_fare_school"
+                        android:textAppearance="@style/TextAppearance.Ficha.Row" />
+
+                    <TextView
+                        android:id="@+id/fareSchool"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                        android:textSize="15sp"
+                        tools:text="S/ 0.50" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rowFareUniversity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    style="@style/Widget.Ficha.Divider"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp" />
+
+                <LinearLayout style="@style/Widget.Ficha.FareRow">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/route_detail_fare_university"
+                        android:textAppearance="@style/TextAppearance.Ficha.Row" />
+
+                    <TextView
+                        android:id="@+id/fareUniversity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                        android:textSize="15sp"
+                        tools:text="S/ 1.00" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Sin ninguno de los dos: una sola fila que lo dice -->
+            <LinearLayout
+                android:id="@+id/rowFareReduced"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    style="@style/Widget.Ficha.Divider"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp" />
+
+                <LinearLayout style="@style/Widget.Ficha.FareRow">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/ficha_fare_reduced"
+                        android:textAppearance="@style/TextAppearance.Ficha.Row"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ficha_fare_missing"
+                        android:textAppearance="@style/TextAppearance.Ficha.Support" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Calificaciones: solo con servidor, que es donde viven -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/communitySection"
+        style="@style/Widget.Ficha.Card"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -222,149 +310,76 @@
             android:padding="16dp">
 
             <LinearLayout
-                android:id="@+id/rowFareSchool"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/route_detail_fare_school"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/fareSchool"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="S/ 0.50" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/rowFareUniversity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/route_detail_fare_university"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/fareUniversity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="S/ 1.00" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/route_detail_fare_regular"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:id="@+id/fareRegular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    tools:text="S/ 2.00" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/faresNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="12dp"
-                android:text="@string/route_detail_fares_note"
-                android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Calificaciones: solo con servidor, que es donde viven -->
-    <LinearLayout
-        android:id="@+id/communitySection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/route_detail_ratings"
-            android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
-            android:textSize="17sp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardCornerRadius="22dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingEnd="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/route_detail_ratings"
+                        android:textAppearance="@style/TextAppearance.Ficha.TileValue"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/ratingSummary"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        tools:text="★ 4.3 · 12 calificaciones" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnRate"
-                        style="@style/Widget.Material3.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/route_detail_rate" />
+                        android:layout_marginTop="2dp"
+                        android:textAppearance="@style/TextAppearance.Ficha.Support"
+                        tools:text="Aún nadie la califica. Sé el primero." />
                 </LinearLayout>
 
-                <!-- Las últimas opiniones escritas; las pone RouteInfoPanel. -->
-                <LinearLayout
-                    android:id="@+id/reviewsContainer"
-                    android:layout_width="match_parent"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRate"
+                    style="@style/Widget.Ficha.ButtonPill"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:text="@string/route_detail_rate" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+
+            <!-- Las últimas opiniones escritas; las pone RouteInfoPanel. -->
+            <LinearLayout
+                android:id="@+id/reviewsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Al final, la foto del micro (si alguien la subió) y lo que el catálogo diga de él -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/detailImageCard"
+        style="@style/Widget.Ficha.Card"
+        android:layout_height="180dp"
+        android:visibility="gone"
+        app:strokeWidth="0dp"
+        tools:cardBackgroundColor="@color/route_accent_1">
+
+        <ImageView
+            android:id="@+id/detailImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Nombre de la empresa o del micro, y lo que el catálogo diga de él -->
+    <TextView
+        android:id="@+id/detailDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textAppearance="@style/TextAppearance.Ficha.Support"
+        android:visibility="gone"
+        tools:text="Empresa California S.A."
+        tools:visibility="visible" />
 </LinearLayout>

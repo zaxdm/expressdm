@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Línea punteada vertical que une la salida con el destino. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="2dp"
+    android:height="26dp"
+    android:viewportWidth="2"
+    android:viewportHeight="26">
+    <path
+        android:fillColor="#9A9EA8"
+        android:pathData="M1,1m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0M1,7m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0M1,13m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0M1,19m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0M1,25m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" />
+</vector>

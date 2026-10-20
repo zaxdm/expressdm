@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Colores propios de Alertas, crear alerta y Asistente. values-night los
+      redefine para el modo oscuro.
+    -->
+    <!-- Fondo arena de las hojas, como el de las pantallas -->
+    <color name="alertas_sand">@color/stone_50</color>
+    <!-- Amarillo suave: el círculo de "todo tranquilo" y las sugerencias -->
+    <color name="alertas_soft_yellow">@color/yellow_100</color>
+    <color name="alertas_on_soft_yellow">@color/amber_700</color>
+    <!-- Tinta: el filtro elegido y la acción fuerte, con su texto -->
+    <color name="alertas_ink">@color/stone_900</color>
+    <color name="alertas_on_ink">@color/white</color>
+    <!-- El cuadro negro del icono del asistente -->
+    <color name="alertas_ink_tile">@color/stone_900</color>
+    <!-- Petróleo de la ubicación, con su versión clara de noche -->
+    <color name="alertas_petrol">@color/petrol</color>
+    <color name="alertas_petrol_soft">@color/petrol_soft</color>
+</resources>

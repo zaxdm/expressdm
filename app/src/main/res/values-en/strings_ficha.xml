@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ficha_trip">Trip</string>
+    <string name="ficha_fare">Fare</string>
+    <string name="ficha_schedule">Hours</string>
+    <string name="ficha_no_data">No data</string>
+    <string name="ficha_fare_reduced">School / university</string>
+    <string name="ficha_fare_missing">No data yet</string>
+    <string name="ficha_arrival_title">Alert me on arrival</string>
+    <string name="ficha_arrival_idle">Rings when you are near your stop</string>
+    <string name="ficha_offline">Offline</string>
+    <string name="ficha_back">Back</string>
+    <string name="ficha_no_ratings">Nobody has rated it yet. Be the first.</string>
+    <string name="ficha_route_subtitle">%1$s → %2$s</string>
+    <string name="ficha_walk_split">" to "</string>
+    <string name="ficha_walk_to_stop">%1$s to your stop</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cuadro translúcido para un icono encima del petróleo o del negro. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/perfil_on_dark_tile" />
+    <corners android:radius="10dp" />
+</shape>

@@ -20,38 +20,55 @@
             android:paddingTop="20dp"
             android:paddingEnd="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/reports_title"
-                android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle" />
-
-            <TextView
+            <!-- Título y, a la derecha, la pastilla "En vivo" -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="2dp"
-                android:text="@string/reports_subtitle"
-                android:textAppearance="@style/TextAppearance.Expresdm.Body" />
-
-            <TextView
-                android:id="@+id/storageNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawablePadding="6dp"
                 android:gravity="center_vertical"
-                android:paddingTop="6dp"
-                android:text="@string/reports_local_note"
-                android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                android:textSize="12sp"
-                app:drawableStartCompat="@drawable/ic_info"
-                app:drawableTint="?attr/colorOnSurfaceVariant" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/reports_title"
+                    android:textAppearance="@style/TextAppearance.Alertas.Title" />
+
+                <TextView
+                    android:id="@+id/livePill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/alertas_bg_pill"
+                    android:backgroundTint="@color/alert_overcharge_soft"
+                    android:drawablePadding="6dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/alertas_live"
+                    android:textColor="@color/alert_overcharge"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@drawable/alertas_dot"
+                    app:drawableTint="@color/alert_overcharge" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:lineSpacingExtra="2dp"
+                android:text="@string/alertas_subtitle_shared"
+                android:textAppearance="@style/TextAppearance.Alertas.Support" />
         </LinearLayout>
 
-        <!-- Grupos de alertas por tipo -->
+        <!-- Filtros por tipo: "Todas" y un punto de color por tipo -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:clipToPadding="false"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
@@ -61,6 +78,7 @@
                 android:id="@+id/filterChips"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
                 app:selectionRequired="true"
                 app:singleLine="true"
                 app:singleSelection="true" />
@@ -77,7 +95,7 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:paddingStart="16dp"
-                android:paddingTop="8dp"
+                android:paddingTop="10dp"
                 android:paddingEnd="16dp"
                 android:paddingBottom="96dp"
                 tools:itemCount="3"
@@ -90,68 +108,113 @@
                 android:layout_gravity="center"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:paddingStart="32dp"
-                android:paddingEnd="32dp"
-                android:paddingBottom="48dp"
+                android:paddingStart="40dp"
+                android:paddingEnd="40dp"
+                android:paddingBottom="72dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
+                <!-- Círculo amarillo suave con el aviso y la insignia verde de "todo bien" -->
                 <FrameLayout
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="@drawable/bg_circle_badge"
-                    android:backgroundTint="?attr/colorPrimaryContainer">
+                    android:layout_width="128dp"
+                    android:layout_height="128dp">
+
+                    <FrameLayout
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:background="@drawable/alertas_bg_circle"
+                        android:backgroundTint="@color/alertas_soft_yellow">
+
+                        <ImageView
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/alertas_ic_warning_outline"
+                            app:tint="?attr/colorOnSurface" />
+                    </FrameLayout>
 
                     <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:layout_gravity="center"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="6dp"
+                        android:background="@drawable/alertas_bg_check_badge"
                         android:importantForAccessibility="no"
-                        android:src="@drawable/ic_nav_alerts"
-                        app:tint="?attr/colorOnPrimaryContainer" />
+                        android:padding="9dp"
+                        android:src="@drawable/alertas_ic_check"
+                        app:tint="@color/white" />
                 </FrameLayout>
 
                 <TextView
                     android:id="@+id/emptyTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="14dp"
                     android:gravity="center"
-                    android:text="@string/reports_empty_title"
-                    android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
-                    android:textSize="18sp" />
+                    android:text="@string/alertas_empty_title"
+                    android:textAppearance="@style/TextAppearance.Alertas.Strong"
+                    android:textSize="19sp" />
 
                 <TextView
                     android:id="@+id/emptyBody"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="8dp"
                     android:gravity="center"
-                    android:text="@string/reports_empty_body"
-                    android:textAppearance="@style/TextAppearance.Expresdm.Body" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnEmptyReport"
-                    style="@style/Widget.Expresdm.ButtonPrimary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:text="@string/report_action"
-                    app:icon="@drawable/ic_add" />
+                    android:lineSpacingExtra="2dp"
+                    android:text="@string/alertas_empty_body"
+                    android:textAppearance="@style/TextAppearance.Alertas.Support"
+                    android:textSize="14sp" />
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabReport"
-        style="@style/Widget.Material3.ExtendedFloatingActionButton.Icon.Primary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:text="@string/report_action"
-        app:icon="@drawable/ic_add" />
+    <!-- Acción fuerte, siempre abajo: tinta con un cuadrito amarillo con "+" -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnReport"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/alertas_report"
+        android:focusable="true"
+        app:cardBackgroundColor="@color/alertas_ink"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:strokeWidth="0dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/alertas_bg_round_8"
+                android:backgroundTint="@color/brand"
+                android:importantForAccessibility="no"
+                android:padding="5dp"
+                android:src="@drawable/alertas_ic_plus"
+                app:tint="@color/on_brand" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:importantForAccessibility="no"
+                android:text="@string/alertas_report"
+                android:textColor="@color/alertas_on_ink"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

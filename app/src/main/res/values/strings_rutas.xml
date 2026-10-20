@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Textos de la pantalla Rutas (inicio) y de la barra de abajo. -->
+<resources>
+    <string name="rutas_title">Rutas</string>
+    <!-- %1$s es el número de opciones, p. ej. "133 opciones" -->
+    <string name="rutas_count_waiting">%1$s · buscando tu ubicación…</string>
+    <string name="rutas_count_nearby">%1$s a menos de %2$s</string>
+    <string name="rutas_count_none">Ninguna a menos de %1$s · las más cercanas</string>
+    <string name="rutas_chip_nearby">Cerca de ti (%1$d)</string>
+    <string name="rutas_chip_nearby_plain">Cerca de ti</string>
+    <string name="rutas_chip_all">Todas (%1$d)</string>
+    <string name="rutas_add_route">+ Agregar ruta</string>
+    <!-- 4 min caminando · 290 m · cerca de Av. España -->
+    <string name="rutas_walk_line">%1$d min caminando · %2$s · %3$s</string>
+    <string name="rutas_nav_assistant">Asistente</string>
+</resources>

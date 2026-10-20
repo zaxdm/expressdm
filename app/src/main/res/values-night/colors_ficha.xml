@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Modo oscuro: la acción fuerte pasa a papel con letra tinta. -->
+    <color name="ficha_strong">@color/paper_100</color>
+    <color name="ficha_on_strong">@color/ink_950</color>
+    <color name="ficha_petrol_icon_bg">#26FFFFFF</color>
+    <color name="ficha_petrol_subtext">#CCFFFFFF</color>
+</resources>

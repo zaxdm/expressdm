@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La insignia verde de "todo bien", con un borde del color del fondo -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/alert_overcharge" />
+    <corners android:radius="9dp" />
+    <stroke android:width="3dp" android:color="@color/alertas_sand" />
+</shape>

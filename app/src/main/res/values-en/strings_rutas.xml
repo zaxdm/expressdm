@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rutas_title">Routes</string>
+    <string name="rutas_count_waiting">%1$s · finding your location…</string>
+    <string name="rutas_count_nearby">%1$s within %2$s</string>
+    <string name="rutas_count_none">None within %1$s · the closest ones</string>
+    <string name="rutas_chip_nearby">Near you (%1$d)</string>
+    <string name="rutas_chip_nearby_plain">Near you</string>
+    <string name="rutas_chip_all">All (%1$d)</string>
+    <string name="rutas_add_route">+ Add route</string>
+    <string name="rutas_walk_line">%1$d min walking · %2$s · %3$s</string>
+    <string name="rutas_nav_assistant">Assistant</string>
+</resources>

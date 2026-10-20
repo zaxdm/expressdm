@@ -16,7 +16,7 @@ import com.peru.expresdm.ui.themeColor
 
 /**
  * Conversación del asistente: los mensajes del usuario van a la derecha en
- * color de marca, los del asistente a la izquierda sobre superficie.
+ * tinta, los del asistente a la izquierda en burbujas blancas.
  */
 class AssistantAdapter(
     private val onRouteClick: (BusRoute) -> Unit
@@ -53,12 +53,9 @@ class AssistantAdapter(
 
             when {
                 message.fromUser -> {
-                    binding.bubble.setCardBackgroundColor(
-                        context.themeColor(androidx.appcompat.R.attr.colorPrimary)
-                    )
-                    binding.messageText.setTextColor(
-                        context.themeColor(com.google.android.material.R.attr.colorOnPrimary)
-                    )
+                    // Lo del usuario, en tinta con letra blanca (de noche, al revés).
+                    binding.bubble.setCardBackgroundColor(ContextCompat.getColor(context, R.color.alertas_ink))
+                    binding.messageText.setTextColor(ContextCompat.getColor(context, R.color.alertas_on_ink))
                 }
 
                 message.isError -> {

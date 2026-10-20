@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Una alerta vigente en la pestaña de alertas. -->
+<!-- Una alerta vigente en la pestaña de alertas: tarjeta blanca con el icono del tipo en su cuadro. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Alertas.Tile"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardCornerRadius="20dp">
+    app:cardCornerRadius="18dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,8 +17,8 @@
         android:orientation="vertical"
         android:paddingStart="14dp"
         android:paddingTop="14dp"
-        android:paddingEnd="6dp"
-        android:paddingBottom="6dp">
+        android:paddingEnd="8dp"
+        android:paddingBottom="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,21 +26,22 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- El icono en su color fuerte sobre el suave del mismo tipo -->
             <FrameLayout
                 android:id="@+id/alertIconBg"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_circle_badge"
-                tools:backgroundTint="@color/alert_traffic">
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/alertas_bg_round_12"
+                tools:backgroundTint="@color/alert_traffic_soft">
 
                 <ImageView
                     android:id="@+id/alertIcon"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:importantForAccessibility="no"
-                    app:tint="@color/white"
-                    tools:src="@drawable/ic_alert_traffic" />
+                    tools:src="@drawable/alertas_ic_traffic"
+                    tools:tint="@color/alert_traffic" />
             </FrameLayout>
 
             <LinearLayout
@@ -54,30 +56,32 @@
                     android:id="@+id/alertType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.Alertas.Strong"
                     tools:text="Tráfico" />
 
                 <TextView
                     android:id="@+id/alertMeta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="2"
-                    android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                    android:textSize="12sp"
+                    android:textAppearance="@style/TextAppearance.Alertas.Support"
                     tools:text="Av. España · Hace 12 min · a 450 m" />
             </LinearLayout>
 
             <ImageButton
                 android:id="@+id/btnShowOnMap"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginEnd="2dp"
+                android:background="@drawable/alertas_bg_circle"
+                android:backgroundTint="?attr/colorSurfaceVariant"
                 android:contentDescription="@string/alert_show_on_map"
-                android:src="@drawable/ic_place"
-                app:tint="?attr/colorPrimary" />
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/alertas_ic_pin"
+                app:tint="?attr/colorOnSurface" />
         </LinearLayout>
 
         <TextView
@@ -110,32 +114,35 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:textAppearance="@style/TextAppearance.Expresdm.Body"
+            android:textAppearance="@style/TextAppearance.Alertas.Support"
             android:textSize="12sp"
             android:visibility="gone"
             tools:text="Ana María · Suele acertar"
             tools:visibility="visible" />
 
+        <!-- Votos: "Ya no está" y "Sigue ahí", en pastillas -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="8dp"
             android:gravity="end|center_vertical"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGone"
-                style="@style/Widget.Material3.Button.TextButton"
+                style="@style/Widget.Alertas.VoteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/alert_gone" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnStillThere"
-                style="@style/Widget.Material3.Button.TonalButton"
+                style="@style/Widget.Alertas.VoteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="8dp"
+                app:backgroundTint="@color/alertas_soft_yellow"
+                app:strokeWidth="0dp"
                 tools:text="Sigue ahí · 3" />
         </LinearLayout>
     </LinearLayout>

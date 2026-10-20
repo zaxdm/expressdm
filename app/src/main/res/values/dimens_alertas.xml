@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Rejilla de tipos de "¿Qué está pasando?" -->
+    <dimen name="alertas_tile_gap">10dp</dimen>
+    <dimen name="alertas_tile_stroke">1dp</dimen>
+    <dimen name="alertas_tile_stroke_selected">2dp</dimen>
+</resources>

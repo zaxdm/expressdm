@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Colores de Perfil, Premium, Ajustes, Ayuda y "¿A dónde vas?" que no son
+      roles del tema. values-night/colors_perfil.xml los ajusta para el modo oscuro.
+    -->
+
+    <!-- La tarjeta y la cabecera negras de Subo Premium -->
+    <color name="perfil_ink_card">@color/stone_900</color>
+    <color name="perfil_on_ink">@color/white</color>
+    <color name="perfil_on_ink_muted">@color/stone_400</color>
+    <!-- Cuadros translúcidos encima de lo negro o del petróleo -->
+    <color name="perfil_on_dark_tile">#26FFFFFF</color>
+
+    <!-- El punto verde de "Activo" -->
+    <color name="perfil_active_dot">#22C55E</color>
+
+    <!-- Caja informativa: petróleo suave con el texto en petróleo -->
+    <color name="perfil_info_bg">@color/petrol_soft</color>
+    <color name="perfil_info_text">@color/petrol</color>
+
+    <!-- Tarjeta petróleo de "Elegir destino en el mapa" -->
+    <color name="perfil_petrol_card">@color/petrol</color>
+    <color name="perfil_on_petrol_muted">#C8DEE3</color>
+
+    <!-- Interruptores en tinta, como en la guía de estilo -->
+    <color name="perfil_switch_on">@color/stone_900</color>
+    <color name="perfil_switch_off">@color/stone_200</color>
+    <color name="perfil_switch_knob">@color/white</color>
+
+    <!-- Cerrar sesión -->
+    <color name="perfil_danger">#C2410C</color>
+
+    <!-- Fondo arena de las hojas (en una hoja, colorBackground no es la arena) -->
+    <color name="perfil_sand">@color/stone_50</color>
+</resources>

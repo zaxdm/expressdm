@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Una parada de la ruta elegida, en la hoja del inicio. -->
+<!--
+  Una parada de "Por dónde pasa". El punto de la línea de tiempo no se dibuja
+  aquí: stopNumber solo guarda su sitio y el color de la ruta, y StopTimelineLayout
+  pinta encima los círculos y la línea que los une.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,21 +12,19 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:minHeight="48dp"
+    android:minHeight="42dp"
     android:orientation="horizontal"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp">
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
 
+    <!-- Sitio del punto; el número no se ve, pero sigue ahí para quien lo pida -->
     <TextView
         android:id="@+id/stopNumber"
-        android:layout_width="26dp"
-        android:layout_height="26dp"
-        android:background="@drawable/bg_circle_badge"
-        android:gravity="center"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
         android:importantForAccessibility="no"
-        android:textColor="@color/white"
-        android:textSize="12sp"
-        android:textStyle="bold"
+        android:textColor="@android:color/transparent"
+        android:textSize="1sp"
         tools:text="4" />
 
     <TextView
@@ -30,24 +32,23 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingStart="14dp"
+        android:paddingStart="16dp"
         android:paddingEnd="8dp"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="15sp"
-        tools:text="Plaza de Armas" />
+        android:textAppearance="@style/TextAppearance.Ficha.Row"
+        tools:text="Avenida Fátima" />
 
     <TextView
         android:id="@+id/stopTag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_pill_surface"
-        android:letterSpacing="0.08"
-        android:paddingStart="8dp"
+        android:background="@drawable/ficha_bg_tag"
+        android:letterSpacing="0.04"
+        android:paddingStart="7dp"
         android:paddingTop="3dp"
-        android:paddingEnd="8dp"
+        android:paddingEnd="7dp"
         android:paddingBottom="3dp"
         android:text="@string/selected_board_here"
-        android:textColor="@color/white"
+        android:textColor="@color/on_brand"
         android:textSize="10sp"
         android:textStyle="bold"
         android:visibility="gone"

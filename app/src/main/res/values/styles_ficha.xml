@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Estilos de la ficha de un micro (maqueta "ficha de una ruta") -->
+
+    <!-- Título de sección: 17 · 800 -->
+    <style name="TextAppearance.Ficha.Section" parent="TextAppearance.Expresdm.TitleMedium">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+
+    <!-- Rótulo pequeño gris arriba de una casilla -->
+    <style name="TextAppearance.Ficha.TileLabel" parent="TextAppearance.Expresdm.BodySmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Valor de una casilla: 800 -->
+    <style name="TextAppearance.Ficha.TileValue" parent="TextAppearance.Expresdm.TitleSmall">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Texto de una fila (tarifas, paradas): 15 · 500 -->
+    <style name="TextAppearance.Ficha.Row" parent="TextAppearance.Expresdm.BodyMedium">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Apoyo: 13 gris -->
+    <style name="TextAppearance.Ficha.Support" parent="TextAppearance.Expresdm.BodySmall">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Casilla de la fila de tres (recorrido, pasaje, horario) -->
+    <style name="Widget.Ficha.Tile" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:background">@drawable/ficha_bg_tile</item>
+    </style>
+
+    <!-- Tarjeta blanca de la ficha -->
+    <style name="Widget.Ficha.Card" parent="Widget.Expresdm.Card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="cardCornerRadius">18dp</item>
+    </style>
+
+    <!-- Cuadro redondeado detrás de un icono, dentro de una tarjeta -->
+    <style name="Widget.Ficha.IconTile" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <!-- Secundaria: blanca con borde -->
+    <style name="Widget.Ficha.ButtonOutlined" parent="Widget.Material3.Button.OutlinedButton.Icon">
+        <item name="android:minHeight">50dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="iconTint">?attr/colorOnSurface</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:textAppearance">@style/TextAppearance.Expresdm.LabelLarge</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Acción fuerte: tinta con texto blanco -->
+    <style name="Widget.Ficha.ButtonStrong" parent="Widget.Material3.Button.Icon">
+        <item name="android:minHeight">50dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="backgroundTint">@color/ficha_strong</item>
+        <item name="android:textColor">@color/ficha_on_strong</item>
+        <item name="iconTint">@color/ficha_on_strong</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="android:textAppearance">@style/TextAppearance.Expresdm.LabelLarge</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Botón pequeño en pastilla con borde ("Calificar") -->
+    <style name="Widget.Ficha.ButtonPill" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">40dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="strokeColor">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textAppearance">@style/TextAppearance.Expresdm.LabelLarge</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Línea fina entre filas de una tarjeta -->
+    <style name="Widget.Ficha.Divider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">?attr/colorOutline</item>
+    </style>
+
+    <!-- Fila de la tarjeta de tarifas -->
+    <style name="Widget.Ficha.FareRow" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">50dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
+</resources>

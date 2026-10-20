@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Un lugar encontrado con el buscador. -->
+<!--
+  Un lugar: reciente o encontrado con el buscador. El icono va en un cuadro
+  gris, el nombre en negrita y la distancia en una pastilla gris.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:minHeight="64dp"
+    android:minHeight="62dp"
     android:orientation="horizontal"
-    android:paddingStart="8dp"
-    android:paddingTop="8dp"
-    android:paddingEnd="8dp"
-    android:paddingBottom="8dp">
+    android:paddingStart="12dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="10dp">
 
-    <FrameLayout
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/bg_circle_badge"
-        android:backgroundTint="?attr/colorSecondaryContainer">
-
-        <ImageView
-            android:id="@+id/placeIcon"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="center"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_place"
-            app:tint="?attr/colorOnSecondaryContainer" />
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/placeIcon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/perfil_bg_tile_neutral"
+        android:importantForAccessibility="no"
+        android:padding="9dp"
+        android:src="@drawable/ic_place"
+        app:tint="?attr/colorOnSurface" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -46,10 +43,9 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            tools:text="Centro Comercial Real Plaza" />
+            android:textAppearance="@style/TextAppearance.Perfil.RowTitle"
+            android:textSize="14sp"
+            tools:text="Avenida Las Américas" />
 
         <TextView
             android:id="@+id/placeDetail"
@@ -57,16 +53,22 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.Expresdm.Body"
+            android:textAppearance="@style/TextAppearance.Perfil.Support"
             android:textSize="12sp"
-            tools:text="Avenida Prolongación César Vallejo" />
+            tools:text="Las Torres de San Borja, Moche" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/placeDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.Expresdm.Body"
-        android:textSize="12sp"
-        tools:text="2,3 km" />
+        android:background="@drawable/perfil_bg_pill_neutral"
+        android:paddingStart="8dp"
+        android:paddingTop="3dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="3dp"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        tools:text="6.1 km" />
 </LinearLayout>

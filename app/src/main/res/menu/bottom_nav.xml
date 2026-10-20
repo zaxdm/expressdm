@@ -2,21 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Los ids coinciden con los destinos de nav_graph.xml para que
-         NavigationUI enlace pestaña y pantalla automáticamente. -->
+         NavigationUI enlace pestaña y pantalla automáticamente.
+         El Asistente no es un destino: abre su hoja sobre el mapa (ver MainActivity). -->
 
     <item
         android:id="@+id/routesFragment"
-        android:icon="@drawable/ic_nav_routes"
+        android:icon="@drawable/rutas_ic_nav_routes"
         android:title="@string/nav_routes" />
 
     <item
+        android:id="@+id/assistantTab"
+        android:icon="@drawable/rutas_ic_nav_assistant"
+        android:title="@string/rutas_nav_assistant" />
+
+    <item
         android:id="@+id/reportsFragment"
-        android:icon="@drawable/ic_nav_alerts"
+        android:icon="@drawable/rutas_ic_nav_alerts"
         android:title="@string/nav_reports" />
 
     <item
         android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_nav_profile"
+        android:icon="@drawable/rutas_ic_nav_profile"
         android:title="@string/nav_profile" />
 
 </menu>

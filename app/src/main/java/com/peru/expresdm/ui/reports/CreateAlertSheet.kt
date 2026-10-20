@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.LinearLayout
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -22,7 +23,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.chip.Chip
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.peru.expresdm.R
 import com.peru.expresdm.ai.ModerationService
@@ -38,7 +39,7 @@ import com.peru.expresdm.data.net.AccountRepository
 import com.peru.expresdm.data.net.ApiClient
 import com.peru.expresdm.data.net.ApiResult
 import com.peru.expresdm.data.net.ImageUploader
-import com.peru.expresdm.databinding.ItemFilterChipBinding
+import com.peru.expresdm.databinding.AlertasItemTypeTileBinding
 import com.peru.expresdm.databinding.SheetCreateAlertBinding
 import com.peru.expresdm.ui.AlertStyle
 import com.peru.expresdm.ui.currentLocation
@@ -63,6 +64,9 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private var selectedType: AlertType? = null
+
+    /** La casilla de cada tipo, para marcar la elegida. */
+    private val typeTiles = mutableMapOf<AlertType, MaterialCardView>()
     private var location: Location? = null
     private var placeName: String? = null
     private var locationProblem: LocationProblem? = null
@@ -113,7 +117,8 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         selectedType = savedInstanceState?.getString(STATE_TYPE)
             ?.let { name -> AlertType.entries.firstOrNull { it.name == name } }
 
-        buildTypeChips()
+        buildTypeGrid()
+        renderPublishLabel()
         buildRouteChoices()
         renderRouteChoice()
         // Las fotos se revisan en el servidor: sin él o sin sesión no hay a quién mandarlas.
@@ -127,9 +132,16 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         }
         renderPhoto()
         binding.btnEnableLocation.setOnClickListener { onLocationAction() }
+        binding.btnClose.setOnClickListener { dismiss() }
+        binding.shareNote.setText(
+            if (AlertRepository.isShared) R.string.reports_shared_note else R.string.reports_local_note
+        )
         binding.btnPublish.setOnClickListener { publish() }
         binding.commentInput.doAfterTextChanged { _binding?.commentLayout?.error = null }
     }
+
+    /** Fondo arena, como en la maqueta: así las casillas blancas resaltan. */
+    override fun getTheme(): Int = R.style.ThemeOverlay_Alertas_BottomSheetDialog
 
     override fun onStart() {
         super.onStart()
@@ -154,26 +166,64 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         outState.putString(STATE_CAMERA_TARGET, cameraTarget?.toString())
     }
 
-    private fun buildTypeChips() {
+    /** Casillas de cada tipo, dos por fila; la elegida lleva el borde grueso en tinta. */
+    private fun buildTypeGrid() {
         val context = requireContext()
-        AlertType.entries.forEach { type ->
-            val chip = ItemFilterChipBinding.inflate(layoutInflater, binding.typeChips, false).root
-            chip.id = View.generateViewId()
-            chip.tag = type
-            chip.setText(AlertStyle.label(type))
-            chip.isCheckedIconVisible = false
-            chip.setChipIconResource(AlertStyle.icon(type))
-            chip.chipIconTint = ColorStateList.valueOf(ContextCompat.getColor(context, AlertStyle.color(type)))
-            chip.isChipIconVisible = true
-            chip.isChecked = type == selectedType
-            binding.typeChips.addView(chip)
-        }
+        typeTiles.clear()
+        binding.typeGrid.removeAllViews()
+        val gap = resources.getDimensionPixelSize(R.dimen.alertas_tile_gap)
 
-        binding.typeChips.setOnCheckedStateChangeListener { group, checkedIds ->
-            selectedType = checkedIds.firstOrNull()?.let { group.findViewById<Chip>(it)?.tag as? AlertType }
-            if (selectedType != null) _binding?.typeError?.isVisible = false
-            renderRouteChoice()
+        AlertType.entries.chunked(2).forEachIndexed { index, pair ->
+            val row = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { if (index > 0) topMargin = gap }
+            }
+            pair.forEachIndexed { column, type ->
+                val tile = AlertasItemTypeTileBinding.inflate(layoutInflater, row, false)
+                tile.tileIcon.setImageResource(AlertStyle.icon(type))
+                tile.tileIcon.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(context, AlertStyle.color(type)))
+                tile.tileIcon.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(context, AlertStyle.softColor(type)))
+                tile.tileLabel.setText(AlertStyle.label(type))
+                if (column > 0) (tile.root.layoutParams as LinearLayout.LayoutParams).marginStart = gap
+                tile.root.setOnClickListener { selectType(type) }
+                row.addView(tile.root)
+                typeTiles[type] = tile.root
+            }
+            // Si la última fila tiene una sola casilla, un hueco ocupa el sitio de la otra.
+            if (pair.size == 1) {
+                row.addView(View(context), LinearLayout.LayoutParams(0, 0, 1f).apply { marginStart = gap })
+            }
+            binding.typeGrid.addView(row)
         }
+        renderTypeSelection()
+    }
+
+    private fun selectType(type: AlertType) {
+        selectedType = type
+        _binding?.typeError?.isVisible = false
+        renderTypeSelection()
+        renderPublishLabel()
+        renderRouteChoice()
+    }
+
+    private fun renderTypeSelection() {
+        val thick = resources.getDimensionPixelSize(R.dimen.alertas_tile_stroke_selected)
+        val thin = resources.getDimensionPixelSize(R.dimen.alertas_tile_stroke)
+        typeTiles.forEach { (type, tile) ->
+            tile.isChecked = type == selectedType
+            tile.strokeWidth = if (type == selectedType) thick else thin
+        }
+    }
+
+    /** "Publicar alerta de tráfico": el botón dice qué se va a publicar. */
+    private fun renderPublishLabel() {
+        val binding = _binding ?: return
+        if (!publishing) binding.btnPublish.setText(AlertStyle.publishLabel(selectedType))
     }
 
     /** La lista de micros, para decir de cuál se habla. */
@@ -286,16 +336,18 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         binding.locationText.text = when (problem) {
             LocationProblem.NO_PERMISSION, LocationProblem.SERVICES_OFF -> getString(R.string.create_alert_no_location)
             LocationProblem.NO_FIX -> getString(R.string.create_alert_no_fix)
-            null -> placeName?.let { getString(R.string.create_alert_location, it) }
-                ?: getString(R.string.create_alert_location_generic)
+            null -> placeName?.let { getString(R.string.alertas_my_location_at, it) }
+                ?: getString(R.string.alertas_my_location)
         }
 
-        binding.btnEnableLocation.isVisible = problem != null
+        // Con la ubicación ya encontrada, el enlace la vuelve a pedir (por si se movió).
+        binding.btnEnableLocation.isVisible = true
         binding.btnEnableLocation.setText(
             when (problem) {
                 LocationProblem.NO_PERMISSION -> R.string.location_action_enable
                 LocationProblem.SERVICES_OFF -> R.string.location_action_settings
-                else -> R.string.create_alert_retry
+                LocationProblem.NO_FIX -> R.string.create_alert_retry
+                null -> R.string.alertas_refresh_location
             }
         )
     }
@@ -306,7 +358,12 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
             )
             LocationProblem.SERVICES_OFF -> startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            LocationProblem.NO_FIX, null -> locate()
+            LocationProblem.NO_FIX -> locate()
+            null -> {
+                location = null
+                placeName = null
+                locate()
+            }
         }
     }
 
@@ -399,7 +456,7 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         binding.commentInput.isEnabled = !busy
         binding.btnAddPhoto.isEnabled = !busy
         binding.btnRemovePhoto.isEnabled = !busy
-        binding.btnPublish.setText(if (busy) R.string.moderation_checking else R.string.create_alert_publish)
+        binding.btnPublish.setText(if (busy) R.string.moderation_checking else AlertStyle.publishLabel(selectedType))
     }
 
     override fun onDestroyView() {

@@ -8,9 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.peru.expresdm.data.AppUpdates
 import com.peru.expresdm.data.Premium
@@ -24,6 +27,8 @@ import com.peru.expresdm.tracking.BackgroundAccess
 import com.peru.expresdm.tracking.PushRegistration
 import com.peru.expresdm.tracking.UpdateWatchWorker
 import com.peru.expresdm.ui.UpdatePrompt
+import com.peru.expresdm.ui.assistant.AssistantSheet
+import com.peru.expresdm.ui.routes.REQUEST_OPEN_ASSISTANT
 import com.peru.expresdm.ui.routes.RouteDetailFragment
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -40,6 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    private lateinit var navHost: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +58,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHost = supportFragmentManager
+        navHost = supportFragmentManager
             .findFragmentById(R.id.navHost) as NavHostFragment
         navController = navHost.navController
 
         binding.bottomNav.setupWithNavController(navController)
+        setUpAssistantTab()
 
         // Las pantallas secundarias (ajustes, soporte, ficha del micro, nueva ruta) ocupan todo el alto.
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -132,6 +139,46 @@ class MainActivity : AppCompatActivity() {
         if (RouteRepository.byId(routeId) == null) return false
         navController.navigate(R.id.routeDetailFragment, RouteDetailFragment.args(routeId))
         return true
+    }
+
+    /**
+     * La pestaña Asistente no es una pantalla: abre la hoja del asistente sobre
+     * el mapa del inicio (que es quien atiende sus órdenes de voz). Mientras la
+     * hoja está abierta, la pestaña se ve marcada; al cerrarla vuelve la de antes.
+     */
+    private fun setUpAssistantTab() {
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            if (item.itemId == R.id.assistantTab) {
+                openAssistant()
+                true
+            } else {
+                NavigationUI.onNavDestinationSelected(item, navController)
+            }
+        }
+        binding.bottomNav.setOnItemReselectedListener { item ->
+            if (item.itemId == R.id.assistantTab) openAssistant()
+        }
+        supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+                if (f is AssistantSheet) binding.bottomNav.menu.findItem(R.id.assistantTab)?.isChecked = true
+            }
+
+            override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+                if (f !is AssistantSheet) return
+                val current = navController.currentDestination?.id ?: return
+                binding.bottomNav.menu.findItem(current)?.isChecked = true
+            }
+        }, true)
+    }
+
+    /** Vuelve al mapa si hace falta y le pide que abra el asistente. */
+    private fun openAssistant() {
+        if (navController.currentDestination?.id != R.id.routesFragment) {
+            binding.bottomNav.menu.findItem(R.id.routesFragment)
+                ?.let { NavigationUI.onNavDestinationSelected(it, navController) }
+        }
+        // Si el mapa todavía no está listo, el aviso espera a que lo esté.
+        navHost.childFragmentManager.setFragmentResult(REQUEST_OPEN_ASSISTANT, Bundle.EMPTY)
     }
 
     /** Deja libres la barra de estado y la de gestos. */

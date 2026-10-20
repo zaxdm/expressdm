@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Alerts -->
+    <string name="alertas_live">Live</string>
+    <string name="alertas_subtitle_shared">What\'s happening on the streets right now. Everyone can see them and each alert expires on its own.</string>
+    <string name="alertas_subtitle_local">What\'s happening on the streets right now. For now they\'re only saved on this phone and each alert expires on its own.</string>
+    <string name="alertas_empty_title">All quiet for now</string>
+    <string name="alertas_empty_body">Seeing traffic, a crash or roadwork? Let others know and it will show up on the map.</string>
+    <string name="alertas_report">Report something</string>
+
+    <!-- Create alert -->
+    <string name="alertas_create_title">What\'s happening?</string>
+    <string name="alertas_create_subtitle">Pick a type. Your alert expires on its own.</string>
+    <string name="alertas_close">Close</string>
+    <string name="alertas_where">Where</string>
+    <string name="alertas_my_location">My current location</string>
+    <string name="alertas_my_location_at">My location: %1$s</string>
+    <string name="alertas_refresh_location">Refresh</string>
+    <string name="alertas_detail_label">Details (optional)</string>
+    <string name="alertas_detail_hint">E.g. lane closed in front of the stop</string>
+    <string name="alertas_publish_traffic">Post traffic alert</string>
+    <string name="alertas_publish_accident">Post accident alert</string>
+    <string name="alertas_publish_overcharge">Post overcharge alert</string>
+    <string name="alertas_publish_roadwork">Post roadwork alert</string>
+    <string name="alertas_publish_crowded">Post crowded bus alert</string>
+    <string name="alertas_publish_danger">Post dangerous area alert</string>
+
+    <!-- Assistant -->
+    <string name="alertas_assistant_title">Subo Assistant</string>
+    <string name="alertas_assistant_premium">PREMIUM</string>
+    <string name="alertas_assistant_from">My location</string>
+    <string name="alertas_assistant_to">Destination on the map</string>
+    <string name="alertas_assistant_try">Try</string>
+    <string name="alertas_assistant_ai_notice">AI-generated answers. Check schedules before you travel.</string>
+</resources>

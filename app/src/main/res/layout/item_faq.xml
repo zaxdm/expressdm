@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Una pregunta de Soporte: al tocarla se despliega la respuesta. Van todas
-  juntas en una tarjeta, separadas por una línea, como las filas de Ajustes.
+  Una pregunta de Ayuda: al tocarla se despliega la respuesta y el "+" gira.
+  Van todas juntas en una tarjeta, separadas por una línea.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -14,9 +14,9 @@
     android:focusable="true"
     android:orientation="vertical"
     android:paddingStart="16dp"
-    android:paddingTop="16dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="16dp">
+    android:paddingTop="14dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="14dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,18 +29,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingEnd="8dp"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="15sp"
+            android:paddingEnd="10dp"
+            android:textAppearance="@style/TextAppearance.Perfil.RowTitle"
+            android:textSize="14sp"
             tools:text="¿Cómo puedo guardar rutas?" />
 
         <ImageView
             android:id="@+id/faqChevron"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:background="@drawable/perfil_bg_circle_soft"
             android:importantForAccessibility="no"
-            android:src="@drawable/ic_chevron_right"
-            app:tint="?attr/colorOnSurfaceVariant" />
+            android:padding="6dp"
+            android:src="@drawable/ic_add"
+            app:tint="?attr/colorOnSurface" />
     </LinearLayout>
 
     <TextView
@@ -49,8 +51,8 @@
         android:layout_height="wrap_content"
         android:lineSpacingExtra="2dp"
         android:paddingTop="10dp"
-        android:textAppearance="@style/TextAppearance.Expresdm.Body"
-        android:textSize="14sp"
+        android:paddingEnd="30dp"
+        android:textAppearance="@style/TextAppearance.Perfil.Support"
         android:visibility="gone"
         tools:text="No hace falta marcarlas."
         tools:visibility="visible" />

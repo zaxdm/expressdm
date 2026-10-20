@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Textos de Perfil, Subo Premium, Ajustes, Ayuda y "¿A dónde vas?" del rediseño. -->
+<resources>
+    <string name="perfil_back">Volver</string>
+    <string name="perfil_tag_premium">Premium</string>
+
+    <!-- Perfil -->
+    <string name="perfil_edit_profile">Editar perfil</string>
+    <string name="perfil_menu_help">Ayuda y sugerencias</string>
+    <string name="perfil_premium_until">Hasta el %1$s · Ver beneficios</string>
+    <string name="perfil_premium_invite">Rutas sin internet, voz y más · Ver beneficios</string>
+    <string name="perfil_footer">Subo · Versión %1$s\nMapas y búsquedas de OpenStreetMap, un proyecto abierto y gratuito.</string>
+
+    <!-- Subo Premium -->
+    <string name="perfil_premium_compare">Gratis vs. Premium</string>
+    <string name="perfil_premium_col_feature">Función</string>
+    <string name="perfil_premium_col_free">Gratis</string>
+    <string name="perfil_premium_col_premium">Premium</string>
+    <string name="perfil_premium_yes">Sí</string>
+    <string name="perfil_premium_no">—</string>
+    <string name="perfil_premium_row_offline">Rutas con mapa sin internet</string>
+    <string name="perfil_premium_up_to">Hasta %1$d</string>
+    <string name="perfil_premium_row_places">Lugares favoritos</string>
+    <string name="perfil_premium_unlimited">Sin límite</string>
+    <string name="perfil_premium_row_assistant">Preguntas al asistente</string>
+    <string name="perfil_premium_assistant_free">5 al día</string>
+    <string name="perfil_premium_no_cap">Sin tope</string>
+    <string name="perfil_premium_row_arrival">Aviso de llegada</string>
+    <string name="perfil_premium_early">+ preaviso</string>
+    <string name="perfil_premium_row_tone">Sonido del aviso a elección</string>
+    <string name="perfil_premium_row_route_alerts">Avisos si cambia recorrido, pasaje u horario</string>
+    <string name="perfil_premium_row_live">Viaje en vivo para quien elijas</string>
+    <string name="perfil_premium_row_voice">Voz: «Subo» y guía hablada</string>
+    <string name="perfil_premium_settings">Configurar voz y avisos</string>
+
+    <!-- Ajustes -->
+    <string name="perfil_settings_early">Avisar unas cuadras antes</string>
+    <string name="perfil_settings_test">Probar aviso</string>
+    <string name="perfil_settings_voice">Voz</string>
+    <string name="perfil_settings_alerts">Alertas nuevas cerca o en mis rutas</string>
+    <string name="perfil_theme_system">Sistema</string>
+
+    <!-- Ayuda -->
+    <string name="perfil_help_title">Ayuda</string>
+    <string name="perfil_feedback_title">Buzón de sugerencias</string>
+    <string name="perfil_feedback_subtitle">Ayúdanos a mejorar Subo</string>
+    <string name="perfil_feedback_message_label">Mensaje</string>
+    <string name="perfil_feedback_message_hint">Cuéntanos qué mejorarías…</string>
+    <string name="perfil_feedback_send">Enviar sugerencia</string>
+
+    <!-- ¿A dónde vas? -->
+    <string name="perfil_planner_from">Desde</string>
+    <string name="perfil_planner_to">Hacia</string>
+    <string name="perfil_planner_my_location">Mi ubicación</string>
+    <string name="perfil_planner_ask">¿No sabes la dirección? Pregúntale al asistente</string>
+    <string name="perfil_planner_more">Más con Premium</string>
+    <string name="perfil_planner_note_manage">%1$s %2$s.</string>
+</resources>

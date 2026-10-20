@@ -6,14 +6,15 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.peru.expresdm.BuildConfig
 import com.peru.expresdm.R
@@ -24,6 +25,7 @@ import com.peru.expresdm.data.net.ApiFailure
 import com.peru.expresdm.data.net.ApiResult
 import com.peru.expresdm.data.net.ImageUploader
 import com.peru.expresdm.data.net.Session
+import com.peru.expresdm.databinding.ItemPremiumBenefitBinding
 import com.peru.expresdm.databinding.SheetPremiumBinding
 import com.peru.expresdm.ui.RouteImages
 import kotlinx.coroutines.launch
@@ -87,14 +89,28 @@ class PremiumSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         requested = savedInstanceState?.getBoolean(STATE_REQUESTED) ?: false
 
-        BENEFITS.forEach { (text, icon) ->
-            val row = layoutInflater.inflate(R.layout.item_premium_benefit, binding.benefits, false) as TextView
-            row.text = getString(text, Premium.PREMIUM_SAVED_ROUTES)
-            row.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, 0, 0, 0)
-            binding.benefits.addView(row)
+        compareRows().forEach { (feature, free, premium) ->
+            val row = ItemPremiumBenefitBinding.inflate(layoutInflater, binding.benefits, false)
+            row.benefitFeature.text = feature
+            row.benefitFree.text = free
+            row.benefitPremium.text = premium
+            binding.benefits.addView(row.root)
         }
 
         binding.btnPremiumAction.setOnClickListener { onAction() }
+        binding.btnPremiumBack.setOnClickListener { dismiss() }
+        // La voz y el aviso de llegada se ajustan en Ajustes, desde el perfil.
+        binding.btnPremiumSettings.setOnClickListener {
+            val nav = runCatching { findNavController() }.getOrNull()
+            dismiss()
+            if (nav == null) return@setOnClickListener
+            when (nav.currentDestination?.id) {
+                R.id.profileFragment -> nav.navigate(R.id.action_profile_to_settings)
+                // Abierta desde Ajustes: ya está ahí.
+                R.id.settingsFragment -> Unit
+                else -> nav.navigate(R.id.settingsFragment)
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             // Puede que lo acaben de activar: se pregunta al abrir.
@@ -104,6 +120,48 @@ class PremiumSheet : BottomSheetDialogFragment() {
                 AccountRepository.session.collect { render(it) }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // La hoja se abre entera: la cabecera y la tabla se ven de una vez.
+        val sheet = dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) ?: return
+        sheet.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        BottomSheetBehavior.from(sheet).apply {
+            skipCollapsed = true
+            state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
+    /**
+     * Las filas de la tabla: qué es, cuánto trae la cuenta gratuita y cuánto
+     * Premium. Solo lo que ya funciona: no se promete lo que aún no existe.
+     */
+    private fun compareRows(): List<Triple<String, String, String>> {
+        val no = getString(R.string.perfil_premium_no)
+        val yes = getString(R.string.perfil_premium_yes)
+        return listOf(
+            Triple(
+                getString(R.string.perfil_premium_row_offline),
+                Premium.FREE_SAVED_ROUTES.toString(),
+                getString(R.string.perfil_premium_up_to, Premium.PREMIUM_SAVED_ROUTES)
+            ),
+            Triple(
+                getString(R.string.perfil_premium_row_places),
+                Premium.FREE_FAVORITE_PLACES.toString(),
+                getString(R.string.perfil_premium_unlimited)
+            ),
+            Triple(
+                getString(R.string.perfil_premium_row_assistant),
+                getString(R.string.perfil_premium_assistant_free),
+                getString(R.string.perfil_premium_no_cap)
+            ),
+            Triple(getString(R.string.perfil_premium_row_arrival), yes, getString(R.string.perfil_premium_early)),
+            Triple(getString(R.string.perfil_premium_row_tone), no, yes),
+            Triple(getString(R.string.perfil_premium_row_route_alerts), no, yes),
+            Triple(getString(R.string.perfil_premium_row_live), no, yes),
+            Triple(getString(R.string.perfil_premium_row_voice), no, yes)
+        )
     }
 
     private suspend fun loadPayment() {
@@ -169,6 +227,9 @@ class PremiumSheet : BottomSheetDialogFragment() {
         // Se paga por Yape si hay sesión, no es ya Premium y el QR está puesto.
         val paying = !active && session != null && payment?.isOffered == true
 
+        binding.premiumActiveDot.isVisible = active
+        // Con Premium activo, lo que queda es ajustarlo; sin él, el botón principal invita a tenerlo.
+        binding.btnPremiumSettings.isVisible = active
         binding.premiumStatus.text = when {
             active -> getString(
                 R.string.premium_status_active,
@@ -305,17 +366,6 @@ class PremiumSheet : BottomSheetDialogFragment() {
         private const val STATE_REQUESTED = "requested"
         private const val STATUS_PENDING = "PENDING"
         private const val STATUS_REJECTED = "REJECTED"
-
-        /** Solo lo que ya funciona: no se promete lo que aún no existe. Cada uno con su icono. */
-        private val BENEFITS = listOf(
-            R.string.premium_benefit_offline to R.drawable.ic_map,
-            R.string.premium_benefit_route_alerts to R.drawable.ic_nav_alerts,
-            R.string.premium_benefit_live to R.drawable.ic_my_location,
-            R.string.premium_benefit_arrival to R.drawable.ic_arrival_alarm,
-            R.string.premium_benefit_places to R.drawable.ic_fav_home,
-            R.string.premium_benefit_assistant to R.drawable.ic_assistant,
-            R.string.premium_benefit_voice to R.drawable.ic_mic
-        )
 
         fun show(manager: FragmentManager) {
             if (manager.findFragmentByTag(TAG) == null) PremiumSheet().show(manager, TAG)

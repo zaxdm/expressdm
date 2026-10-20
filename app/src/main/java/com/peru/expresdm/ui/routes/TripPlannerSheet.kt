@@ -9,7 +9,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.TextView
+import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.getSystemService
@@ -27,16 +27,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import com.peru.expresdm.R
 import com.peru.expresdm.data.Place
 import com.peru.expresdm.data.Premium
 import com.peru.expresdm.data.RecentPlaceStore
 import com.peru.expresdm.data.SavedPlaceStore
+import com.peru.expresdm.databinding.ItemPerfilFavoriteTileBinding
 import com.peru.expresdm.databinding.ItemPlaceBinding
 import com.peru.expresdm.databinding.SheetTripPlannerBinding
 import com.peru.expresdm.ui.SavedPlaceStyle
 import com.peru.expresdm.ui.account.PremiumSheet
+import com.peru.expresdm.ui.assistant.AssistantSheet
+import com.peru.expresdm.ui.themeColor
 import com.peru.expresdm.ui.formatDistance
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -89,6 +93,16 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
 
         binding.resultsRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.resultsRecycler.adapter = adapter
+        // Una línea fina entre lugar y lugar, como en las demás tarjetas.
+        binding.resultsRecycler.addItemDecoration(
+            MaterialDividerItemDecoration(requireContext(), MaterialDividerItemDecoration.VERTICAL).apply {
+                isLastItemDecorated = false
+                dividerColor = requireContext().themeColor(com.google.android.material.R.attr.colorOutline)
+                val inset = (DIVIDER_INSET_DP * resources.displayMetrics.density).toInt()
+                dividerInsetStart = inset
+                dividerInsetEnd = inset
+            }
+        )
 
         // Al reabrir con un viaje en curso, se parte de él para poder ajustarlo.
         (viewModel.homeState.value.search as? PlaceSearchState.Chosen)?.let { current ->
@@ -111,6 +125,12 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
         binding.btnPlan.setOnClickListener { finish() }
         binding.btnPickOnMap.setOnClickListener {
             setFragmentResult(REQUEST_KEY, bundleOf(RESULT_ACTION to ACTION_PICK_ON_MAP))
+            dismiss()
+        }
+        // ¿No sabe la dirección? Se lo pregunta al asistente, que conoce los lugares.
+        binding.btnAskAssistant.setOnClickListener {
+            hideKeyboard()
+            AssistantSheet.show(parentFragmentManager)
             dismiss()
         }
         binding.btnClearRecents.setOnClickListener { RecentPlaceStore.get(requireContext()).clear() }
@@ -240,6 +260,7 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
         val binding = _binding ?: return
         binding.idleContent.isVisible = true
         binding.resultsContent.isVisible = false
+        binding.btnAskAssistant.isVisible = true
         adapter.submitList(emptyList())
     }
 
@@ -247,6 +268,8 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
         val binding = _binding ?: return
         binding.idleContent.isVisible = false
         binding.resultsContent.isVisible = true
+        // Mientras se eligen resultados, la fila del asistente solo quitaría sitio.
+        binding.btnAskAssistant.isVisible = false
         binding.resultsLabel.setText(label)
         binding.resultsHint.text = hint
         adapter.submitList(places.map { PlaceResult(it, viewModel.distanceTo(it)) })
@@ -331,79 +354,131 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
         }
     }
 
+    /** Una casilla de "Destinos favoritos": qué enseña y qué hace al tocarla. */
+    private class FavoriteTile(
+        @DrawableRes val icon: Int,
+        val label: String,
+        val detail: String?,
+        val onClick: () -> Unit,
+        val onLongClick: (() -> Unit)? = null
+    )
+
     /**
-     * Los destinos favoritos: cada uno con el icono de lo que es (casa,
-     * trabajo, pareja…) y, mientras quede hueco, la fila para añadir otro.
+     * Los destinos favoritos, en casillas de tres en fila como en la maqueta:
+     * los guardados con su icono (casa, trabajo, pareja…), casa y trabajo
+     * esperando su lugar con un "+", y "Otro" para cualquier otro. Cuando la
+     * cuenta gratuita llega a su tope, la última casilla lleva a Premium.
      */
     private fun renderFavorites(favorites: List<SavedPlaceStore.Favorite>) {
         val binding = _binding ?: return
-        val container = binding.favoritesContainer
-        container.removeAllViews()
+        val premium = Premium.active
+        val tiles = mutableListOf<FavoriteTile>()
+
         favorites.forEach { favorite ->
             val label = getString(labelOf(favorite.kind))
-            val row = ItemPlaceBinding.inflate(layoutInflater, container, false)
-            row.placeIcon.setImageResource(iconOf(favorite.kind))
-            row.placeName.text = label
-            row.placeDetail.text = favorite.place.name
-            val distance = viewModel.distanceTo(favorite.place)
-            row.placeDistance.isVisible = distance != null
-            distance?.let { row.placeDistance.text = requireContext().formatDistance(it) }
-            row.root.contentDescription = getString(R.string.saved_place_go, label, favorite.place.name)
-            row.root.setOnClickListener {
-                savingKind = null
-                replacing = null
-                activeField = Field.DESTINATION
-                onPlacePicked(favorite.place)
-            }
-            row.root.setOnLongClickListener {
-                MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(getString(R.string.saved_place_title, label, favorite.place.name))
-                    .setItems(
-                        arrayOf(getString(R.string.saved_place_change), getString(R.string.saved_place_remove))
-                    ) { _, which ->
-                        if (which == 0) {
-                            startSaving(favorite.kind, favorite)
-                        } else {
-                            SavedPlaceStore.get(requireContext()).remove(favorite)
-                        }
-                    }
-                    .show()
-                true
-            }
-            container.addView(row.root)
-        }
-
-        val premium = Premium.active
-        val row = ItemPlaceBinding.inflate(layoutInflater, container, false)
-        row.placeDistance.isVisible = false
-        if (favorites.size < Premium.favoritePlacesLimit(premium)) {
-            row.placeIcon.setImageResource(R.drawable.ic_add)
-            row.placeName.setText(R.string.saved_place_add)
-            row.placeDetail.text = if (premium) {
-                getString(R.string.saved_place_add_detail_premium)
-            } else {
-                getString(R.string.saved_place_add_detail_free, Premium.FREE_FAVORITE_PLACES)
-            }
-            row.root.setOnClickListener { pickKind(favorites) }
-        } else {
-            // La cuenta gratuita llegó a su tope: lo que sigue es de Premium.
-            row.placeIcon.setImageResource(R.drawable.ic_star)
-            row.placeName.setText(R.string.saved_place_more_premium)
-            row.placeDetail.text = getString(R.string.saved_place_more_premium_detail, Premium.FREE_FAVORITE_PLACES)
-            row.root.setOnClickListener { PremiumSheet.show(parentFragmentManager) }
-        }
-        container.addView(row.root)
-        if (favorites.isNotEmpty()) {
-            val edge = (HINT_EDGE_DP * resources.displayMetrics.density).toInt()
-            container.addView(
-                TextView(requireContext()).apply {
-                    setText(R.string.saved_place_manage_hint)
-                    setTextAppearance(R.style.TextAppearance_Expresdm_Body)
-                    textSize = HINT_TEXT_SP
-                    setPadding(edge, edge, edge, 0)
-                }
+            tiles += FavoriteTile(
+                icon = iconOf(favorite.kind),
+                label = label,
+                detail = favorite.place.name,
+                onClick = {
+                    savingKind = null
+                    replacing = null
+                    activeField = Field.DESTINATION
+                    onPlacePicked(favorite.place)
+                },
+                onLongClick = { manageFavorite(favorite, label) }
             )
         }
+
+        if (favorites.size < Premium.favoritePlacesLimit(premium)) {
+            val used = favorites.map { it.kind }.toSet()
+            listOf(SavedPlaceStore.Kind.HOME, SavedPlaceStore.Kind.WORK)
+                .filter { it !in used }
+                .forEach { kind ->
+                    tiles += FavoriteTile(R.drawable.ic_add, getString(labelOf(kind)), null, { startSaving(kind) })
+                }
+            tiles += FavoriteTile(R.drawable.ic_add, getString(R.string.saved_place_other), null, { pickKind(favorites) })
+        } else {
+            // La cuenta gratuita llegó a su tope: lo que sigue es de Premium.
+            tiles += FavoriteTile(
+                R.drawable.ic_star, getString(R.string.perfil_planner_more), null,
+                { PremiumSheet.show(parentFragmentManager) }
+            )
+        }
+
+        val container = binding.favoritesContainer
+        container.removeAllViews()
+        val gap = (TILE_GAP_DP * resources.displayMetrics.density).toInt()
+        tiles.chunked(TILES_PER_ROW).forEachIndexed { index, row ->
+            val line = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                isBaselineAligned = false
+            }
+            row.forEachIndexed { position, tile -> line.addView(tileView(line, tile, position, gap)) }
+            // Huecos invisibles para que las casillas de la última fila midan igual.
+            repeat(TILES_PER_ROW - row.size) {
+                line.addView(
+                    View(requireContext()),
+                    LinearLayout.LayoutParams(0, 1, 1f).apply { marginStart = gap }
+                )
+            }
+            container.addView(
+                line,
+                LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply { if (index > 0) topMargin = gap }
+            )
+        }
+
+        val note = if (premium) {
+            getString(R.string.saved_place_add_detail_premium)
+        } else {
+            getString(R.string.saved_place_add_detail_free, Premium.FREE_FAVORITE_PLACES)
+        }
+        binding.favoritesNote.text = if (favorites.isEmpty()) {
+            note
+        } else {
+            getString(R.string.perfil_planner_note_manage, note, getString(R.string.saved_place_manage_hint))
+        }
+    }
+
+    private fun tileView(parent: ViewGroup, tile: FavoriteTile, position: Int, gap: Int): View {
+        val item = ItemPerfilFavoriteTileBinding.inflate(layoutInflater, parent, false)
+        item.tileIcon.setImageResource(tile.icon)
+        item.tileLabel.text = tile.label
+        item.tileDetail.isVisible = tile.detail != null
+        item.tileDetail.text = tile.detail
+        item.tileCard.contentDescription =
+            tile.detail?.let { getString(R.string.saved_place_go, tile.label, it) } ?: tile.label
+        item.tileCard.setOnClickListener { tile.onClick() }
+        tile.onLongClick?.let { action ->
+            item.tileCard.setOnLongClickListener {
+                action()
+                true
+            }
+        }
+        (item.root.layoutParams as LinearLayout.LayoutParams).apply {
+            width = 0
+            weight = 1f
+            if (position > 0) marginStart = gap
+        }
+        return item.root
+    }
+
+    /** Mantener presionado un favorito: cambiar su lugar o quitarlo. */
+    private fun manageFavorite(favorite: SavedPlaceStore.Favorite, label: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.saved_place_title, label, favorite.place.name))
+            .setItems(
+                arrayOf(getString(R.string.saved_place_change), getString(R.string.saved_place_remove))
+            ) { _, which ->
+                if (which == 0) {
+                    startSaving(favorite.kind, favorite)
+                } else {
+                    SavedPlaceStore.get(requireContext()).remove(favorite)
+                }
+            }
+            .show()
     }
 
     /** Antes de buscar el lugar se dice qué es: de ahí salen su nombre y su icono. */
@@ -451,8 +526,9 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
 
         /** Cuánto se espera sin teclear antes de buscar. */
         private const val TYPING_PAUSE_MS = 450L
-        private const val HINT_EDGE_DP = 8
-        private const val HINT_TEXT_SP = 12f
+        private const val TILES_PER_ROW = 3
+        private const val TILE_GAP_DP = 8
+        private const val DIVIDER_INSET_DP = 12
 
         /** Con qué clave avisa esta hoja a quien la abrió, y de qué. */
         const val REQUEST_KEY = "trip_planner"

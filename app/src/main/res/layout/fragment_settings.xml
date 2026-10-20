@@ -1,76 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<!--
+  Ajustes, como en la maqueta: botón redondo de volver y título grande; cada
+  sección es un rótulo gris en mayúsculas y una tarjeta blanca con filas.
+-->
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground">
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/colorBackground"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_arrow_back"
-        app:navigationIconTint="?attr/colorOnSurface"
-        app:title="@string/profile_settings"
-        app:titleTextColor="?attr/colorOnSurface" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="6dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            style="@style/Widget.Perfil.CircleButton"
+            android:contentDescription="@string/perfil_back"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="12dp"
+            android:text="@string/profile_settings"
+            android:textAppearance="@style/TextAppearance.Perfil.Title" />
+    </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/settingsScroll"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        android:paddingBottom="32dp">
 
-        <!--
-          Cada sección es una etiqueta y una tarjeta. Las listas de opciones
-          (distancia, sonido, tema, idioma) son filas que enseñan lo elegido y
-          abren un selector: así la pantalla no se llena de botones.
-        -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="20dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
             <!-- Aviso al llegar -->
             <TextView
                 style="@style/Widget.Expresdm.SettingsLabel"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/settings_arrival_label" />
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Expresdm.SettingsCard">
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Expresdm.SettingsCard">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_settings"
                     android:orientation="vertical"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp">
+                    android:showDividers="middle">
 
                     <include
                         android:id="@+id/rowArrivalDistance"
                         layout="@layout/item_setting_row" />
 
-                    <View style="@style/Widget.Expresdm.SettingsDivider" />
-
                     <include
                         android:id="@+id/rowArrivalTone"
                         layout="@layout/item_setting_row" />
-
-                    <View style="@style/Widget.Expresdm.SettingsDivider" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/arrivalVibration"
@@ -87,10 +91,39 @@
                         style="@style/Widget.Expresdm.Switch"
                         android:text="@string/settings_arrival_voice" />
 
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/arrivalEarly"
-                        style="@style/Widget.Expresdm.Switch"
-                        android:text="@string/settings_arrival_early" />
+                    <!-- El preaviso, con su etiqueta PREMIUM al lado del texto -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/arrivalEarlyLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="16dp"
+                            android:text="@string/perfil_settings_early"
+                            android:textAppearance="@style/TextAppearance.Perfil.RowText" />
+
+                        <TextView
+                            style="@style/Widget.Perfil.Tag"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/perfil_tag_premium" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/arrivalEarly"
+                            style="@style/Widget.Expresdm.Switch"
+                            android:layout_width="wrap_content"
+                            android:contentDescription="@string/settings_arrival_early"
+                            android:paddingStart="0dp" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -109,30 +142,43 @@
             <!-- Para oír y sentir el aviso tal como quedó configurado arriba. -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnTestArrival"
-                style="@style/Widget.Material3.Button.TonalButton"
+                style="@style/Widget.Expresdm.ButtonPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:minHeight="52dp"
-                android:text="@string/settings_arrival_test"
-                app:cornerRadius="26dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/perfil_settings_test"
+                app:cornerRadius="14dp"
                 app:icon="@drawable/ic_arrival_alarm"
-                app:iconGravity="textStart" />
+                app:iconGravity="textStart"
+                app:iconSize="18dp" />
 
-            <!-- Voz (Premium) -->
-            <TextView
-                style="@style/Widget.Expresdm.SettingsLabel"
-                android:text="@string/settings_voice_label" />
+            <!-- Voz, con su etiqueta PREMIUM -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Expresdm.SettingsCard">
+                <TextView
+                    style="@style/Widget.Expresdm.SettingsLabel"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/perfil_settings_voice" />
+
+                <TextView
+                    style="@style/Widget.Perfil.Tag"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/perfil_tag_premium" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Expresdm.SettingsCard">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_settings"
                     android:orientation="vertical"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp">
+                    android:showDividers="middle">
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/voiceWake"
@@ -151,86 +197,118 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Caja informativa petróleo suave -->
             <TextView
-                style="@style/Widget.Expresdm.SettingsNote"
-                android:text="@string/settings_voice_note" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/perfil_bg_info"
+                android:lineSpacingExtra="2dp"
+                android:padding="14dp"
+                android:text="@string/settings_voice_note"
+                android:textColor="@color/perfil_info_text"
+                android:textSize="13sp" />
 
             <!-- Notificaciones -->
             <TextView
                 style="@style/Widget.Expresdm.SettingsLabel"
                 android:text="@string/settings_notifications_label" />
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Expresdm.SettingsCard">
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Expresdm.SettingsCard">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="12dp">
+                    android:paddingBottom="14dp">
 
                     <!-- Avisar de lo que se reporta cerca, aunque la app esté cerrada -->
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/alertNotifications"
                         style="@style/Widget.Expresdm.Switch"
-                        android:text="@string/settings_alert_notifications" />
+                        android:text="@string/perfil_settings_alerts" />
 
-                    <View style="@style/Widget.Expresdm.SettingsDivider" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="16dp"
-                        android:paddingTop="14dp"
-                        android:paddingEnd="16dp"
-                        android:text="@string/settings_alert_types"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="15sp" />
-
-                    <!-- Un chip por tipo de alerta; los pone SettingsFragment. -->
+                    <!-- Un chip por tipo de alerta, con su punto de color; los pone SettingsFragment. -->
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/alertTypesContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/settings_alert_types"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        app:chipSpacingHorizontal="6dp"
+                        app:chipSpacingVertical="2dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
                         android:paddingStart="16dp"
-                        android:paddingTop="6dp"
                         android:paddingEnd="16dp"
-                        app:chipSpacingHorizontal="8dp"
-                        app:chipSpacingVertical="0dp" />
+                        android:text="@string/settings_alert_types_note"
+                        android:textAppearance="@style/TextAppearance.Perfil.Support"
+                        android:textSize="11sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                style="@style/Widget.Expresdm.SettingsNote"
-                android:text="@string/settings_alert_types_note" />
 
             <!-- Apariencia e idioma -->
             <TextView
                 style="@style/Widget.Expresdm.SettingsLabel"
                 android:text="@string/settings_appearance" />
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Expresdm.SettingsCard">
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Expresdm.SettingsCard">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_settings"
                     android:orientation="vertical"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp">
+                    android:showDividers="middle">
 
-                    <include
-                        android:id="@+id/rowTheme"
-                        layout="@layout/item_setting_row" />
+                    <!-- Tema: tres botones juntos, el elegido en tinta -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="16dp"
+                        android:paddingTop="14dp"
+                        android:paddingEnd="16dp"
+                        android:paddingBottom="14dp">
 
-                    <View style="@style/Widget.Expresdm.SettingsDivider" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_theme"
+                            android:textAppearance="@style/TextAppearance.Perfil.RowText" />
+
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/themeToggle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            app:selectionRequired="true"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/themeSystem"
+                                style="@style/Widget.Perfil.Segment"
+                                android:text="@string/perfil_theme_system" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/themeLight"
+                                style="@style/Widget.Perfil.Segment"
+                                android:text="@string/settings_theme_light" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/themeDark"
+                                style="@style/Widget.Perfil.Segment"
+                                android:text="@string/settings_theme_dark" />
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+                    </LinearLayout>
 
                     <include
                         android:id="@+id/rowLanguage"
                         layout="@layout/item_setting_row" />
-
-                    <View style="@style/Widget.Expresdm.SettingsDivider" />
 
                     <!-- Muestra de la paleta, para ver el efecto del tema -->
                     <LinearLayout
@@ -271,9 +349,10 @@
 
             <TextView
                 style="@style/Widget.Expresdm.SettingsNote"
-                android:text="@string/settings_language_note" />
+                android:text="@string/settings_language_note"
+                tools:ignore="TextContrastCheck" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Colores de la ficha de un micro. La "acción fuerte" es el botón tinta de
+      la guía de estilo: tinta con texto blanco de día; de noche, al revés,
+      para que no se pierda sobre el fondo negro.
+    -->
+    <color name="ficha_strong">@color/stone_900</color>
+    <color name="ficha_on_strong">@color/white</color>
+    <!-- El cuadro del icono dentro de la tarjeta petróleo -->
+    <color name="ficha_petrol_icon_bg">#26FFFFFF</color>
+    <color name="ficha_petrol_subtext">#CCFFFFFF</color>
+</resources>

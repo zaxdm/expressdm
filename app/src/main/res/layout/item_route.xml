@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Una ruta en la lista: tarjeta blanca con la insignia cuadrada de su color,
+  el nombre y por dónde va; a la derecha el pasaje y cuánto dura. Si se sabe
+  lo cerca que pasa, debajo va una franja con la caminata.
+-->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,166 +11,122 @@
     android:id="@+id/routeCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="12dp"
+    android:layout_marginTop="10dp"
     android:checkable="false"
     android:clickable="true"
     android:focusable="true"
-    app:cardCornerRadius="22dp">
+    app:cardCornerRadius="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp">
+        android:padding="14dp">
 
-        <ImageView
-            android:id="@+id/routeImage"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:layout_marginBottom="12dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
-
-        <!-- Fila superior: insignia, nombre y favorito -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingEnd="8dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/routeBadge"
-                style="@style/Widget.Expresdm.RouteBadge"
-                android:background="@drawable/bg_circle_badge"
-                tools:text="A" />
+                style="@style/Widget.Rutas.RouteBadge"
+                tools:backgroundTint="@color/route_accent_1"
+                tools:text="B" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:paddingStart="14dp"
-                android:paddingEnd="8dp">
+                android:paddingStart="12dp"
+                android:paddingEnd="10dp">
 
                 <TextView
                     android:id="@+id/routeName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="17sp"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    tools:text="California" />
+                    tools:text="Nuevos Girasoles" />
 
                 <TextView
                     android:id="@+id/routeSubtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="2dp"
-                    android:textAppearance="@style/TextAppearance.Expresdm.Body"
+                    android:layout_marginTop="1dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="13sp"
-                    tools:text="El Porvenir - Huanchaco" />
+                    tools:text="Calle Diego Quispe Tito — Calle José la Rivera" />
+            </LinearLayout>
 
-                <!-- Solo en el inicio: lo cerca que pasa del usuario -->
-                <LinearLayout
-                    android:id="@+id/nearbyRow"
-                    android:layout_width="match_parent"
+            <!-- Pasaje arriba, duración debajo -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/routeFare"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingTop="6dp"
-                    android:visibility="gone"
-                    tools:visibility="visible">
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="S/ 2.50" />
 
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:importantForAccessibility="no"
-                        android:src="@drawable/ic_walk"
-                        app:tint="?attr/colorPrimary" />
-
-                    <TextView
-                        android:id="@+id/nearbyText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:paddingStart="4dp"
-                        android:textColor="?attr/colorPrimary"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        tools:text="350 m · 5 min a pie · Av. Mansiche" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/routeDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="13sp"
+                    tools:text="57 min" />
             </LinearLayout>
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="14dp"
-            android:background="?attr/colorOutline" />
-
-        <!-- Fila inferior: duracion, pasaje y acceso al detalle -->
+        <!-- Solo si se sabe dónde está el usuario: cuánto camina hasta subir -->
         <LinearLayout
+            android:id="@+id/nearbyRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/rutas_bg_walk_strip"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="6dp">
+            android:paddingStart="10dp"
+            android:paddingTop="7dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="7dp"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_clock"
+                android:src="@drawable/ic_walk"
                 app:tint="?attr/colorOnSurfaceVariant" />
 
             <TextView
-                android:id="@+id/routeDuration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="6dp"
-                android:textAppearance="@style/TextAppearance.Expresdm.Body"
-                android:textSize="13sp"
-                tools:text="38 min" />
-
-            <TextView
-                android:id="@+id/routeFare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="18dp"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                tools:text="S/ 2.00" />
-
-            <Space
+                android:id="@+id/nearbyText"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/seeRoute"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/see_route"
-                android:textColor="?attr/colorOnSurface"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/ic_arrow_right"
-                app:tint="?attr/colorOnSurface" />
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingStart="6dp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12sp"
+                tools:text="4 min caminando · 290 m · cerca de Vía de Evitamiento" />
         </LinearLayout>
-
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

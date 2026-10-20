@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Estilos de Alertas, crear alerta y Asistente, según la guía de Subo:
+      Título 28·800, Sección 17·800, Texto 15·500 y Apoyo 13 en gris.
+    -->
+    <style name="TextAppearance.Alertas.Title" parent="TextAppearance.Expresdm.TitleLarge">
+        <item name="android:textSize">28sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Títulos de hojas y encabezados (24 o 22 sp, 800) -->
+    <style name="TextAppearance.Alertas.SheetTitle" parent="TextAppearance.Expresdm.TitleLarge">
+        <item name="android:textSize">24sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Nombre en una casilla o una fila: 15 sp, 800 -->
+    <style name="TextAppearance.Alertas.Strong" parent="TextAppearance.Expresdm.TitleSmall">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Apoyo: 13 sp en gris -->
+    <style name="TextAppearance.Alertas.Support" parent="TextAppearance.Expresdm.BodyMedium">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Chip de filtro de alertas: pastilla con un punto de color delante -->
+    <style name="Widget.Alertas.FilterChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/alertas_chip_bg</item>
+        <item name="chipStrokeColor">@color/alertas_chip_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/alertas_chip_text</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="chipMinHeight">38dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Expresdm.Circle</item>
+        <item name="chipIcon">@drawable/alertas_dot</item>
+        <item name="chipIconSize">8dp</item>
+        <item name="chipIconVisible">true</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipStartPadding">12dp</item>
+        <item name="chipEndPadding">14dp</item>
+        <item name="iconStartPadding">0dp</item>
+        <item name="iconEndPadding">2dp</item>
+        <item name="textStartPadding">6dp</item>
+        <item name="textEndPadding">0dp</item>
+        <item name="android:checkable">true</item>
+    </style>
+
+    <!-- Casilla blanca de tipo (rejilla de crear alerta) y tarjetas blancas -->
+    <style name="Widget.Alertas.Tile" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardCornerRadius">14dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+        <item name="strokeColor">@color/alertas_tile_stroke</item>
+        <item name="strokeWidth">1dp</item>
+        <!-- Sin el velo gris de Material sobre la casilla elegida: basta el borde -->
+        <item name="cardForegroundColor">@android:color/transparent</item>
+    </style>
+
+    <!-- Acción fuerte: tinta con texto blanco -->
+    <style name="Widget.Alertas.InkButton" parent="Widget.Material3.Button">
+        <item name="android:minHeight">56dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="backgroundTint">@color/alertas_ink</item>
+        <item name="android:textColor">@color/alertas_on_ink</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Botón principal ancho: amarillo, 56 dp -->
+    <style name="Widget.Alertas.PrimaryButton" parent="Widget.Expresdm.ButtonPrimary">
+        <item name="android:minHeight">56dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+
+    <!-- Enlace de texto en petróleo ("Actualizar", "Activar"…) -->
+    <style name="Widget.Alertas.LinkButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+    </style>
+
+    <!-- Votos de una alerta: pastillas pequeñas -->
+    <style name="Widget.Alertas.VoteButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">40dp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="cornerRadius">100dp</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+    </style>
+
+    <!-- Botones redondos del asistente (micrófono y enviar) -->
+    <style name="Widget.Alertas.RoundFab" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Expresdm.Circle</item>
+        <item name="elevation">0dp</item>
+        <item name="pressedTranslationZ">0dp</item>
+        <item name="hoveredFocusedTranslationZ">0dp</item>
+        <item name="fabCustomSize">52dp</item>
+        <item name="maxImageSize">22dp</item>
+    </style>
+
+    <!-- La caja de texto blanca y redondeada del detalle -->
+    <style name="Widget.Alertas.TextField" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">?attr/colorSurface</item>
+        <item name="boxStrokeColor">@color/alertas_field_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1.5dp</item>
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
+    </style>
+
+    <style name="Widget.Alertas.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxBackgroundColor">?attr/colorSurface</item>
+        <item name="boxStrokeColor">@color/alertas_field_stroke</item>
+        <item name="boxCornerRadiusTopStart">14dp</item>
+        <item name="boxCornerRadiusTopEnd">14dp</item>
+        <item name="boxCornerRadiusBottomStart">14dp</item>
+        <item name="boxCornerRadiusBottomEnd">14dp</item>
+    </style>
+
+    <!-- Hojas de crear alerta y del asistente: fondo arena, como las pantallas -->
+    <style name="ThemeOverlay.Alertas.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.Alertas.BottomSheet</item>
+    </style>
+    <style name="Widget.Alertas.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/alertas_sand</item>
+    </style>
+</resources>

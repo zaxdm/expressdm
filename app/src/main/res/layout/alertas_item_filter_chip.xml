@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Filtro de la pestaña de alertas: pastilla con el punto de color del tipo. -->
+<com.google.android.material.chip.Chip xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.Alertas.FilterChip"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />

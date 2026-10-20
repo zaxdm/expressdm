@@ -52,7 +52,7 @@ class SupportFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
+        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
 
         MAIN_FAQS.forEach { addFaq(it) }
         binding.btnMoreQuestions.setOnClickListener {
@@ -104,7 +104,8 @@ class SupportFragment : Fragment() {
         item.root.setOnClickListener {
             val open = !item.faqAnswer.isVisible
             item.faqAnswer.isVisible = open
-            item.faqChevron.rotation = if (open) 90f else 0f
+            // El "+" gira y queda como una "x" para cerrar.
+            item.faqChevron.animate().rotation(if (open) 45f else 0f).setDuration(150).start()
         }
         binding.faqContainer.addView(item.root)
     }

@@ -10,15 +10,28 @@ import com.peru.expresdm.data.AlertType
 /** Icono, color y nombre de cada tipo de alerta, iguales en el mapa y en la lista. */
 object AlertStyle {
 
+    /** Los iconos de la guía de estilo: ondas, "!", "S/", cono, dos cabezas, bandera y "…". */
     @DrawableRes
     fun icon(type: AlertType): Int = when (type) {
-        AlertType.TRAFFIC -> R.drawable.ic_alert_traffic
-        AlertType.ACCIDENT -> R.drawable.ic_alert_accident
-        AlertType.OVERCHARGE -> R.drawable.ic_alert_overcharge
-        AlertType.ROADWORK -> R.drawable.ic_alert_roadwork
-        AlertType.CROWDED -> R.drawable.ic_alert_crowded
-        AlertType.DANGER -> R.drawable.ic_alert_danger
-        AlertType.OTHER -> R.drawable.ic_info
+        AlertType.TRAFFIC -> R.drawable.alertas_ic_traffic
+        AlertType.ACCIDENT -> R.drawable.alertas_ic_accident
+        AlertType.OVERCHARGE -> R.drawable.alertas_ic_overcharge
+        AlertType.ROADWORK -> R.drawable.alertas_ic_roadwork
+        AlertType.CROWDED -> R.drawable.alertas_ic_crowded
+        AlertType.DANGER -> R.drawable.alertas_ic_danger
+        AlertType.OTHER -> R.drawable.alertas_ic_other
+    }
+
+    /** El texto del botón de publicar, que dice qué se va a publicar. */
+    @StringRes
+    fun publishLabel(type: AlertType?): Int = when (type) {
+        AlertType.TRAFFIC -> R.string.alertas_publish_traffic
+        AlertType.ACCIDENT -> R.string.alertas_publish_accident
+        AlertType.OVERCHARGE -> R.string.alertas_publish_overcharge
+        AlertType.ROADWORK -> R.string.alertas_publish_roadwork
+        AlertType.CROWDED -> R.string.alertas_publish_crowded
+        AlertType.DANGER -> R.string.alertas_publish_danger
+        AlertType.OTHER, null -> R.string.create_alert_publish
     }
 
     @StringRes

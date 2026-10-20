@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- En oscuro lo negro se separa del fondo con un gris un poco más claro. -->
+    <color name="perfil_ink_card">@color/ink_800</color>
+    <color name="perfil_on_ink">@color/paper_100</color>
+    <color name="perfil_on_ink_muted">@color/stone_400</color>
+    <color name="perfil_on_dark_tile">#1FFFFFFF</color>
+
+    <color name="perfil_active_dot">#4ADE80</color>
+
+    <color name="perfil_info_bg">#123A44</color>
+    <color name="perfil_info_text">#BFE0E6</color>
+
+    <color name="perfil_petrol_card">#135E71</color>
+    <color name="perfil_on_petrol_muted">#C8DEE3</color>
+
+    <color name="perfil_switch_on">@color/yellow_500</color>
+    <color name="perfil_switch_off">@color/ink_700</color>
+    <color name="perfil_switch_knob">@color/ink_950</color>
+
+    <color name="perfil_danger">#F08A5D</color>
+
+    <!-- Fondo arena de las hojas (en una hoja, colorBackground no es la arena) -->
+    <color name="perfil_sand">@color/ink_950</color>
+</resources>

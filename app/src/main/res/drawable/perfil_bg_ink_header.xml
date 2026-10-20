@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cabecera negra de la hoja de Subo Premium: redondeada solo arriba, como la hoja. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/perfil_ink_card" />
+    <corners android:topLeftRadius="28dp" android:topRightRadius="28dp" />
+</shape>

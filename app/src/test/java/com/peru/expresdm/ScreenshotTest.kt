@@ -97,11 +97,66 @@ class ScreenshotTest {
                     .findFragmentById(R.id.navHost) as NavHostFragment
                 navHost.navController.navigate(
                     R.id.routeDetailFragment,
-                    RouteDetailFragment.args("california-porvenir")
+                    RouteDetailFragment.args(fichaRouteId())
                 )
                 idle()
                 capture(activity, "15-ficha-micro")
+                scrollFichaDown(activity)
+                capture(activity, "15-ficha-micro-abajo")
             }
+        }
+    }
+
+    /** La ficha de un micro en modo oscuro, arriba y abajo. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-night-xhdpi")
+    fun `captura la ficha del micro en modo oscuro`() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val navHost = activity.supportFragmentManager
+                    .findFragmentById(R.id.navHost) as NavHostFragment
+                navHost.navController.navigate(
+                    R.id.routeDetailFragment,
+                    RouteDetailFragment.args(fichaRouteId())
+                )
+                idle()
+                capture(activity, "15-ficha-micro-oscuro")
+                scrollFichaDown(activity)
+                capture(activity, "15-ficha-micro-oscuro-abajo")
+            }
+        }
+    }
+
+    /** La ficha dentro de la hoja del inicio, al tocar la primera ruta de la lista. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura la ficha en la hoja del inicio`() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val list = activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.routesRecycler)
+                capture(activity, "15-ficha-hoja-antes")
+                list.getChildAt(0)?.performClick()
+                idle()
+                BottomSheetBehavior.from(activity.findViewById<View>(R.id.sheet)).state =
+                    BottomSheetBehavior.STATE_EXPANDED
+                capture(activity, "15-ficha-hoja")
+                activity.findViewById<ViewGroup>(R.id.routePanel)?.let { scroll ->
+                    scroll.scrollTo(0, scroll.getChildAt(0).height - scroll.height + scroll.paddingBottom)
+                }
+                capture(activity, "15-ficha-hoja-abajo")
+            }
+        }
+    }
+
+    /** Una ruta del catálogo con varias paradas, para que la ficha tenga de todo. */
+    private fun fichaRouteId(): String =
+        com.peru.expresdm.data.RouteRepository.all().let { routes ->
+            (routes.firstOrNull { it.stops.size in 4..7 } ?: routes.first()).id
+        }
+
+    private fun scrollFichaDown(activity: Activity) {
+        activity.findViewById<ViewGroup>(R.id.detailScroll)?.let { scroll ->
+            scroll.scrollTo(0, Int.MAX_VALUE / 2)
         }
     }
 
@@ -113,14 +168,13 @@ class ScreenshotTest {
     @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
     fun `captura el perfil con sesion`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        SessionStore.get(context).save(
-            Session(
-                token = "token-de-prueba",
-                userId = "usuario-1",
-                email = "ana.quispe@ejemplo.pe",
-                displayName = "Ana María Quispe"
-            )
+        val session = Session(
+            token = "token-de-prueba",
+            userId = "usuario-1",
+            email = "ana.quispe@ejemplo.pe",
+            displayName = "Ana María Quispe"
         )
+        SessionStore.get(context).save(session)
         val usage = RouteUsageStore.get(context)
         repeat(4) { usage.recordUse("california-porvenir") }
         repeat(2) { usage.recordUse("california-esperanza") }
@@ -129,11 +183,54 @@ class ScreenshotTest {
             ActivityScenario.launch(MainActivity::class.java).use { scenario ->
                 scenario.onActivity { activity ->
                     selectTab(activity, R.id.profileFragment)
+                    keepSession(context, session)
                     capture(activity, "07-perfil-con-sesion")
                 }
             }
         } finally {
             // La sesión de mentira no debe filtrarse a las demás capturas.
+            SessionStore.get(context).clear()
+        }
+    }
+
+    /** El perfil y la hoja de Subo Premium de una cuenta que ya lo tiene activo. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura el perfil premium activo`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val session = Session(
+            token = "token-de-prueba",
+            userId = "usuario-2",
+            email = "stebandioses@gmail.com",
+            displayName = "Esteban Zait Dioses Munoz",
+            // 12 oct. 2027
+            premiumUntil = 1823342400000L
+        )
+        SessionStore.get(context).save(session)
+        val usage = RouteUsageStore.get(context)
+        repeat(3) { usage.recordUse("california-porvenir") }
+        repeat(2) { usage.recordUse("california-esperanza") }
+
+        try {
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                scenario.onActivity { activity ->
+                    selectTab(activity, R.id.profileFragment)
+                    keepSession(context, session)
+                    // El uso va por cuenta: se apunta ya con la sesión puesta, y con
+                    // las rutas que haya en el catálogo (el del servidor cambia).
+                    com.peru.expresdm.data.RouteRepository.all().take(2).forEachIndexed { index, route ->
+                        repeat(4 - index) { usage.recordUse(route.id) }
+                    }
+                    idle()
+                    capture(activity, "07b-perfil-premium-activo")
+                    activity.findViewById<View>(R.id.rowPremium).performClick()
+                    idle()
+                    keepSession(context, session)
+                    val sheet = ShadowDialog.getLatestDialog().window!!.decorView
+                    capture(activity, "17b-subo-premium-activo", sheet)
+                }
+            }
+        } finally {
             SessionStore.get(context).clear()
         }
     }
@@ -213,6 +310,27 @@ class ScreenshotTest {
         }
     }
 
+    /** El inicio con ubicación en Trujillo: las líneas cercanas y, con el filtro "Todas", el catálogo. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura las rutas cercanas`() {
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                val navHost = activity.supportFragmentManager
+                    .findFragmentById(R.id.navHost) as NavHostFragment
+                val routes = navHost.childFragmentManager.primaryNavigationFragment!!
+                androidx.lifecycle.ViewModelProvider(routes)[com.peru.expresdm.ui.routes.RoutesViewModel::class.java]
+                    .onLocationChanged(-8.1116, -79.0287)
+                // El cálculo de las cercanas corre fuera del hilo principal.
+                Thread.sleep(1_500)
+                capture(activity, "20-rutas-cerca")
+
+                activity.findViewById<View>(R.id.chipAll).performClick()
+                capture(activity, "21-rutas-todas")
+            }
+        }
+    }
+
     /** La esfera de la voz: pequeña sobre el mapa y en una franja dentro del asistente. */
     @Test
     @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
@@ -227,11 +345,80 @@ class ScreenshotTest {
                 activity.findViewById<View>(R.id.voiceBar).visibility = View.VISIBLE
                 capture(activity, "18-voz-en-el-mapa")
 
-                activity.findViewById<View>(R.id.assistantBubble).performClick()
+                activity.findViewById<View>(R.id.assistantTab).performClick()
                 idle()
                 val sheet = ShadowDialog.getLatestDialog().window!!.decorView
                 sheet.findViewById<View>(R.id.voiceOrb).visibility = View.VISIBLE
                 capture(activity, "19-voz-en-el-asistente", sheet)
+            }
+        }
+    }
+
+    /** Alertas con datos de ejemplo, la hoja "¿Qué está pasando?" y el asistente con su saludo. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura alertas crear alerta y asistente`() = captureAlertas("alertas")
+
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-night-xhdpi")
+    fun `captura alertas crear alerta y asistente en modo oscuro`() = captureAlertas("alertas-oscuro")
+
+    private fun captureAlertas(suffix: String) {
+        val now = System.currentTimeMillis()
+        val minute = 60_000L
+        val samples = listOf(
+            com.peru.expresdm.data.RoadAlert(
+                id = "ej-1", type = com.peru.expresdm.data.AlertType.TRAFFIC,
+                latitude = -8.11, longitude = -79.03, placeName = "Av. España",
+                comment = "Cola larga desde el óvalo, mejor tomar Av. América",
+                createdAt = now - 12 * minute, confirmations = 3
+            ),
+            com.peru.expresdm.data.RoadAlert(
+                id = "ej-2", type = com.peru.expresdm.data.AlertType.ROADWORK,
+                latitude = -8.10, longitude = -79.02, placeName = "Av. Larco",
+                comment = null, createdAt = now - 40 * minute
+            ),
+            com.peru.expresdm.data.RoadAlert(
+                id = "ej-3", type = com.peru.expresdm.data.AlertType.DANGER,
+                latitude = -8.12, longitude = -79.04, placeName = "Óvalo Grau",
+                comment = null, createdAt = now - 90 * minute
+            )
+        )
+        // Las alertas viven en un objeto: se cambian a mano y luego se vacían.
+        val field = com.peru.expresdm.data.AlertRepository::class.java.getDeclaredField("_alerts")
+            .apply { isAccessible = true }
+        @Suppress("UNCHECKED_CAST")
+        val flow = field.get(com.peru.expresdm.data.AlertRepository)
+            as kotlinx.coroutines.flow.MutableStateFlow<List<com.peru.expresdm.data.RoadAlert>>
+
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                selectTab(activity, R.id.reportsFragment)
+                capture(activity, "20-$suffix-vacia")
+
+                activity.findViewById<View>(R.id.btnReport).performClick()
+                idle()
+                val sheet = ShadowDialog.getLatestDialog().window!!.decorView
+                capture(activity, "21-$suffix-crear", sheet)
+                // Elige "Tráfico", la primera casilla.
+                val grid = sheet.findViewById<ViewGroup>(R.id.typeGrid)
+                (grid.getChildAt(0) as ViewGroup).getChildAt(0).performClick()
+                capture(activity, "22-$suffix-crear-trafico", sheet)
+                ShadowDialog.getLatestDialog().dismiss()
+                idle()
+
+                try {
+                    flow.value = samples
+                    idle()
+                    capture(activity, "23-$suffix-lista")
+                } finally {
+                    flow.value = emptyList()
+                }
+
+                selectTab(activity, R.id.routesFragment)
+                activity.findViewById<View>(R.id.assistantTab).performClick()
+                idle()
+                capture(activity, "24-$suffix-asistente", ShadowDialog.getLatestDialog().window!!.decorView)
             }
         }
     }
@@ -242,6 +429,15 @@ class ScreenshotTest {
     }
 
     /** Deja que se ejecuten las tareas pendientes del hilo principal. */
+    /**
+     * Al abrir, la app pregunta al servidor por la sesión y, como el token es
+     * de mentira, la cierra. Se vuelve a poner justo antes de la captura.
+     */
+    private fun keepSession(context: Context, session: Session) {
+        SessionStore.get(context).save(session)
+        idle()
+    }
+
     private fun idle() {
         shadowOf(Looper.getMainLooper()).idle()
     }

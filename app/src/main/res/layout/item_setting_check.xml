@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Un chip de Ajustes que se crea desde código, como los de tipos de alerta. -->
+<!--
+  Un chip de tipo de alerta que se crea desde código: pastilla blanca con borde
+  y un punto del color del tipo (lo tiñe SettingsFragment).
+-->
 <com.google.android.material.chip.Chip
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Material3.Chip.Filter"
+    style="@style/Widget.Perfil.AlertChip"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     tools:text="Tráfico" />

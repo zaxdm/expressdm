@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Estilos de Perfil, Subo Premium, Ajustes, Ayuda y "¿A dónde vas?",
+      copiados de la guía de estilo: Título 28·800, Sección 17·800,
+      Texto 15·500 y Apoyo 13 en gris.
+    -->
+
+    <!-- Título de pantalla: 28 en negrita -->
+    <style name="TextAppearance.Perfil.Title" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Sección: 17 en negrita -->
+    <style name="TextAppearance.Perfil.Section" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">-0.01</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Texto de una fila en negrita: nombres de ruta, lugares, opciones -->
+    <style name="TextAppearance.Perfil.RowTitle" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Texto normal de una fila: 15 en 500 -->
+    <style name="TextAppearance.Perfil.RowText" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Apoyo: 13 en gris -->
+    <style name="TextAppearance.Perfil.Support" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Rótulo pequeño en mayúsculas: DESDE, HACIA, FUNCIÓN… -->
+    <style name="TextAppearance.Perfil.Caps" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Etiqueta amarilla: ACTIVO, PREMIUM -->
+    <style name="Widget.Perfil.Tag" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/perfil_bg_tag_brand</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/on_brand</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.04</item>
+    </style>
+
+    <!-- Botón redondo de cabecera: atrás, ajustes, cerrar -->
+    <style name="Widget.Perfil.CircleButton" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@drawable/perfil_bg_circle_button</item>
+        <item name="tint">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Icono de una fila de menú, sin cuadro, como en el perfil de la maqueta -->
+    <style name="Widget.Perfil.MenuIcon" parent="">
+        <item name="android:layout_width">22dp</item>
+        <item name="android:layout_height">22dp</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="tint">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- La flecha ">" del final de una fila -->
+    <style name="Widget.Perfil.Chevron" parent="">
+        <item name="android:layout_width">18dp</item>
+        <item name="android:layout_height">18dp</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="android:src">@drawable/ic_chevron_right</item>
+        <item name="tint">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Casilla blanca de "Tu actividad" y de los destinos favoritos -->
+    <style name="Widget.Perfil.TileCard" parent="Widget.Expresdm.Card">
+        <item name="cardCornerRadius">16dp</item>
+    </style>
+
+    <!-- Acción fuerte: botón de tinta con el texto claro (Enviar sugerencia) -->
+    <style name="Widget.Perfil.ButtonInk" parent="Widget.Material3.Button">
+        <item name="android:minHeight">52dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="backgroundTint">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorSurface</item>
+        <item name="iconTint">?attr/colorSurface</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- Secundaria: con borde y fondo blanco -->
+    <style name="Widget.Perfil.ButtonOutline" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">52dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="strokeColor">?attr/colorOnSurfaceVariant</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- Chip de tipo de alerta: pastilla blanca con borde y un punto de color -->
+    <style name="Widget.Perfil.AlertChip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">?attr/colorSurface</item>
+        <item name="chipStrokeColor">@color/perfil_chip_stroke</item>
+        <item name="chipStrokeWidth">1.2dp</item>
+        <item name="chipCornerRadius">999dp</item>
+        <item name="chipMinHeight">32dp</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="chipIcon">@drawable/perfil_dot</item>
+        <item name="chipIconVisible">true</item>
+        <item name="chipIconSize">8dp</item>
+        <item name="iconStartPadding">10dp</item>
+        <item name="iconEndPadding">0dp</item>
+        <item name="textStartPadding">6dp</item>
+        <item name="textEndPadding">10dp</item>
+        <item name="android:textColor">@color/perfil_chip_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="rippleColor">?attr/colorControlHighlight</item>
+    </style>
+
+    <!-- Interruptor en tinta, sin el borde gris de Material -->
+    <style name="Widget.Perfil.SwitchColors" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="trackTint">@color/perfil_switch_track</item>
+        <item name="thumbTint">@color/perfil_switch_thumb</item>
+        <item name="trackDecorationTint">@android:color/transparent</item>
+    </style>
+
+    <!-- Un botón del selector de tema (Sistema · Claro · Oscuro) -->
+    <style name="Widget.Perfil.Segment" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minHeight">44dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="backgroundTint">@color/perfil_segment_bg</item>
+        <item name="android:textColor">@color/perfil_segment_text</item>
+        <item name="strokeColor">?attr/colorOutline</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- Campo del buzón: relleno de arena, borde fino y esquinas de 12, sin rótulo flotante -->
+    <style name="Widget.Perfil.Field" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="hintEnabled">false</item>
+        <item name="boxBackgroundColor">?android:attr/colorBackground</item>
+        <item name="boxStrokeColor">?attr/colorOnSurfaceVariant</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+    </style>
+
+    <style name="Widget.Perfil.Field.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="hintEnabled">false</item>
+        <item name="boxBackgroundColor">?android:attr/colorBackground</item>
+        <item name="boxStrokeColor">?attr/colorOnSurfaceVariant</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="endIconTint">?attr/colorOnSurface</item>
+    </style>
+</resources>
