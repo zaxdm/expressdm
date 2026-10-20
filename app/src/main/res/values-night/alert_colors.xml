@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Tonos más claros: sobre el mapa y las tarjetas oscuras se leen mejor. -->
-    <color name="alert_traffic">#8B5CF6</color>
-    <color name="alert_accident">#EF4444</color>
-    <color name="alert_overcharge">#10B981</color>
-    <color name="alert_roadwork">#0EA5E9</color>
-    <color name="alert_crowded">#3B82F6</color>
-    <color name="alert_danger">#EA580C</color>
-    <color name="alert_other">#7C8AA0</color>
+    <color name="alert_traffic">#5B8DEF</color>
+    <color name="alert_accident">#EA6A2E</color>
+    <color name="alert_overcharge">#2FA35A</color>
+    <color name="alert_roadwork">#D9A21B</color>
+    <color name="alert_crowded">#9B6BF0</color>
+    <color name="alert_danger">#E5484D</color>
+    <color name="alert_other">#8B909C</color>
+
+    <!-- El fondo suave de cada tipo: pastillas e iconos -->
+    <color name="alert_traffic_soft">#1C2A4A</color>
+    <color name="alert_accident_soft">#3A2216</color>
+    <color name="alert_overcharge_soft">#16301F</color>
+    <color name="alert_roadwork_soft">#352A10</color>
+    <color name="alert_crowded_soft">#2A1F45</color>
+    <color name="alert_danger_soft">#3D1A1A</color>
+    <color name="alert_other_soft">#2A2C31</color>
 </resources>

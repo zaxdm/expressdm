@@ -37,12 +37,99 @@
     </style>
 
     <style name="TextAppearance.Expresdm.SectionTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">24sp</item>
+        <item name="android:letterSpacing">-0.02</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Expresdm.Body" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <!--
+      Los estilos de texto de Material, con la letra de Subo. Los títulos y las
+      etiquetas de los botones van en negrita (800); el resto, en 500.
+    -->
+    <style name="TextAppearance.Expresdm.DisplayLarge" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.Expresdm.DisplayMedium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.Expresdm.DisplaySmall" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.Expresdm.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.Expresdm.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.Expresdm.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.Expresdm.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.Expresdm.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="android:letterSpacing">0</item>
     </style>
 
     <!-- Insignia circular con la letra de la ruta -->
@@ -86,7 +173,17 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">28dp</item>
         <item name="android:paddingStart">4dp</item>
+        <item name="android:textAllCaps">true</item>
         <item name="android:textAppearance">@style/TextAppearance.Expresdm.SectionLabel</item>
+    </style>
+
+    <!-- Icono de una fila de Ajustes o del Perfil: un cuadro redondeado de color -->
+    <style name="Widget.Expresdm.SettingsIcon" parent="">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:background">@drawable/bg_icon_tile</item>
+        <item name="android:importantForAccessibility">no</item>
     </style>
 
     <!-- Tarjeta que agrupa las filas de una sección de Ajustes -->
@@ -129,15 +226,15 @@
     </style>
 
     <!--
-      Botón principal: una pastilla. De día es negra con el texto blanco, como
-      en la web; de noche, amarilla con el texto negro (colorPrimary cambia).
+      Botón principal: el amarillo de marca con el texto negro, de día y de
+      noche, como en la guía de estilo y en la web.
     -->
     <style name="Widget.Expresdm.ButtonPrimary" parent="Widget.Material3.Button">
         <item name="android:minHeight">52dp</item>
-        <item name="cornerRadius">26dp</item>
-        <item name="backgroundTint">?attr/colorPrimary</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
-        <item name="iconTint">?attr/colorOnPrimary</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="backgroundTint">@color/brand</item>
+        <item name="android:textColor">@color/on_brand</item>
+        <item name="iconTint">@color/on_brand</item>
         <item name="android:textStyle">bold</item>
     </style>
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La línea entre filas de una tarjeta que se llena desde código, con el mismo margen que en Ajustes. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetLeft="16dp"
+    android:insetRight="16dp">
+    <shape android:shape="rectangle">
+        <solid android:color="?attr/colorOutline" />
+        <size android:height="1dp" />
+    </shape>
+</inset>

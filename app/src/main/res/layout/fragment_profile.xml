@@ -137,7 +137,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAccount"
-                    style="@style/Widget.Material3.Button.TextButton"
+                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/account_sign_in" />
@@ -146,12 +146,8 @@
 
         <!-- Actividad -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/profile_activity"
-            android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
-            android:textSize="17sp" />
+            style="@style/Widget.Expresdm.SettingsLabel"
+            android:text="@string/profile_activity" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -276,12 +272,8 @@
 
         <!-- Rutas guardadas -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/profile_saved_routes"
-            android:textAppearance="@style/TextAppearance.Expresdm.SectionTitle"
-            android:textSize="17sp" />
+            style="@style/Widget.Expresdm.SettingsLabel"
+            android:text="@string/profile_saved_routes" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/favoritesRecycler"
@@ -332,7 +324,7 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="28dp"
             app:cardCornerRadius="22dp">
 
             <LinearLayout
@@ -351,14 +343,17 @@
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:minHeight="64dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="12dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:importantForAccessibility="no"
+                        style="@style/Widget.Expresdm.SettingsIcon"
+                        android:backgroundTint="@color/brand"
                         android:src="@drawable/ic_star"
-                        app:tint="?attr/colorSecondary" />
+                        app:tint="@color/on_brand" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -402,14 +397,16 @@
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:minHeight="64dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="12dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:importantForAccessibility="no"
+                        style="@style/Widget.Expresdm.SettingsIcon"
                         android:src="@drawable/ic_settings"
-                        app:tint="?attr/colorOnSurfaceVariant" />
+                        app:tint="?attr/colorOnPrimaryContainer" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -444,14 +441,16 @@
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:minHeight="64dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="12dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:importantForAccessibility="no"
+                        style="@style/Widget.Expresdm.SettingsIcon"
                         android:src="@drawable/ic_support"
-                        app:tint="?attr/colorOnSurfaceVariant" />
+                        app:tint="?attr/colorOnPrimaryContainer" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -486,14 +485,16 @@
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:minHeight="64dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="12dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:importantForAccessibility="no"
+                        style="@style/Widget.Expresdm.SettingsIcon"
                         android:src="@drawable/ic_info"
-                        app:tint="?attr/colorOnSurfaceVariant" />
+                        app:tint="?attr/colorOnPrimaryContainer" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -531,14 +532,17 @@
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="16dp"
+                    android:minHeight="64dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="12dp"
                     android:visibility="gone"
                     tools:visibility="visible">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:importantForAccessibility="no"
+                        style="@style/Widget.Expresdm.SettingsIcon"
+                        android:backgroundTint="?attr/colorErrorContainer"
                         android:src="@drawable/ic_sign_out"
                         app:tint="?attr/colorError" />
 

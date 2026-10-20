@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-      Colores de los tipos de alerta. Salen de la paleta de la app salvo el rojo
-      de accidente y el naranja de peligro, que son avisos de seguridad y se
-      tienen que reconocer al instante, y el verde de cobro de más, que es el
-      color del dinero.
+      Colores de los tipos de alerta, de la guía de estilo de Subo. Cada tipo
+      tiene su color fuerte (icono, punto en el mapa) y uno suave de fondo.
     -->
-    <color name="alert_traffic">#7C3AED</color>
-    <color name="alert_accident">#DC2626</color>
-    <color name="alert_overcharge">#047857</color>
-    <color name="alert_roadwork">#0284C7</color>
-    <color name="alert_crowded">#2563EB</color>
-    <color name="alert_danger">#C2410C</color>
-    <color name="alert_other">#64748B</color>
+    <color name="alert_traffic">#2563EB</color>
+    <color name="alert_accident">#C2410C</color>
+    <color name="alert_overcharge">#15803D</color>
+    <color name="alert_roadwork">#8A6100</color>
+    <color name="alert_crowded">#6D28D9</color>
+    <color name="alert_danger">#B42318</color>
+    <color name="alert_other">#5F6470</color>
+
+    <!-- El fondo suave de cada tipo: pastillas e iconos -->
+    <color name="alert_traffic_soft">#E0E9FD</color>
+    <color name="alert_accident_soft">#FCE7DC</color>
+    <color name="alert_overcharge_soft">#DCF2E3</color>
+    <color name="alert_roadwork_soft">#FFF1C7</color>
+    <color name="alert_crowded_soft">#EDE6FB</color>
+    <color name="alert_danger_soft">#FDE4E2</color>
+    <color name="alert_other_soft">#EFECE5</color>
 </resources>

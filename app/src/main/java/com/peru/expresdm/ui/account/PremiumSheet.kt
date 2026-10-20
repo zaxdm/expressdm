@@ -87,9 +87,10 @@ class PremiumSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         requested = savedInstanceState?.getBoolean(STATE_REQUESTED) ?: false
 
-        BENEFITS.forEach { text ->
+        BENEFITS.forEach { (text, icon) ->
             val row = layoutInflater.inflate(R.layout.item_premium_benefit, binding.benefits, false) as TextView
             row.text = getString(text, Premium.PREMIUM_SAVED_ROUTES)
+            row.setCompoundDrawablesRelativeWithIntrinsicBounds(icon, 0, 0, 0)
             binding.benefits.addView(row)
         }
 
@@ -305,15 +306,15 @@ class PremiumSheet : BottomSheetDialogFragment() {
         private const val STATUS_PENDING = "PENDING"
         private const val STATUS_REJECTED = "REJECTED"
 
-        /** Solo lo que ya funciona: no se promete lo que aún no existe. */
+        /** Solo lo que ya funciona: no se promete lo que aún no existe. Cada uno con su icono. */
         private val BENEFITS = listOf(
-            R.string.premium_benefit_offline,
-            R.string.premium_benefit_route_alerts,
-            R.string.premium_benefit_live,
-            R.string.premium_benefit_arrival,
-            R.string.premium_benefit_places,
-            R.string.premium_benefit_assistant,
-            R.string.premium_benefit_voice
+            R.string.premium_benefit_offline to R.drawable.ic_map,
+            R.string.premium_benefit_route_alerts to R.drawable.ic_nav_alerts,
+            R.string.premium_benefit_live to R.drawable.ic_my_location,
+            R.string.premium_benefit_arrival to R.drawable.ic_arrival_alarm,
+            R.string.premium_benefit_places to R.drawable.ic_fav_home,
+            R.string.premium_benefit_assistant to R.drawable.ic_assistant,
+            R.string.premium_benefit_voice to R.drawable.ic_mic
         )
 
         fun show(manager: FragmentManager) {

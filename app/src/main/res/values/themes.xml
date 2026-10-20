@@ -38,10 +38,43 @@
         <item name="colorOutline">@color/stone_200</item>
         <item name="colorOutlineVariant">@color/stone_200</item>
 
+        <!--
+          Las superficies elevadas (barra de abajo, hojas, diálogos, campos)
+          usan estos roles. Sin ellos Material pone grises y lilas suyos que no
+          son de la marca; y sin quitar el tinte, la elevación oscurece todo.
+        -->
+        <item name="elevationOverlayEnabled">false</item>
+        <item name="colorSurfaceContainerLowest">@color/white</item>
+        <item name="colorSurfaceContainerLow">@color/white</item>
+        <item name="colorSurfaceContainer">@color/white</item>
+        <item name="colorSurfaceContainerHigh">@color/stone_50</item>
+        <item name="colorSurfaceContainerHighest">@color/stone_100</item>
+        <item name="colorSurfaceBright">@color/white</item>
+        <item name="colorSurfaceDim">@color/stone_100</item>
+
         <item name="android:statusBarColor">@color/stone_50</item>
         <item name="android:navigationBarColor">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+
+        <!-- Letra de Subo en toda la app (ver font/subo_sans.xml) -->
+        <item name="fontFamily">@font/subo_sans</item>
+        <item name="android:fontFamily">@font/subo_sans</item>
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.Expresdm.DisplayLarge</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.Expresdm.DisplayMedium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.Expresdm.DisplaySmall</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Expresdm.HeadlineLarge</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.Expresdm.HeadlineMedium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Expresdm.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Expresdm.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Expresdm.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Expresdm.TitleSmall</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Expresdm.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Expresdm.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Expresdm.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Expresdm.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Expresdm.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Expresdm.LabelSmall</item>
 
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Expresdm.Small</item>
         <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Expresdm.Medium</item>

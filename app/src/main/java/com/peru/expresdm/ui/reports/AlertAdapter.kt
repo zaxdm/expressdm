@@ -43,8 +43,10 @@ class AlertAdapter(
             val context = binding.root.context
             val color = ContextCompat.getColor(context, AlertStyle.color(alert.type))
 
-            binding.alertIconBg.backgroundTintList = ColorStateList.valueOf(color)
+            binding.alertIconBg.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(context, AlertStyle.softColor(alert.type)))
             binding.alertIcon.setImageResource(AlertStyle.icon(alert.type))
+            binding.alertIcon.imageTintList = ColorStateList.valueOf(color)
             // Si la alerta es de un micro, se dice de cuál.
             val routeName = alert.routeId?.let { RouteRepository.byId(it)?.name }
             binding.alertType.text = if (routeName == null) {

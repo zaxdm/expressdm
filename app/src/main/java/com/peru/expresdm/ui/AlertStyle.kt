@@ -42,6 +42,18 @@ object AlertStyle {
         AlertType.DANGER -> R.color.alert_danger
         AlertType.OTHER -> R.color.alert_other
     }
+
+    /** El fondo suave del mismo tipo, para poner el icono en su color encima. */
+    @ColorRes
+    fun softColor(type: AlertType): Int = when (type) {
+        AlertType.TRAFFIC -> R.color.alert_traffic_soft
+        AlertType.ACCIDENT -> R.color.alert_accident_soft
+        AlertType.OVERCHARGE -> R.color.alert_overcharge_soft
+        AlertType.ROADWORK -> R.color.alert_roadwork_soft
+        AlertType.CROWDED -> R.color.alert_crowded_soft
+        AlertType.DANGER -> R.color.alert_danger_soft
+        AlertType.OTHER -> R.color.alert_other_soft
+    }
 }
 
 /** "Ahora mismo", "Hace 5 min", "Hace 2 h" o "Hace 3 d". */

@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-      Paleta "Subo": amarillo, negro y crema, la misma que la web
-      (flutter_app/lib/theme.dart).
+      Paleta "Subo": amarillo, tinta y arena, con el petróleo para la ubicación
+      y las caminatas. Es la misma de la web (web/src/styles.css).
 
       Los nombres describen el color, no su uso. Quién usa cada uno se decide
       en themes.xml, para que cambiar la identidad sea tocar un solo archivo.
     -->
 
     <!-- Amarillo: el color de la marca -->
-    <color name="yellow_500">#FFC400</color>
-    <color name="yellow_300">#FFD54F</color>
-    <color name="yellow_100">#FFF0B3</color>
+    <color name="yellow_500">#FFC629</color>
+    <color name="yellow_300">#FFD866</color>
+    <color name="yellow_100">#FFF1C7</color>
 
     <!-- Ámbar: el amarillo cuando tiene que leerse como texto sobre blanco -->
-    <color name="amber_700">#8A6500</color>
+    <color name="amber_700">#8A6100</color>
     <color name="amber_900">#4A3800</color>
 
     <!--
-      Piedra: textos, bordes y superficies neutras. Los claros tiran a crema,
-      para que el fondo y los bordes acompañen al amarillo.
+      Piedra: textos, bordes y superficies neutras. stone_900 es la "tinta",
+      stone_500 el gris de texto (pasa 4.5:1) y stone_50 el fondo arena.
     -->
-    <color name="stone_900">#1C1A14</color>
-    <color name="stone_700">#44403C</color>
-    <color name="stone_500">#6B6553</color>
-    <color name="stone_400">#A8A29E</color>
-    <color name="stone_300">#E3DDC8</color>
-    <color name="stone_200">#F0E8D2</color>
-    <color name="stone_100">#F6F2E6</color>
-    <color name="stone_50">#FFFCF2</color>
+    <color name="stone_900">#15171C</color>
+    <color name="stone_700">#3A3E47</color>
+    <color name="stone_500">#5F6470</color>
+    <color name="stone_400">#9A9EA8</color>
+    <color name="stone_300">#DAD6CC</color>
+    <color name="stone_200">#E8E5DD</color>
+    <color name="stone_100">#EFECE5</color>
+    <color name="stone_50">#F5F3EE</color>
 
     <!-- Negros del modo oscuro -->
-    <color name="ink_950">#100F0E</color>
-    <color name="ink_900">#1A1917</color>
-    <color name="ink_800">#252321</color>
-    <color name="ink_700">#3A3734</color>
-    <color name="paper_100">#F2EFEA</color>
+    <color name="ink_950">#0E0F12</color>
+    <color name="ink_900">#17191E</color>
+    <color name="ink_800">#22252B</color>
+    <color name="ink_700">#343841</color>
+    <color name="paper_100">#F5F3EE</color>
+
+    <!-- Petróleo: tu ubicación, las caminatas y los enlaces; el suave, avisos informativos -->
+    <color name="petrol">#0F4C5C</color>
+    <color name="petrol_soft">#DCEBEE</color>
+    <color name="on_petrol">#FFFFFF</color>
 
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>

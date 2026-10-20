@@ -68,18 +68,20 @@ flutter:
   assets:
     - assets/nosotros/
 
-  # La letra va dentro de la web con sus negritas: sin esto el navegador solo
-  # descarga la Roboto normal y los títulos salen finos.
+  # La letra de Subo, Plus Jakarta Sans, va dentro de la web con sus pesos:
+  # sin esto el navegador solo descarga la normal y los títulos salen finos.
   fonts:
-    - family: Roboto
+    - family: PlusJakartaSans
       fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
-        - asset: assets/fonts/Roboto-Medium.ttf
+        - asset: assets/fonts/PlusJakartaSans-Regular.ttf
+        - asset: assets/fonts/PlusJakartaSans-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSans-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Roboto-Black.ttf
-          weight: 900
+        - asset: assets/fonts/PlusJakartaSans-ExtraBold.ttf
+          weight: 800
 
   # To add assets to your application, add an assets section, like this:
   # assets:
