@@ -47,9 +47,6 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
 
-        <!-- Letra de Subo en toda la app (ver font/subo_sans.xml) -->
-        <item name="fontFamily">@font/subo_sans</item>
-        <item name="android:fontFamily">@font/subo_sans</item>
         <item name="textAppearanceDisplayLarge">@style/TextAppearance.Expresdm.DisplayLarge</item>
         <item name="textAppearanceDisplayMedium">@style/TextAppearance.Expresdm.DisplayMedium</item>
         <item name="textAppearanceDisplaySmall">@style/TextAppearance.Expresdm.DisplaySmall</item>

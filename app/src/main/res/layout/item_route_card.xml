@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Una ruta en el carrusel del inicio. La foto del micro llena la tarjeta; si la
+  ruta no tiene foto, se ve su color con la letra de fondo. El degradado oscuro
+  asegura que el texto se lea en los dos casos.
+-->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/routeCard"
+    android:layout_width="236dp"
+    android:layout_height="156dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    tools:cardBackgroundColor="@color/route_accent_1">
+
+    <!-- Sin foto: la letra de la ruta, grande y tenue -->
+    <TextView
+        android:id="@+id/routeWatermark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="-14dp"
+        android:layout_marginEnd="14dp"
+        android:alpha="0.2"
+        android:importantForAccessibility="no"
+        android:textColor="@color/white"
+        android:textSize="104sp"
+        android:textStyle="bold"
+        tools:text="A" />
+
+    <ImageView
+        android:id="@+id/routeImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_route_card_scrim" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/routeBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:background="@drawable/bg_chip_white"
+                android:gravity="center"
+                android:minWidth="30dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="A"
+                tools:textColor="@color/route_accent_1" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <!-- Lo cerca que pasa: a cuántos minutos a pie -->
+            <TextView
+                android:id="@+id/routeWalk"
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_chip_scrim"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical"
+                android:paddingStart="8dp"
+                android:paddingEnd="10dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_walk_small"
+                app:drawableTint="@color/white"
+                tools:text="2 min"
+                tools:visibility="visible" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/routeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="California" />
+
+        <TextView
+            android:id="@+id/routeSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.86"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            tools:text="El Porvenir — Huanchaco" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Dónde se sube: la parada más cercana -->
+            <TextView
+                android:id="@+id/routeStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="4dp"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingEnd="8dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:drawableStartCompat="@drawable/ic_place_small"
+                app:drawableTint="@color/white"
+                tools:text="Av. España" />
+
+            <TextView
+                android:id="@+id/routeFare"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="S/ 2.00" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

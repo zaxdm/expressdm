@@ -8,8 +8,6 @@
 
     <!-- Título de pantalla: 28 en negrita -->
     <style name="TextAppearance.Perfil.Title" parent="TextAppearance.Material3.HeadlineMedium">
-        <item name="fontFamily">@font/subo_sans</item>
-        <item name="android:fontFamily">@font/subo_sans</item>
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.02</item>
@@ -18,8 +16,6 @@
 
     <!-- Sección: 17 en negrita -->
     <style name="TextAppearance.Perfil.Section" parent="TextAppearance.Material3.TitleMedium">
-        <item name="fontFamily">@font/subo_sans</item>
-        <item name="android:fontFamily">@font/subo_sans</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.01</item>
@@ -28,8 +24,6 @@
 
     <!-- Texto de una fila en negrita: nombres de ruta, lugares, opciones -->
     <style name="TextAppearance.Perfil.RowTitle" parent="TextAppearance.Material3.BodyLarge">
-        <item name="fontFamily">@font/subo_sans</item>
-        <item name="android:fontFamily">@font/subo_sans</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0</item>
@@ -38,8 +32,6 @@
 
     <!-- Texto normal de una fila: 15 en 500 -->
     <style name="TextAppearance.Perfil.RowText" parent="TextAppearance.Material3.BodyLarge">
-        <item name="fontFamily">@font/subo_sans</item>
-        <item name="android:fontFamily">@font/subo_sans</item>
         <item name="android:textSize">15sp</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
@@ -47,8 +39,6 @@
 
     <!-- Apoyo: 13 en gris -->
     <style name="TextAppearance.Perfil.Support" parent="TextAppearance.Material3.BodyMedium">
-        <item name="fontFamily">@font/subo_sans</item>
-        <item name="android:fontFamily">@font/subo_sans</item>
         <item name="android:textSize">13sp</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
@@ -56,8 +46,6 @@
 
     <!-- Rótulo pequeño en mayúsculas: DESDE, HACIA, FUNCIÓN… -->
     <style name="TextAppearance.Perfil.Caps" parent="TextAppearance.Material3.LabelSmall">
-        <item name="fontFamily">@font/subo_sans</item>
-        <item name="android:fontFamily">@font/subo_sans</item>
         <item name="android:textSize">10sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.1</item>

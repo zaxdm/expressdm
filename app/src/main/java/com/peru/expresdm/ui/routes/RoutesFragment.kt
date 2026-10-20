@@ -1112,9 +1112,10 @@ class RoutesFragment : Fragment() {
     }
 
     /**
-     * Las rutas y los lugares son siempre una lista, una tarjeta debajo de otra.
-     * Las formas de llegar, con la hoja en reposo, son un carrusel que se ojea
-     * de lado sin tapar el mapa; al subirla, también lista.
+     * "Todas" y los lugares son una lista de filas. Las rutas que pasan cerca y
+     * las formas de llegar van en tarjetas con foto: con la hoja en reposo, un
+     * carrusel que se ojea de lado sin tapar el mapa; al subirla, las mismas
+     * tarjetas a lo ancho, una debajo de otra.
      */
     private fun applyListLayout() {
         val binding = _binding ?: return
@@ -1126,10 +1127,19 @@ class RoutesFragment : Fragment() {
             else -> Unit
         }
         val manager = recycler.layoutManager as? LinearLayoutManager ?: return
+        val photoCards = nearbyCardsShown()
+        val style = when {
+            !photoCards -> RouteAdapter.Style.ROWS
+            sheetRaised -> RouteAdapter.Style.CARDS
+            else -> RouteAdapter.Style.CAROUSEL
+        }
         val carousel = !sheetRaised && hasCarousel()
         val orientation = if (carousel) RecyclerView.HORIZONTAL else RecyclerView.VERTICAL
 
-        if (journeyAdapter.carousel != !sheetRaised || manager.orientation != orientation) {
+        if (routeAdapter.style != style || journeyAdapter.carousel != !sheetRaised ||
+            manager.orientation != orientation
+        ) {
+            routeAdapter.style = style
             journeyAdapter.carousel = !sheetRaised
             manager.orientation = orientation
             carouselSnap.attachToRecyclerView(if (carousel) recycler else null)
@@ -1138,8 +1148,17 @@ class RoutesFragment : Fragment() {
         fitSheet()
     }
 
-    /** Lo que hay en la lista se puede enseñar como carrusel de tarjetas: solo las formas de llegar. */
-    private fun hasCarousel(): Boolean = _binding?.routesRecycler?.adapter === journeyAdapter
+    /** Lo que hay en la lista se puede enseñar como carrusel: las formas de llegar y las rutas cercanas. */
+    private fun hasCarousel(): Boolean {
+        val adapter = _binding?.routesRecycler?.adapter
+        return adapter === journeyAdapter || (adapter === routeAdapter && nearbyCardsShown())
+    }
+
+    /** La lista muestra las rutas que pasan cerca (no "Todas"): esas van con foto, como antes. */
+    private fun nearbyCardsShown(): Boolean {
+        val state = lastState ?: return false
+        return state.mode == HomeMode.NEARBY && !showAllRoutes
+    }
 
     private fun setSheetRaised(raised: Boolean) {
         if (sheetRaised == raised) return

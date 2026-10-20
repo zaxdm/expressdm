@@ -17,6 +17,23 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <!-- Arriba de todo, la foto del micro (si alguien la subió) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/detailImageCard"
+        style="@style/Widget.Ficha.Card"
+        android:layout_height="180dp"
+        android:visibility="gone"
+        app:strokeWidth="0dp"
+        tools:cardBackgroundColor="@color/route_accent_1">
+
+        <ImageView
+            android:id="@+id/detailImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+    </com.google.android.material.card.MaterialCardView>
+
     <!-- Recorrido, pasaje y horario: tres casillas en fila -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -355,22 +372,6 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Al final, la foto del micro (si alguien la subió) y lo que el catálogo diga de él -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/detailImageCard"
-        style="@style/Widget.Ficha.Card"
-        android:layout_height="180dp"
-        android:visibility="gone"
-        app:strokeWidth="0dp"
-        tools:cardBackgroundColor="@color/route_accent_1">
-
-        <ImageView
-            android:id="@+id/detailImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
-    </com.google.android.material.card.MaterialCardView>
 
     <!-- Nombre de la empresa o del micro, y lo que el catálogo diga de él -->
     <TextView

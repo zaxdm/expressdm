@@ -75,13 +75,13 @@ ThemeData buildTheme() {
   return ThemeData(
     colorScheme: scheme,
     scaffoldBackgroundColor: Palette.paper,
-    fontFamily: 'PlusJakartaSans',
+    fontFamily: 'Roboto',
     // Títulos gruesos y un poco apretados; el texto corrido, normal.
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(fontSize: 46, fontWeight: FontWeight.w800, letterSpacing: -1, height: 1.08),
-      headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.5, height: 1.15),
-      titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.2),
-      titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: 0),
+      headlineLarge: TextStyle(fontSize: 46, fontWeight: FontWeight.w700, letterSpacing: -1, height: 1.08),
+      headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.5, height: 1.15),
+      titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.2),
+      titleMedium: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, letterSpacing: 0),
       titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, letterSpacing: 0),
       bodyLarge: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, height: 1.5, letterSpacing: 0),
       bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, height: 1.5, letterSpacing: 0),

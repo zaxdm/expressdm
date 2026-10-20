@@ -5,8 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-// Avisos al momento (Firebase). Solo se activan si está el archivo que se
-// descarga de la consola de Firebase; sin él la app compila igual y revisa las
+// Avisos al momento (Firebase). Solo se activan si estÃ¡ el archivo que se
+// descarga de la consola de Firebase; sin Ã©l la app compila igual y revisa las
 // alertas por su cuenta cada rato.
 if (file("google-services.json").exists()) {
     apply(plugin = libs.plugins.google.services.get().pluginId)
@@ -15,7 +15,7 @@ if (file("google-services.json").exists()) {
 /**
  * La clave de Gemini se lee de local.properties, que no se versiona.
  * Si falta, la app compila igual y el asistente queda desactivado con un
- * mensaje claro en pantalla, en vez de fallar en tiempo de ejecución.
+ * mensaje claro en pantalla, en vez de fallar en tiempo de ejecuciÃ³n.
  */
 private val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
@@ -25,19 +25,19 @@ private val localProperties = Properties().apply {
 val geminiApiKey: String = localProperties.getProperty("GEMINI_API_KEY", "")
 
 /**
- * Dirección del servidor propio. Si está vacía, la app guarda todo en el
- * teléfono, como antes de que el servidor existiera.
+ * DirecciÃ³n del servidor propio. Si estÃ¡ vacÃ­a, la app guarda todo en el
+ * telÃ©fono, como antes de que el servidor existiera.
  */
 val backendUrl: String = localProperties.getProperty("BACKEND_URL", "")
 val googleWebClientId: String = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "").trim()
 
-/** Correo de soporte. Si está vacío, la pantalla de Soporte no ofrece contacto. */
+/** Correo de soporte. Si estÃ¡ vacÃ­o, la pantalla de Soporte no ofrece contacto. */
 val supportEmail: String = localProperties.getProperty("SUPPORT_EMAIL", "").trim()
 
 /**
  * La web de Subo. Los enlaces que se comparten apuntan a ella y, con la app
  * instalada, se abren en la app. No es un secreto; se puede cambiar con WEB_URL
- * en local.properties el día que haya dominio propio.
+ * en local.properties el dÃ­a que haya dominio propio.
  */
 val webUrl: String = localProperties.getProperty("WEB_URL", "https://subo.esteban-dioses.workers.dev")
     .trim().trimEnd('/')
@@ -50,8 +50,8 @@ android {
         applicationId = "com.peru.expresdm"
         minSdk = 24
         targetSdk = 35
-        versionCode = 8
-        versionName = "1.7"
+        versionCode = 9
+        versionName = "1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -75,7 +75,7 @@ android {
             isIncludeAndroidResources = true
 
             all {
-                // Las capturas necesitan la librería nativa de Robolectric, que
+                // Las capturas necesitan la librerÃ­a nativa de Robolectric, que
                 // Windows bloquea en equipos con Smart App Control o WDAC
                 // activos. Se ejecutan solo cuando se piden:
                 //     ./gradlew testDebugUnitTest -Pscreenshots
@@ -88,7 +88,7 @@ android {
 
     signingConfigs {
         // Solo se define si local.properties trae los datos del keystore, para
-        // que quien clone el repo sin él pueda seguir compilando en debug.
+        // que quien clone el repo sin Ã©l pueda seguir compilando en debug.
         val storeFileName = localProperties.getProperty("RELEASE_STORE_FILE", "")
         if (storeFileName.isNotBlank() && rootProject.file(storeFileName).exists()) {
             create("release") {
@@ -151,7 +151,7 @@ dependencies {
     // Mapas OpenStreetMap: libre, sin API key ni cuenta de facturacion
     implementation(libs.osmdroid.android)
 
-    // Revisión periódica de alertas cercanas, aunque la app esté cerrada
+    // RevisiÃ³n periÃ³dica de alertas cercanas, aunque la app estÃ© cerrada
     implementation(libs.androidx.work.runtime.ktx)
 
     // Avisos al momento de alertas nuevas (Firebase Cloud Messaging)
