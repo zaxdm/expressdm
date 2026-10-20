@@ -344,6 +344,7 @@
     <string name="settings_arrival_100">100 m before</string>
     <string name="settings_arrival_200">200 m before (Recommended)</string>
     <string name="settings_arrival_500">500 m before</string>
+    <string name="settings_arrival_distance">Alert distance</string>
     <string name="settings_arrival_vibration">Strong vibration</string>
     <string name="settings_arrival_sound">Loud sound</string>
     <string name="settings_arrival_tone">Alert sound</string>

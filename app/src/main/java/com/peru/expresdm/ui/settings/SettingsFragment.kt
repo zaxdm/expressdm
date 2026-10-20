@@ -10,13 +10,15 @@ import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.checkbox.MaterialCheckBox
-import com.google.android.material.radiobutton.MaterialRadioButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.peru.expresdm.R
 import com.peru.expresdm.data.AlertType
@@ -27,6 +29,7 @@ import com.peru.expresdm.data.CustomSound
 import com.peru.expresdm.data.Premium
 import com.peru.expresdm.data.ThemeMode
 import com.peru.expresdm.databinding.FragmentSettingsBinding
+import com.peru.expresdm.databinding.ItemSettingRowBinding
 import com.peru.expresdm.tracking.AlertWatchWorker
 import com.peru.expresdm.tracking.ArrivalAlarmService
 import com.peru.expresdm.tracking.ArrivalSignal
@@ -40,6 +43,9 @@ import com.peru.expresdm.voice.VoiceInput
 /**
  * Ajustes del aviso de bajada, de las alertas, de apariencia y de idioma.
  *
+ * Las listas de opciones (distancia, sonido, tema, idioma) son filas que
+ * enseñan lo elegido y abren un selector, para que la pantalla no se llene.
+ *
  * Cambiar el tema o el idioma recrea la Activity: Android necesita volver a
  * resolver los recursos. Por eso los valores se guardan antes de aplicarlos.
  */
@@ -49,6 +55,24 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var settings: AppSettings
+
+    private val distances = listOf(
+        100 to R.string.settings_arrival_100,
+        AppSettings.DEFAULT_ARRIVAL_DISTANCE to R.string.settings_arrival_200,
+        500 to R.string.settings_arrival_500
+    )
+
+    private val themes = listOf(
+        ThemeMode.SYSTEM to R.string.settings_theme_system,
+        ThemeMode.LIGHT to R.string.settings_theme_light,
+        ThemeMode.DARK to R.string.settings_theme_dark
+    )
+
+    private val languages = listOf(
+        AppLanguage.SYSTEM to R.string.settings_language_system,
+        AppLanguage.SPANISH to R.string.settings_language_spanish,
+        AppLanguage.ENGLISH to R.string.settings_language_english
+    )
 
     /** Evita reaccionar a los cambios que provoca el propio código al pintar. */
     private var bindingSelection = false
@@ -87,16 +111,21 @@ class SettingsFragment : Fragment() {
 
         binding.toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
 
+        setUpRow(binding.rowArrivalDistance, R.drawable.ic_place, R.string.settings_arrival_distance)
+        setUpRow(binding.rowArrivalTone, R.drawable.ic_arrival_alarm, R.string.settings_arrival_tone)
+        setUpRow(binding.rowTheme, R.drawable.ic_palette, R.string.settings_theme)
+        setUpRow(binding.rowLanguage, R.drawable.ic_language, R.string.settings_language)
+
         renderCurrentSelection()
         renderAlertTypes()
         renderPalette()
 
-        binding.arrivalDistanceGroup.setOnCheckedChangeListener { _, checkedId ->
-            if (bindingSelection) return@setOnCheckedChangeListener
-            settings.arrivalDistanceMeters = when (checkedId) {
-                R.id.arrivalDistance100 -> 100
-                R.id.arrivalDistance500 -> 500
-                else -> AppSettings.DEFAULT_ARRIVAL_DISTANCE
+        binding.rowArrivalDistance.root.setOnClickListener {
+            val selected = distances.indexOfFirst { it.first == settings.arrivalDistanceMeters }
+                .takeIf { it >= 0 } ?: 1
+            pickOne(R.string.settings_arrival_distance, distances.map { getString(it.second) }, selected) {
+                settings.arrivalDistanceMeters = distances[it].first
+                renderCurrentSelection()
             }
         }
 
@@ -157,60 +186,47 @@ class SettingsFragment : Fragment() {
         }
 
         renderTones()
-        binding.arrivalToneGroup.setOnCheckedChangeListener { group, checkedId ->
-            if (bindingSelection) return@setOnCheckedChangeListener
-            val choice = group.findViewById<View>(checkedId)?.tag as? String ?: return@setOnCheckedChangeListener
-            // Elegir el sonido es de Premium: sin él se queda el de siempre.
-            if (!Premium.active && choice != ArrivalTone.DEFAULT.key) {
-                renderTones()
-                PremiumSheet.show(childFragmentManager)
-                return@setOnCheckedChangeListener
-            }
-            settings.arrivalSoundChoice = choice
-            // Se oye al elegirlo: nadie escoge un sonido por el nombre.
-            ArrivalSignal.play(requireContext(), vibrate = false, sound = true)
-        }
-        binding.btnAddSound.setOnClickListener {
-            if (!Premium.active) {
-                PremiumSheet.show(childFragmentManager)
-            } else if (settings.customSounds.size >= AppSettings.MAX_CUSTOM_SOUNDS) {
-                showMessage(getString(R.string.settings_arrival_tone_limit, AppSettings.MAX_CUSTOM_SOUNDS))
-            } else {
-                pickSound.launch(arrayOf("audio/*"))
-            }
-        }
+        binding.rowArrivalTone.root.setOnClickListener { pickTone() }
 
         binding.btnTestArrival.setOnClickListener { testArrival() }
 
-        binding.themeGroup.setOnCheckedChangeListener { _, checkedId ->
-            if (bindingSelection) return@setOnCheckedChangeListener
-            settings.themeMode = when (checkedId) {
-                R.id.themeLight -> ThemeMode.LIGHT
-                R.id.themeDark -> ThemeMode.DARK
-                else -> ThemeMode.SYSTEM
+        binding.rowTheme.root.setOnClickListener {
+            val selected = themes.indexOfFirst { it.first == settings.themeMode }
+            pickOne(R.string.settings_theme, themes.map { getString(it.second) }, selected) {
+                settings.themeMode = themes[it].first
             }
         }
 
-        binding.languageGroup.setOnCheckedChangeListener { _, checkedId ->
-            if (bindingSelection) return@setOnCheckedChangeListener
-            settings.language = when (checkedId) {
-                R.id.languageSpanish -> AppLanguage.SPANISH
-                R.id.languageEnglish -> AppLanguage.ENGLISH
-                else -> AppLanguage.SYSTEM
+        binding.rowLanguage.root.setOnClickListener {
+            val selected = languages.indexOfFirst { it.first == settings.language }
+            pickOne(R.string.settings_language, languages.map { getString(it.second) }, selected) {
+                settings.language = languages[it].first
             }
         }
+    }
+
+    private fun setUpRow(row: ItemSettingRowBinding, @DrawableRes icon: Int, @StringRes title: Int) {
+        row.settingIcon.setImageResource(icon)
+        row.settingTitle.setText(title)
+    }
+
+    /** Un selector de una sola opción; se cierra al elegir. */
+    private fun pickOne(@StringRes title: Int, labels: List<String>, selected: Int, onPicked: (Int) -> Unit) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(title)
+            .setSingleChoiceItems(labels.toTypedArray(), selected) { dialog, which ->
+                dialog.dismiss()
+                if (which != selected) onPicked(which)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun renderCurrentSelection() {
         bindingSelection = true
 
-        binding.arrivalDistanceGroup.check(
-            when (settings.arrivalDistanceMeters) {
-                100 -> R.id.arrivalDistance100
-                500 -> R.id.arrivalDistance500
-                else -> R.id.arrivalDistance200
-            }
-        )
+        val distance = distances.firstOrNull { it.first == settings.arrivalDistanceMeters } ?: distances[1]
+        binding.rowArrivalDistance.settingSummary.setText(distance.second)
         binding.arrivalVibration.isChecked = settings.arrivalVibration
         binding.arrivalSound.isChecked = settings.arrivalSound
         binding.arrivalVoice.isChecked = settings.arrivalVoice
@@ -221,21 +237,10 @@ class SettingsFragment : Fragment() {
             VoiceInput.hasPermission(requireContext())
         binding.alertNotifications.isChecked = settings.alertNotifications
 
-        binding.themeGroup.check(
-            when (settings.themeMode) {
-                ThemeMode.LIGHT -> R.id.themeLight
-                ThemeMode.DARK -> R.id.themeDark
-                ThemeMode.SYSTEM -> R.id.themeSystem
-            }
-        )
-
-        binding.languageGroup.check(
-            when (settings.language) {
-                AppLanguage.SPANISH -> R.id.languageSpanish
-                AppLanguage.ENGLISH -> R.id.languageEnglish
-                AppLanguage.SYSTEM -> R.id.languageSystem
-            }
-        )
+        themes.firstOrNull { it.first == settings.themeMode }
+            ?.let { binding.rowTheme.settingSummary.setText(it.second) }
+        languages.firstOrNull { it.first == settings.language }
+            ?.let { binding.rowLanguage.settingSummary.setText(it.second) }
 
         bindingSelection = false
     }
@@ -244,7 +249,7 @@ class SettingsFragment : Fragment() {
      * Una casilla de algo que es de Premium: marcarla sin serlo la deja como
      * estaba y enseña qué trae Premium.
      */
-    private fun premiumCheck(box: MaterialCheckBox, onChanged: (Boolean) -> Unit) {
+    private fun premiumCheck(box: CompoundButton, onChanged: (Boolean) -> Unit) {
         box.setOnCheckedChangeListener { _, checked ->
             if (bindingSelection) return@setOnCheckedChangeListener
             if (checked && !Premium.active) {
@@ -256,60 +261,86 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun uncheck(box: MaterialCheckBox) {
+    private fun uncheck(box: CompoundButton) {
         bindingSelection = true
         box.isChecked = false
         bindingSelection = false
     }
 
-    /** Una casilla por tipo de alerta: los apagados dejan de salir en el mapa y en la lista. */
+    /** Un chip por tipo de alerta: los apagados dejan de salir en el mapa y en la lista. */
     private fun renderAlertTypes() {
         val enabled = settings.alertTypes.value
         binding.alertTypesContainer.removeAllViews()
 
         AlertType.entries.forEach { type ->
             val check = layoutInflater
-                .inflate(R.layout.item_setting_check, binding.alertTypesContainer, false) as MaterialCheckBox
+                .inflate(R.layout.item_setting_check, binding.alertTypesContainer, false) as Chip
             check.setText(AlertStyle.label(type))
             check.isChecked = type in enabled
-            // Sin id propio, Android restauraría todas las casillas con el estado de la última.
+            // Sin id propio, Android restauraría todos los chips con el estado del último.
             check.isSaveEnabled = false
             check.setOnCheckedChangeListener { _, checked -> settings.setAlertTypeEnabled(type, checked) }
             binding.alertTypesContainer.addView(check)
         }
     }
 
-    /** Los tonos de la app y, debajo, los que añadió el usuario. */
+    /** Los tonos de la app y, debajo, los que añadió el usuario: (lo que se guarda, nombre). */
+    private fun toneOptions(): List<Pair<String, String>> =
+        ArrivalTone.entries.map { it.key to getString(labelOf(it)) } +
+            settings.customSounds.map { it.uri to it.name }
+
+    /** Pone en la fila el sonido elegido y las notas que le tocan. */
     private fun renderTones() {
-        val custom = settings.customSounds
         val selected = ArrivalSignal.soundChoice(requireContext())
-        val options = ArrivalTone.entries.map { it.key to getString(labelOf(it)) } +
-            custom.map { it.uri to it.name }
+        binding.rowArrivalTone.settingSummary.text =
+            toneOptions().firstOrNull { it.first == selected }?.second ?: getString(labelOf(ArrivalTone.DEFAULT))
 
-        bindingSelection = true
-        binding.arrivalToneGroup.clearCheck()
-        binding.arrivalToneGroup.removeAllViews()
-        options.forEach { (choice, label) ->
-            val radio = layoutInflater
-                .inflate(R.layout.item_setting_choice, binding.arrivalToneGroup, false) as MaterialRadioButton
-            radio.id = View.generateViewId()
-            radio.tag = choice
-            radio.text = label
-            // El id se genera cada vez: Android no sabría a quién devolverle el estado.
-            radio.isSaveEnabled = false
-            if (ArrivalTone.fromKey(choice) == null) {
-                radio.setOnLongClickListener {
-                    removeCustomSound(choice)
-                    true
-                }
-            }
-            binding.arrivalToneGroup.addView(radio)
-            if (choice == selected) binding.arrivalToneGroup.check(radio.id)
-        }
-        bindingSelection = false
-
-        binding.customSoundsNote.isVisible = custom.isNotEmpty()
+        binding.customSoundsNote.isVisible = settings.customSounds.isNotEmpty()
         binding.tonePremiumNote.isVisible = !Premium.active
+    }
+
+    /**
+     * El selector de sonidos. Cada uno suena al tocarlo, porque nadie escoge un
+     * sonido por el nombre; los del usuario se quitan manteniéndolos presionados.
+     */
+    private fun pickTone() {
+        val options = toneOptions()
+        val selected = options.indexOfFirst { it.first == ArrivalSignal.soundChoice(requireContext()) }
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.settings_arrival_tone)
+            .setSingleChoiceItems(options.map { it.second }.toTypedArray(), selected) { dialog, which ->
+                val choice = options[which].first
+                // Elegir el sonido es de Premium: sin él se queda el de siempre.
+                if (!Premium.active && choice != ArrivalTone.DEFAULT.key) {
+                    dialog.dismiss()
+                    PremiumSheet.show(childFragmentManager)
+                    return@setSingleChoiceItems
+                }
+                settings.arrivalSoundChoice = choice
+                ArrivalSignal.play(requireContext(), vibrate = false, sound = true)
+                renderTones()
+            }
+            .setPositiveButton(android.R.string.ok, null)
+            .setNeutralButton(R.string.settings_arrival_tone_add) { _, _ -> addSound() }
+            .setOnDismissListener { ArrivalSignal.stop() }
+            .show()
+        dialog.listView.setOnItemLongClickListener { _, _, position, _ ->
+            val choice = options[position].first
+            if (ArrivalTone.fromKey(choice) != null) return@setOnItemLongClickListener false
+            dialog.dismiss()
+            removeCustomSound(choice)
+            true
+        }
+    }
+
+    private fun addSound() {
+        if (!Premium.active) {
+            PremiumSheet.show(childFragmentManager)
+        } else if (settings.customSounds.size >= AppSettings.MAX_CUSTOM_SOUNDS) {
+            showMessage(getString(R.string.settings_arrival_tone_limit, AppSettings.MAX_CUSTOM_SOUNDS))
+        } else {
+            pickSound.launch(arrayOf("audio/*"))
+        }
     }
 
     private fun addCustomSound(uri: Uri) {

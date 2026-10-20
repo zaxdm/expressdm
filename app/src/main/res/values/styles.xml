@@ -66,16 +66,56 @@
         <item name="android:textSize">15sp</item>
     </style>
 
-    <!-- Casilla de una lista de ajustes -->
-    <style name="Widget.Expresdm.Check" parent="Widget.Material3.CompoundButton.CheckBox">
+    <!-- Interruptor de una lista de ajustes: el texto a la izquierda, el botón a la derecha -->
+    <style name="Widget.Expresdm.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">52dp</item>
-        <item name="android:layout_marginStart">6dp</item>
-        <item name="android:paddingStart">8dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="switchPadding">16dp</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- Etiqueta en mayúsculas encima de cada tarjeta de Ajustes -->
+    <style name="Widget.Expresdm.SettingsLabel" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">28dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Expresdm.SectionLabel</item>
+    </style>
+
+    <!-- Tarjeta que agrupa las filas de una sección de Ajustes -->
+    <style name="Widget.Expresdm.SettingsCard" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="cardCornerRadius">22dp</item>
+    </style>
+
+    <!-- Línea entre filas de una tarjeta de Ajustes -->
+    <style name="Widget.Expresdm.SettingsDivider" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:background">?attr/colorOutline</item>
+    </style>
+
+    <!-- Aclaración pequeña debajo de una tarjeta de Ajustes -->
+    <style name="Widget.Expresdm.SettingsNote" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:lineSpacingExtra">2dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Expresdm.Body</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <!-- Cuadro de color de la muestra de paleta -->

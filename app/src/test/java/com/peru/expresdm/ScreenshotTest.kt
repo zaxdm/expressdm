@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -71,6 +72,12 @@ class ScreenshotTest {
                 activity.findViewById<View>(R.id.rowSettings)?.performClick()
                 idle()
                 capture(activity, "06-ajustes")
+
+                // El final de Ajustes: tipos de alerta, tema e idioma.
+                activity.findViewById<ViewGroup>(R.id.settingsScroll)?.let { scroll ->
+                    scroll.scrollTo(0, scroll.getChildAt(0).height + scroll.paddingBottom - scroll.height)
+                }
+                capture(activity, "06-ajustes-abajo")
             }
         }
     }

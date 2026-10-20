@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Una casilla de Ajustes que se crea desde código, como las de tipos de alerta. -->
-<com.google.android.material.checkbox.MaterialCheckBox
+<!-- Un chip de Ajustes que se crea desde código, como los de tipos de alerta. -->
+<com.google.android.material.chip.Chip
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.Expresdm.Check"
+    style="@style/Widget.Material3.Chip.Filter"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     tools:text="Tráfico" />
