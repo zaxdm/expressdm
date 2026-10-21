@@ -73,6 +73,15 @@ class ScreenshotTest {
                 idle()
                 capture(activity, "06-ajustes")
 
+                // El aviso por SMS al llegar.
+                activity.findViewById<ViewGroup>(R.id.settingsScroll)?.let { scroll ->
+                    val card = activity.findViewById<View>(R.id.arrivalSms)
+                    val top = IntArray(2).also { card.getLocationInWindow(it) }[1] -
+                        IntArray(2).also { scroll.getLocationInWindow(it) }[1]
+                    scroll.scrollTo(0, scroll.scrollY + top - 200)
+                }
+                capture(activity, "06-ajustes-sms")
+
                 // El final de Ajustes: tipos de alerta, tema e idioma.
                 activity.findViewById<ViewGroup>(R.id.settingsScroll)?.let { scroll ->
                     scroll.scrollTo(0, scroll.getChildAt(0).height + scroll.paddingBottom - scroll.height)

@@ -55,4 +55,5 @@
     <string name="perfil_planner_ask">¿No sabes la dirección? Pregúntale al asistente</string>
     <string name="perfil_planner_more">Más con Premium</string>
     <string name="perfil_planner_note_manage">%1$s %2$s.</string>
+    <string name="perfil_premium_row_sms">Aviso por SMS al llegar, sin internet</string>
 </resources>

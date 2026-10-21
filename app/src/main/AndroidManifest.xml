@@ -28,6 +28,17 @@
     <!-- Voz (Premium): preguntarle al asistente hablando. La app funciona sin él. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!--
+      Premium: al llegar, un SMS desde la línea del usuario a quien él eligió,
+      aunque no tenga internet. Se pide solo al activarlo en Ajustes.
+    -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <!-- Pedir SMS no deja la app fuera de las tablets sin línea: ahí ese aviso no se ofrece. -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <!-- Actualizarse sola: abrir el instalador con la versión nueva que la app descarga. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
@@ -121,6 +132,11 @@
             android:exported="false"
             android:foregroundServiceType="location"
             android:stopWithTask="false" />
+
+        <!-- Cómo salió el SMS de «ya llegué», y su «Reintentar». Solo lo llaman la app y Android por ella. -->
+        <receiver
+            android:name=".tracking.ArrivalSmsReceiver"
+            android:exported="false" />
 
         <!-- Viaje en vivo: manda por dónde va mientras el usuario lo comparte. -->
         <service

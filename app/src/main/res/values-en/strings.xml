@@ -700,4 +700,34 @@
     <string name="voice_no_location">I do not know where you are yet. Turn on location.</string>
     <string name="voice_where">You are on %1$s.</string>
     <string name="voice_where_unknown">I marked you on the map, but could not get the street name.</string>
+    <!-- SMS on arrival (Premium) -->
+    <string name="settings_sms_label">TEXT SOMEONE WHEN I ARRIVE</string>
+    <string name="settings_sms_switch">Send an SMS when I reach my stop</string>
+    <string name="settings_sms_contact">Who to notify</string>
+    <string name="settings_sms_contact_none">Choose a contact</string>
+    <string name="settings_sms_offline">Only when I have no internet</string>
+    <string name="settings_sms_test">Send a test SMS</string>
+    <string name="settings_sms_note">The SMS is sent from your line like any text: it doesn\'t need internet, but it does need signal and credit (or SMS in your plan). If it fails, we\'ll let you know so you can retry after topping up or send it by WhatsApp. Without signal, we retry a few times on our own. Use the button to check your line can send it.</string>
+    <string name="settings_sms_pick">Choose from my contacts</string>
+    <string name="settings_sms_type">Type a number</string>
+    <string name="settings_sms_remove">Remove contact</string>
+    <string name="settings_sms_number_hint">Mobile number</string>
+    <string name="settings_sms_bad_number">That number doesn\'t look valid</string>
+    <string name="settings_sms_need_contact">First choose who to notify</string>
+    <string name="settings_sms_need_permission">Without permission to send SMS we can\'t notify anyone. You can grant it in Android settings.</string>
+    <string name="settings_sms_unavailable">This phone can\'t send SMS</string>
+    <string name="settings_sms_sending">Sending the test SMS…</string>
+    <string name="settings_sms_test_sent">The test SMS was sent. Ask %1$s if it arrived.</string>
+    <string name="settings_sms_test_no_signal">There\'s no signal right now. Try again when you have signal.</string>
+    <string name="settings_sms_test_failed">The SMS wasn\'t sent. Most often there\'s no credit or SMS left in your plan. Top up and try again.</string>
+    <string name="sms_test_text">Subo: test of the arrival notice. If you get this, I can text you when I arrive.</string>
+    <string name="sms_channel_name">SMS notice</string>
+    <string name="sms_channel_description">Whether the “I arrived” SMS was sent</string>
+    <string name="sms_sent_title">We texted %1$s that you arrived</string>
+    <string name="sms_failed_title">Couldn\'t text %1$s</string>
+    <string name="sms_failed_balance">Most often there\'s no credit or SMS left in your plan. Retry after topping up, or send it by WhatsApp if you have data.</string>
+    <string name="sms_failed_no_signal">There was no signal after several tries. Retry when you have signal, or send it by WhatsApp if you have data.</string>
+    <string name="sms_action_retry">Retry</string>
+    <string name="sms_action_whatsapp">Send by WhatsApp</string>
+    <string name="premium_benefit_sms">SMS notice: when you arrive, it texts whoever you choose even without internet</string>
 </resources>

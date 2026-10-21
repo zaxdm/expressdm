@@ -115,6 +115,29 @@ class AppSettings private constructor(context: Context) {
         get() = prefs.getBoolean(KEY_ARRIVAL_EARLY, true)
         set(value) = prefs.edit().putBoolean(KEY_ARRIVAL_EARLY, value).apply()
 
+    // --- Aviso por SMS al llegar (Premium) ---
+
+    /** Mandar un SMS a [arrivalSmsContact] al llegar a la parada. Solo tiene efecto con Premium. */
+    var arrivalSms: Boolean
+        get() = prefs.getBoolean(KEY_ARRIVAL_SMS, false)
+        set(value) = prefs.edit().putBoolean(KEY_ARRIVAL_SMS, value).apply()
+
+    /** Mandarlo solo cuando el teléfono no tiene internet, que es para lo que sirve; si no, siempre. */
+    var arrivalSmsOnlyOffline: Boolean
+        get() = prefs.getBoolean(KEY_ARRIVAL_SMS_OFFLINE, true)
+        set(value) = prefs.edit().putBoolean(KEY_ARRIVAL_SMS_OFFLINE, value).apply()
+
+    /** A quién se le avisa; `null` si todavía no eligió a nadie. */
+    var arrivalSmsContact: SmsContact?
+        get() {
+            val number = prefs.getString(KEY_ARRIVAL_SMS_NUMBER, null)?.takeIf { it.isNotBlank() } ?: return null
+            return SmsContact(prefs.getString(KEY_ARRIVAL_SMS_NAME, null).orEmpty(), number)
+        }
+        set(value) = prefs.edit()
+            .putString(KEY_ARRIVAL_SMS_NAME, value?.name)
+            .putString(KEY_ARRIVAL_SMS_NUMBER, value?.number)
+            .apply()
+
     // --- Voz (Premium): solo tienen efecto con la cuenta de pago ---
 
     /** Leer en alto todas las respuestas del asistente, no solo las de preguntas habladas. */
@@ -198,6 +221,10 @@ class AppSettings private constructor(context: Context) {
         private const val KEY_VOICE_ANSWERS = "voice_answers"
         private const val KEY_VOICE_GUIDE = "voice_guide"
         private const val KEY_VOICE_WAKE = "voice_wake"
+        private const val KEY_ARRIVAL_SMS = "arrival_sms"
+        private const val KEY_ARRIVAL_SMS_OFFLINE = "arrival_sms_offline"
+        private const val KEY_ARRIVAL_SMS_NAME = "arrival_sms_name"
+        private const val KEY_ARRIVAL_SMS_NUMBER = "arrival_sms_number"
 
         /** Más que esto ya no es una lista para elegir de un vistazo. */
         const val MAX_CUSTOM_SOUNDS = 10

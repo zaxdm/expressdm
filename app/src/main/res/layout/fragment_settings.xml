@@ -209,6 +209,80 @@
                 android:textColor="@color/perfil_info_text"
                 android:textSize="13sp" />
 
+            <!-- Aviso por SMS al llegar, con su etiqueta PREMIUM -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/Widget.Expresdm.SettingsLabel"
+                    android:layout_marginTop="0dp"
+                    android:text="@string/settings_sms_label" />
+
+                <TextView
+                    style="@style/Widget.Perfil.Tag"
+                    android:layout_marginStart="6dp"
+                    android:text="@string/perfil_tag_premium" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Expresdm.SettingsCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@drawable/divider_settings"
+                    android:orientation="vertical"
+                    android:showDividers="middle">
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/arrivalSms"
+                        style="@style/Widget.Expresdm.Switch"
+                        android:text="@string/settings_sms_switch" />
+
+                    <!-- A quién se le avisa: se elige de los contactos o se escribe el número. -->
+                    <include
+                        android:id="@+id/rowSmsContact"
+                        layout="@layout/item_setting_row" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/arrivalSmsOffline"
+                        style="@style/Widget.Expresdm.Switch"
+                        android:text="@string/settings_sms_offline" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Para saber si la línea tiene saldo o SMS antes de necesitarlo. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTestSms"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/settings_sms_test"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_arrival_alarm"
+                app:iconGravity="textStart"
+                app:iconSize="18dp" />
+
+            <TextView
+                android:id="@+id/smsTestStatus"
+                style="@style/Widget.Expresdm.SettingsNote"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/perfil_bg_info"
+                android:lineSpacingExtra="2dp"
+                android:padding="14dp"
+                android:text="@string/settings_sms_note"
+                android:textColor="@color/perfil_info_text"
+                android:textSize="13sp" />
+
             <!-- Notificaciones -->
             <TextView
                 style="@style/Widget.Expresdm.SettingsLabel"

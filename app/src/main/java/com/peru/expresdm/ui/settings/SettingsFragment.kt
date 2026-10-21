@@ -6,7 +6,11 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.provider.OpenableColumns
+import android.text.InputType
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +21,9 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -25,21 +32,26 @@ import com.peru.expresdm.R
 import com.peru.expresdm.data.AlertType
 import com.peru.expresdm.data.AppLanguage
 import com.peru.expresdm.data.AppSettings
+import com.peru.expresdm.data.ArrivalSms
 import com.peru.expresdm.data.ArrivalTone
 import com.peru.expresdm.data.CustomSound
 import com.peru.expresdm.data.Premium
+import com.peru.expresdm.data.SmsContact
 import com.peru.expresdm.data.ThemeMode
 import com.peru.expresdm.databinding.FragmentSettingsBinding
 import com.peru.expresdm.databinding.ItemSettingRowBinding
 import com.peru.expresdm.tracking.AlertWatchWorker
 import com.peru.expresdm.tracking.ArrivalAlarmService
 import com.peru.expresdm.tracking.ArrivalSignal
+import com.peru.expresdm.tracking.ArrivalSmsSender
+import com.peru.expresdm.tracking.SmsTestResult
 import com.peru.expresdm.tracking.PushRegistration
 import com.peru.expresdm.ui.AlertStyle
 import com.peru.expresdm.ui.account.PremiumSheet
 import com.peru.expresdm.ui.themeColor
 import com.peru.expresdm.voice.Speaker
 import com.peru.expresdm.voice.VoiceInput
+import kotlinx.coroutines.launch
 
 /**
  * Ajustes del aviso de bajada, de las alertas, de apariencia y de idioma.
@@ -90,6 +102,55 @@ class SettingsFragment : Fragment() {
         binding.voiceWake.isChecked = granted
         bindingSelection = false
         if (!granted) showMessage(getString(R.string.voice_needs_microphone))
+    }
+
+    /** Lo que se iba a hacer cuando se pidió el permiso de SMS: activar el aviso o mandar la prueba. */
+    private var afterSmsPermission: (() -> Unit)? = null
+
+    private val askSms = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        val next = afterSmsPermission
+        afterSmsPermission = null
+        if (_binding == null) return@registerForActivityResult
+        if (granted) {
+            next?.invoke()
+        } else {
+            settings.arrivalSms = false
+            renderSms()
+            showMessage(getString(R.string.settings_sms_need_permission))
+        }
+    }
+
+    /**
+     * La agenda de Android, mostrando solo números: devuelve el elegido con
+     * permiso para leer solo ese, sin pedir acceso a todos los contactos.
+     */
+    private val pickContact = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val uri = result.data?.data ?: return@registerForActivityResult
+        if (_binding == null) return@registerForActivityResult
+        val contact = try {
+            requireContext().contentResolver.query(
+                uri,
+                arrayOf(
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                    ContactsContract.CommonDataKinds.Phone.NUMBER
+                ),
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                if (!cursor.moveToFirst()) return@use null
+                val number = ArrivalSms.cleanNumber(cursor.getString(1).orEmpty()) ?: return@use null
+                SmsContact(cursor.getString(0).orEmpty(), number)
+            }
+        } catch (e: RuntimeException) {
+            null
+        }
+        if (contact == null) {
+            showMessage(getString(R.string.settings_sms_bad_number))
+        } else {
+            settings.arrivalSmsContact = contact
+            renderSms()
+        }
     }
 
     /** El selector de archivos de Android, para añadir un sonido propio. */
@@ -175,6 +236,8 @@ class SettingsFragment : Fragment() {
             }
         }
 
+        setUpSms()
+
         binding.alertNotifications.setOnCheckedChangeListener { _, checked ->
             if (bindingSelection) return@setOnCheckedChangeListener
             settings.alertNotifications = checked
@@ -205,6 +268,155 @@ class SettingsFragment : Fragment() {
             val selected = languages.indexOfFirst { it.first == settings.language }
             pickOne(R.string.settings_language, languages.map { getString(it.second) }, selected) {
                 settings.language = languages[it].first
+            }
+        }
+    }
+
+    // --- Aviso por SMS al llegar (Premium) ---
+
+    private fun setUpSms() {
+        setUpRow(binding.rowSmsContact, R.drawable.ic_fav_family, R.string.settings_sms_contact)
+        renderSms()
+
+        binding.arrivalSms.setOnCheckedChangeListener { box, checked ->
+            if (bindingSelection) return@setOnCheckedChangeListener
+            when {
+                !checked -> settings.arrivalSms = false
+                !Premium.active -> {
+                    uncheck(box)
+                    PremiumSheet.show(childFragmentManager)
+                }
+                !ArrivalSmsSender.canSendSms(requireContext()) -> {
+                    uncheck(box)
+                    showMessage(getString(R.string.settings_sms_unavailable))
+                }
+                else -> withSmsPermission {
+                    settings.arrivalSms = true
+                    renderSms()
+                    // Sin a quién avisar no sirve de nada: se pregunta ya.
+                    if (settings.arrivalSmsContact == null) chooseContact()
+                }
+            }
+        }
+        binding.arrivalSmsOffline.setOnCheckedChangeListener { _, checked ->
+            if (bindingSelection) return@setOnCheckedChangeListener
+            settings.arrivalSmsOnlyOffline = checked
+        }
+        binding.rowSmsContact.root.setOnClickListener {
+            if (Premium.active) chooseContact() else PremiumSheet.show(childFragmentManager)
+        }
+        binding.btnTestSms.setOnClickListener { testSms() }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                ArrivalSmsSender.testResult.collect { renderSmsTest(it) }
+            }
+        }
+    }
+
+    private fun renderSms() {
+        bindingSelection = true
+        binding.arrivalSms.isChecked = settings.arrivalSms && Premium.active &&
+            ArrivalSmsSender.hasPermission(requireContext())
+        binding.arrivalSmsOffline.isChecked = settings.arrivalSmsOnlyOffline
+        bindingSelection = false
+        val contact = settings.arrivalSmsContact
+        binding.rowSmsContact.settingSummary.text = when {
+            contact == null -> getString(R.string.settings_sms_contact_none)
+            contact.name.isBlank() -> ArrivalSms.displayNumber(contact.number)
+            else -> "${contact.name} · ${ArrivalSms.displayNumber(contact.number)}"
+        }
+    }
+
+    private fun renderSmsTest(result: SmsTestResult?) {
+        val contact = settings.arrivalSmsContact
+        val who = contact?.name?.ifBlank { null } ?: contact?.number?.let(ArrivalSms::displayNumber).orEmpty()
+        binding.smsTestStatus.isVisible = result != null
+        binding.smsTestStatus.text = when (result) {
+            null -> ""
+            SmsTestResult.SENDING -> getString(R.string.settings_sms_sending)
+            SmsTestResult.SENT -> getString(R.string.settings_sms_test_sent, who)
+            SmsTestResult.NO_SIGNAL -> getString(R.string.settings_sms_test_no_signal)
+            SmsTestResult.FAILED -> getString(R.string.settings_sms_test_failed)
+        }
+        binding.btnTestSms.isEnabled = result != SmsTestResult.SENDING
+    }
+
+    /** Hace [action] con el permiso de SMS; si no lo hay, lo pide antes. */
+    private fun withSmsPermission(action: () -> Unit) {
+        if (ArrivalSmsSender.hasPermission(requireContext())) {
+            action()
+        } else {
+            afterSmsPermission = action
+            askSms.launch(Manifest.permission.SEND_SMS)
+        }
+    }
+
+    private fun chooseContact() {
+        val options = mutableListOf(getString(R.string.settings_sms_pick), getString(R.string.settings_sms_type))
+        if (settings.arrivalSmsContact != null) options += getString(R.string.settings_sms_remove)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.settings_sms_contact)
+            .setItems(options.toTypedArray()) { _, which ->
+                when (which) {
+                    0 -> openContacts()
+                    1 -> typeNumber()
+                    else -> {
+                        settings.arrivalSmsContact = null
+                        renderSms()
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun openContacts() {
+        try {
+            pickContact.launch(Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI))
+        } catch (e: android.content.ActivityNotFoundException) {
+            // Un teléfono sin agenda: queda escribir el número.
+            typeNumber()
+        }
+    }
+
+    private fun typeNumber() {
+        val context = requireContext()
+        val field = EditText(context).apply {
+            inputType = InputType.TYPE_CLASS_PHONE
+            hint = getString(R.string.settings_sms_number_hint)
+            setText(settings.arrivalSmsContact?.number.orEmpty())
+        }
+        val padding = (20 * resources.displayMetrics.density).toInt()
+        val holder = FrameLayout(context).apply {
+            setPadding(padding, padding / 2, padding, 0)
+            addView(field)
+        }
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.settings_sms_contact)
+            .setView(holder)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val number = ArrivalSms.cleanNumber(field.text.toString())
+                if (number == null) {
+                    showMessage(getString(R.string.settings_sms_bad_number))
+                } else {
+                    settings.arrivalSmsContact = SmsContact("", number)
+                    renderSms()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun testSms() {
+        when {
+            !Premium.active -> PremiumSheet.show(childFragmentManager)
+            !ArrivalSmsSender.canSendSms(requireContext()) -> showMessage(getString(R.string.settings_sms_unavailable))
+            settings.arrivalSmsContact == null -> {
+                showMessage(getString(R.string.settings_sms_need_contact))
+                chooseContact()
+            }
+            else -> withSmsPermission {
+                settings.arrivalSmsContact?.let { ArrivalSmsSender.sendTest(requireContext(), it) }
             }
         }
     }

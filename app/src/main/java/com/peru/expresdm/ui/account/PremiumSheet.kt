@@ -160,6 +160,7 @@ class PremiumSheet : BottomSheetDialogFragment() {
             Triple(getString(R.string.perfil_premium_row_tone), no, yes),
             Triple(getString(R.string.perfil_premium_row_route_alerts), no, yes),
             Triple(getString(R.string.perfil_premium_row_live), no, yes),
+            Triple(getString(R.string.perfil_premium_row_sms), no, yes),
             Triple(getString(R.string.perfil_premium_row_voice), no, yes)
         )
     }

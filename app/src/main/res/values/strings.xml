@@ -698,4 +698,34 @@
     <string name="voice_no_location">Todavía no sé dónde estás. Activa la ubicación.</string>
     <string name="voice_where">Estás en %1$s.</string>
     <string name="voice_where_unknown">Te marqué en el mapa, pero no pude saber el nombre de la calle.</string>
+    <!-- Aviso por SMS al llegar (Premium) -->
+    <string name="settings_sms_label">AVISAR A ALGUIEN POR SMS</string>
+    <string name="settings_sms_switch">Mandar un SMS cuando llegue a mi parada</string>
+    <string name="settings_sms_contact">A quién avisar</string>
+    <string name="settings_sms_contact_none">Elige un contacto</string>
+    <string name="settings_sms_offline">Solo si no tengo internet</string>
+    <string name="settings_sms_test">Enviar un SMS de prueba</string>
+    <string name="settings_sms_note">El SMS sale de tu línea, como cualquier mensaje: no necesita internet, pero sí señal y saldo (o SMS en tu plan). Si no sale, te avisamos para que lo reintentes cuando recargues o lo mandes por WhatsApp. Sin señal, lo reintentamos solos unas veces. Prueba con el botón para saber si tu línea puede.</string>
+    <string name="settings_sms_pick">Elegir de mis contactos</string>
+    <string name="settings_sms_type">Escribir un número</string>
+    <string name="settings_sms_remove">Quitar contacto</string>
+    <string name="settings_sms_number_hint">Número de celular</string>
+    <string name="settings_sms_bad_number">Ese número no parece válido</string>
+    <string name="settings_sms_need_contact">Primero elige a quién avisar</string>
+    <string name="settings_sms_need_permission">Sin permiso para enviar SMS no se puede avisar. Puedes darlo en los ajustes de Android.</string>
+    <string name="settings_sms_unavailable">Este teléfono no puede enviar SMS</string>
+    <string name="settings_sms_sending">Enviando el SMS de prueba…</string>
+    <string name="settings_sms_test_sent">El SMS de prueba salió. Pregúntale a %1$s si le llegó.</string>
+    <string name="settings_sms_test_no_signal">No hay señal ahora. Prueba otra vez cuando tengas señal.</string>
+    <string name="settings_sms_test_failed">No salió el SMS. Lo más común es que no tengas saldo o SMS en tu plan. Recarga y vuelve a probar.</string>
+    <string name="sms_test_text">Subo: prueba del aviso de llegada. Si te llega, ya puedo avisarte por SMS cuando llegue.</string>
+    <string name="sms_channel_name">Aviso por SMS</string>
+    <string name="sms_channel_description">Si el SMS de «ya llegué» salió o no</string>
+    <string name="sms_sent_title">Avisamos a %1$s por SMS que llegaste</string>
+    <string name="sms_failed_title">No se pudo avisar a %1$s por SMS</string>
+    <string name="sms_failed_balance">Lo más común es que no haya saldo o SMS en tu plan. Reintenta cuando recargues o mándalo por WhatsApp si tienes datos.</string>
+    <string name="sms_failed_no_signal">No hubo señal en varios intentos. Reintenta cuando tengas señal o mándalo por WhatsApp si tienes datos.</string>
+    <string name="sms_action_retry">Reintentar</string>
+    <string name="sms_action_whatsapp">Enviar por WhatsApp</string>
+    <string name="premium_benefit_sms">Aviso por SMS: al llegar, avisa a quien elijas aunque no tengas internet</string>
 </resources>

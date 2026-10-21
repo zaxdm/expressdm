@@ -79,6 +79,9 @@ class ArrivalAlarmService : Service(), LocationListener {
     private val handler = Handler(Looper.getMainLooper())
     private var lastNotifiedDistance: Double? = null
 
+    /** La última lectura del GPS: el SMS de «ya llegué» lleva ese punto. */
+    private var lastLocation: Location? = null
+
     /** Se le vio lejos de la parada: a partir de ahí tiene sentido el preaviso. */
     private var cameFromFar = false
     private var earlyWarned = false
@@ -169,6 +172,7 @@ class ArrivalAlarmService : Service(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         val target = _state.value.target ?: return
+        lastLocation = location
         val distance = NearbyRoutes.distanceMeters(location.latitude, location.longitude, target.latitude, target.longitude)
         val accuracy = if (location.hasAccuracy()) location.accuracy else null
 
@@ -257,6 +261,9 @@ class ArrivalAlarmService : Service(), LocationListener {
             return
         }
         _state.value = ArrivalState(arrivedAt = target)
+        // Premium: avisa por SMS a quien eligió, aunque no tenga internet.
+        val here = lastLocation
+        ArrivalSmsSender.onArrived(this, target.stopName, here?.latitude ?: target.latitude, here?.longitude ?: target.longitude)
         stopEverything()
     }
 
