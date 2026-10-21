@@ -434,7 +434,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/rowSettings"
+                    android:id="@+id/rowAbout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
@@ -448,14 +448,14 @@
 
                     <ImageView
                         style="@style/Widget.Perfil.MenuIcon"
-                        android:src="@drawable/ic_settings" />
+                        android:src="@drawable/ic_info" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingStart="14dp"
-                        android:text="@string/profile_settings"
+                        android:text="@string/profile_about"
                         android:textAppearance="@style/TextAppearance.Perfil.RowText" />
 
                     <ImageView style="@style/Widget.Perfil.Chevron" />

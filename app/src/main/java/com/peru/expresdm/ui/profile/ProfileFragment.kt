@@ -97,8 +97,9 @@ class ProfileFragment : Fragment() {
 
         binding.rowPremium.setOnClickListener { PremiumSheet.show(childFragmentManager) }
 
-        binding.rowSettings.setOnClickListener {
-            findNavController().navigate(R.id.action_profile_to_settings)
+        // Ajustes ya está en la rueda de arriba: aquí va Nosotros.
+        binding.rowAbout.setOnClickListener {
+            findNavController().navigate(R.id.action_profile_to_about)
         }
         binding.btnProfileSettings.setOnClickListener {
             findNavController().navigate(R.id.action_profile_to_settings)

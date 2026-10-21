@@ -124,7 +124,16 @@ class JourneyAdapter(
         fun bind(journey: Journey) {
             val context = binding.root.context
 
-            binding.journeyHeader.setBackgroundColor(accentOf(context, journey.rides.firstOrNull()))
+            val first = journey.rides.firstOrNull()
+            binding.journeyHeader.setBackgroundColor(accentOf(context, first))
+            // La foto del primer micro va en la cabecera; con ella, la cabecera es más alta para que se vea.
+            val headerPhoto = first?.route?.imageUrl?.takeIf { it.startsWith("https://") }
+            binding.journeyHeader.minimumHeight = if (headerPhoto != null) dp(150) else 0
+            RouteImages.show(
+                binding.journeyHeaderImage,
+                headerPhoto,
+                first?.route?.let { it.vehicleName.ifBlank { it.name } }.orEmpty()
+            )
             fillChain(binding.journeyChain, journey.rides)
             binding.journeyTitle.text = titleOf(context, journey)
             binding.journeyTime.text = context.getString(R.string.duration_minutes, journey.totalMinutes)
@@ -143,7 +152,8 @@ class JourneyAdapter(
 
             buildSteps(journey)
             binding.journeyPhotos.removeAllViews()
-            journey.rides.filter { !it.route.imageUrl.isNullOrBlank() }.forEach { ride ->
+            // Abajo, solo las fotos de los micros del transbordo: la del primero ya está en la cabecera.
+            journey.rides.drop(1).filter { !it.route.imageUrl.isNullOrBlank() }.forEach { ride ->
                 val image = ImageView(context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(120))
                         .apply { bottomMargin = dp(10) }

@@ -162,6 +162,9 @@ class RoutesFragment : Fragment() {
     /** Elección en curso del punto de bajada; `null` cuando no se está eligiendo. */
     private var picking: PickSession? = null
 
+    /** Se está marcando en el mapa dónde queda un favorito (casa, trabajo…): el próximo toque lo guarda. */
+    private var savingFavorite: SavedPlaceStore.Kind? = null
+
     private var sheetBehavior: BottomSheetBehavior<LinearLayout>? = null
 
     private var lastState: HomeState? = null
@@ -929,6 +932,14 @@ class RoutesFragment : Fragment() {
                     // Para apuntar bien hace falta todo el mapa: la hoja, al mínimo.
                     sheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
                     showLongMessage(getString(R.string.destination_tap_hint))
+                }
+                TripPlannerSheet.ACTION_SAVE_ON_MAP -> {
+                    val kind = result.getString(TripPlannerSheet.RESULT_KIND)
+                        ?.let { name -> SavedPlaceStore.Kind.entries.firstOrNull { it.name == name } }
+                        ?: return@setFragmentResultListener
+                    savingFavorite = kind
+                    sheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
+                    showLongMessage(getString(R.string.saved_place_tap_hint, getString(SavedPlaceStyle.label(kind))))
                 }
             }
         }
@@ -2448,6 +2459,10 @@ class RoutesFragment : Fragment() {
             showStreet(point)
             return
         }
+        savingFavorite?.let { kind ->
+            saveFavoriteAt(point, kind)
+            return
+        }
         val session = picking
         if (session == null) {
             hideKeyboard()
@@ -2473,6 +2488,19 @@ class RoutesFragment : Fragment() {
         picking = session.copy(drop = drop, label = drop.stop?.name)
         renderPick()
         if (drop.stop == null) resolveStreetName(drop)
+    }
+
+    /** Guarda como favorito el punto tocado, con el nombre de su calle si se sabe. */
+    private fun saveFavoriteAt(point: GeoPoint, kind: SavedPlaceStore.Kind) {
+        savingFavorite = null
+        val label = getString(SavedPlaceStyle.label(kind))
+        val context = requireContext().applicationContext
+        viewLifecycleOwner.lifecycleScope.launch {
+            val street = PlaceSearch.streetName(point.latitude, point.longitude)
+            val place = Place(street ?: getString(R.string.saved_place_map_point), "", point.latitude, point.longitude)
+            val saved = SavedPlaceStore.get(context).save(kind, place)
+            showMessage(getString(if (saved) R.string.saved_place_done else R.string.saved_place_full, label))
+        }
     }
 
     /**

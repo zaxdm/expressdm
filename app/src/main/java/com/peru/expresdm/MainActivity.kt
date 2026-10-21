@@ -142,9 +142,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * La pestaña Asistente no es una pantalla: abre la hoja del asistente sobre
-     * el mapa del inicio (que es quien atiende sus órdenes de voz). Mientras la
-     * hoja está abierta, la pestaña se ve marcada; al cerrarla vuelve la de antes.
+     * La pestaña Asistente abre el chat como una pantalla encima del mapa del
+     * inicio (que es quien atiende sus órdenes de voz). Mientras está abierto,
+     * la pestaña se ve marcada; al cerrarlo vuelve la de antes.
      */
     private fun setUpAssistantTab() {
         binding.bottomNav.setOnItemSelectedListener { item ->
@@ -152,6 +152,8 @@ class MainActivity : AppCompatActivity() {
                 openAssistant()
                 true
             } else {
+                // Otra pestaña: el chat se cierra y se ve esa pantalla.
+                closeAssistant()
                 NavigationUI.onNavDestinationSelected(item, navController)
             }
         }
@@ -169,6 +171,12 @@ class MainActivity : AppCompatActivity() {
                 binding.bottomNav.menu.findItem(current)?.isChecked = true
             }
         }, true)
+    }
+
+    /** Cierra el chat del asistente si está abierto sobre el mapa. */
+    private fun closeAssistant() {
+        val map = navHost.childFragmentManager.primaryNavigationFragment ?: return
+        (map.childFragmentManager.findFragmentByTag(AssistantSheet.TAG) as? AssistantSheet)?.dismiss()
     }
 
     /** Vuelve al mapa si hace falta y le pide que abra el asistente. */

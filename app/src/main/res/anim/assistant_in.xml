@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- El asistente entra deslizándose un poco desde abajo, como una pantalla nueva. -->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="220"
+    android:interpolator="@android:interpolator/decelerate_cubic">
+    <translate
+        android:fromYDelta="8%"
+        android:toYDelta="0" />
+    <alpha
+        android:fromAlpha="0"
+        android:toAlpha="1" />
+</set>

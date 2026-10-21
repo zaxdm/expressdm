@@ -395,7 +395,7 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
             listOf(SavedPlaceStore.Kind.HOME, SavedPlaceStore.Kind.WORK)
                 .filter { it !in used }
                 .forEach { kind ->
-                    tiles += FavoriteTile(R.drawable.ic_add, getString(labelOf(kind)), null, { startSaving(kind) })
+                    tiles += FavoriteTile(R.drawable.ic_add, getString(labelOf(kind)), null, { saveOnMap(kind) })
                 }
             tiles += FavoriteTile(R.drawable.ic_add, getString(R.string.saved_place_other), null, { pickKind(favorites) })
         } else {
@@ -483,7 +483,14 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
 
     /** Antes de buscar el lugar se dice qué es: de ahí salen su nombre y su icono. */
     private fun pickKind(favorites: List<SavedPlaceStore.Favorite>) =
-        SavedPlaceStyle.pickKind(requireContext(), favorites) { startSaving(it) }
+        SavedPlaceStyle.pickKind(requireContext(), favorites) { saveOnMap(it) }
+
+    /** Un favorito nuevo se marca tocando el mapa: casi nadie sabe escribir la dirección de su casa. */
+    private fun saveOnMap(kind: SavedPlaceStore.Kind) {
+        hideKeyboard()
+        setFragmentResult(REQUEST_KEY, bundleOf(RESULT_ACTION to ACTION_SAVE_ON_MAP, RESULT_KIND to kind.name))
+        dismiss()
+    }
 
     /**
      * A partir de aquí, el próximo lugar que se elija se guarda como [kind];
@@ -539,6 +546,10 @@ class TripPlannerSheet : BottomSheetDialogFragment() {
 
         /** El usuario prefiere marcar el destino tocando el mapa. */
         const val ACTION_PICK_ON_MAP = "pick_on_map"
+
+        /** El usuario va a tocar el mapa para guardar un favorito de la clase [RESULT_KIND]. */
+        const val ACTION_SAVE_ON_MAP = "save_on_map"
+        const val RESULT_KIND = "kind"
 
         fun show(manager: FragmentManager) {
             if (manager.findFragmentByTag(TAG) == null) TripPlannerSheet().show(manager, TAG)

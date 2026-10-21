@@ -317,7 +317,6 @@
     <string name="profile_guest_subtitle">Inicia sesión para sincronizar tus rutas</string>
     <string name="profile_saved_routes">Rutas favoritas</string>
     <string name="profile_settings">Ajustes</string>
-    <string name="profile_about">Acerca de</string>
     <string name="profile_about_body">Subo usa mapas y búsquedas de OpenStreetMap, un proyecto abierto y gratuito.</string>
     <string name="profile_activity">Tu actividad</string>
     <string name="profile_stat_recorded">Rutas grabadas</string>
@@ -728,4 +727,38 @@
     <string name="sms_action_retry">Reintentar</string>
     <string name="sms_action_whatsapp">Enviar por WhatsApp</string>
     <string name="premium_benefit_sms">Aviso por SMS: al llegar, avisa a quien elijas aunque no tengas internet</string>
+    <!-- Nosotros -->
+    <string name="about_title">Nosotros</string>
+    <string name="profile_about">Nosotros</string>
+    <string name="about_tag">HECHO EN TRUJILLO</string>
+    <string name="about_headline">¿Este micro me lleva?</string>
+    <string name="about_intro">Subo nació de esa pregunta. Somos una empresa trujillana en crecimiento y queremos que la respuesta esté en tu celular antes de salir de casa.</string>
+    <string name="about_team_label">EL EQUIPO</string>
+    <string name="about_team_students_title">5 estudiantes de Tecsup Trujillo</string>
+    <string name="about_team_students_body">Somos cinco estudiantes de Diseño y Desarrollo de Software de Tecsup Trujillo. Diseñamos, programamos y mantenemos Subo.</string>
+    <string name="about_team_growth_title">Una empresa en crecimiento</string>
+    <string name="about_team_growth_body">Empezamos con las rutas de Trujillo y cada semana sumamos líneas, paraderos y funciones nuevas.</string>
+    <string name="about_team_city_title">Usamos el micro todos los días</string>
+    <string name="about_team_city_body">Cargamos y revisamos las rutas nosotros mismos, con ayuda de colaboradores que recorren la ciudad.</string>
+    <string name="about_what_label">LO QUE HACE SUBO</string>
+    <string name="about_what_routes_title">Rutas, paraderos y pasajes</string>
+    <string name="about_what_routes_body">Por dónde pasa cada micro, dónde subir y bajar, cuánto cuesta y en qué horario pasa.</string>
+    <string name="about_what_alerts_title">Avisos de la calle</string>
+    <string name="about_what_alerts_body">Tráfico, accidentes, obras o cobros de más, contados por los mismos pasajeros.</string>
+    <string name="about_what_assistant_title">Asistente</string>
+    <string name="about_what_assistant_body">Dile a dónde vas y te dice qué micro tomar, cuánto cuesta y cuánto demora.</string>
+    <string name="about_what_arrival_title">Aviso de llegada</string>
+    <string name="about_what_arrival_body">Te avisa cuando llegas a tu parada, aunque vayas con el celular guardado.</string>
+    <string name="about_promises_label">LO QUE NO VA A CAMBIAR</string>
+    <string name="about_promise_free_title">Gratis para pasajeros</string>
+    <string name="about_promise_free_body">Ver las rutas y los avisos no cuesta nada, ni en la app ni en la web.</string>
+    <string name="about_promise_data_title">Tus datos son tuyos</string>
+    <string name="about_promise_data_body">No vendemos tus datos y solo pedimos lo necesario para que la cuenta funcione.</string>
+    <string name="about_promise_fix_title">Si algo está mal, lo corregimos</string>
+    <string name="about_promise_fix_body">El transporte cambia seguido. Si ves una diferencia en la calle, cuéntanos y la arreglamos.</string>
+    <string name="about_note">Las rutas, horarios y pasajes son aproximados: no son datos oficiales de las empresas de transporte.</string>
+    <string name="about_contact">Escríbenos</string>
+    <string name="saved_place_tap_hint">Toca el mapa donde queda tu %1$s para guardarlo</string>
+    <string name="saved_place_map_point">Punto en el mapa</string>
+    <string name="saved_place_full">No se pudo guardar %1$s: llegaste al tope de favoritos</string>
 </resources>

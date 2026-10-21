@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La etiqueta amarilla de la tarjeta de «Nosotros». -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFC629" />
+    <corners android:radius="999dp" />
+</shape>

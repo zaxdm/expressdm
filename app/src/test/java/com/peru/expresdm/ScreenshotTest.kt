@@ -69,7 +69,7 @@ class ScreenshotTest {
 
                 selectTab(activity, R.id.profileFragment)
                 // Ajustes: tema, idioma y muestra de la paleta.
-                activity.findViewById<View>(R.id.rowSettings)?.performClick()
+                activity.findViewById<View>(R.id.btnProfileSettings)?.performClick()
                 idle()
                 capture(activity, "06-ajustes")
 
@@ -104,6 +104,22 @@ class ScreenshotTest {
 
                 val navHost = activity.supportFragmentManager
                     .findFragmentById(R.id.navHost) as NavHostFragment
+
+                // Nosotros, desde el perfil.
+                navHost.navController.popBackStack()
+                idle()
+                activity.findViewById<View>(R.id.rowAbout)?.performClick()
+                idle()
+                capture(activity, "14b-nosotros")
+                activity.findViewById<ViewGroup>(R.id.aboutScroll)?.let { scroll ->
+                    scroll.scrollTo(0, scroll.getChildAt(0).height + scroll.paddingBottom - scroll.height)
+                }
+                capture(activity, "14b-nosotros-abajo")
+
+                // El asistente, como pantalla encima del mapa.
+                activity.findViewById<View>(R.id.assistantTab)?.performClick()
+                idle()
+                capture(activity, "18-asistente")
                 navHost.navController.navigate(
                     R.id.routeDetailFragment,
                     RouteDetailFragment.args(fichaRouteId())
@@ -356,9 +372,8 @@ class ScreenshotTest {
 
                 activity.findViewById<View>(R.id.assistantTab).performClick()
                 idle()
-                val sheet = ShadowDialog.getLatestDialog().window!!.decorView
-                sheet.findViewById<View>(R.id.voiceOrb).visibility = View.VISIBLE
-                capture(activity, "19-voz-en-el-asistente", sheet)
+                activity.findViewById<View>(R.id.voiceOrb).visibility = View.VISIBLE
+                capture(activity, "19-voz-en-el-asistente")
             }
         }
     }
@@ -427,7 +442,8 @@ class ScreenshotTest {
                 selectTab(activity, R.id.routesFragment)
                 activity.findViewById<View>(R.id.assistantTab).performClick()
                 idle()
-                capture(activity, "24-$suffix-asistente", ShadowDialog.getLatestDialog().window!!.decorView)
+                // El asistente ya no es una ventana: es una pantalla dentro de la Activity.
+                capture(activity, "24-$suffix-asistente")
             }
         }
     }

@@ -319,7 +319,6 @@
     <string name="profile_guest_subtitle">Sign in to sync your routes</string>
     <string name="profile_saved_routes">Favourite routes</string>
     <string name="profile_settings">Settings</string>
-    <string name="profile_about">About</string>
     <string name="profile_about_body">Subo uses OpenStreetMap maps and search, an open and free mapping project.</string>
     <string name="profile_activity">Your activity</string>
     <string name="profile_stat_recorded">Routes recorded</string>
@@ -730,4 +729,38 @@
     <string name="sms_action_retry">Retry</string>
     <string name="sms_action_whatsapp">Send by WhatsApp</string>
     <string name="premium_benefit_sms">SMS notice: when you arrive, it texts whoever you choose even without internet</string>
+    <!-- About us -->
+    <string name="about_title">About us</string>
+    <string name="profile_about">About us</string>
+    <string name="about_tag">MADE IN TRUJILLO</string>
+    <string name="about_headline">Does this bus take me there?</string>
+    <string name="about_intro">Subo was born from that question. We are a growing company from Trujillo and want the answer on your phone before you leave home.</string>
+    <string name="about_team_label">THE TEAM</string>
+    <string name="about_team_students_title">5 students from Tecsup Trujillo</string>
+    <string name="about_team_students_body">We are five Software Design and Development students from Tecsup Trujillo. We design, build and maintain Subo.</string>
+    <string name="about_team_growth_title">A growing company</string>
+    <string name="about_team_growth_body">We started with the routes of Trujillo and add lines, stops and new features every week.</string>
+    <string name="about_team_city_title">We ride the bus every day</string>
+    <string name="about_team_city_body">We load and check the routes ourselves, helped by contributors who travel around the city.</string>
+    <string name="about_what_label">WHAT SUBO DOES</string>
+    <string name="about_what_routes_title">Routes, stops and fares</string>
+    <string name="about_what_routes_body">Where each bus goes, where to get on and off, how much it costs and when it runs.</string>
+    <string name="about_what_alerts_title">Street alerts</string>
+    <string name="about_what_alerts_body">Traffic, accidents, roadworks or overcharging, reported by passengers.</string>
+    <string name="about_what_assistant_title">Assistant</string>
+    <string name="about_what_assistant_body">Tell it where you are going and it tells you which bus to take, the fare and how long it takes.</string>
+    <string name="about_what_arrival_title">Arrival alert</string>
+    <string name="about_what_arrival_body">It lets you know when you reach your stop, even with your phone in your pocket.</string>
+    <string name="about_promises_label">WHAT WON\'T CHANGE</string>
+    <string name="about_promise_free_title">Free for passengers</string>
+    <string name="about_promise_free_body">Seeing routes and alerts costs nothing, in the app or on the web.</string>
+    <string name="about_promise_data_title">Your data is yours</string>
+    <string name="about_promise_data_body">We don\'t sell your data and only ask for what the account needs.</string>
+    <string name="about_promise_fix_title">If something is wrong, we fix it</string>
+    <string name="about_promise_fix_body">Transport changes often. If you see a difference on the street, tell us and we\'ll fix it.</string>
+    <string name="about_note">Routes, schedules and fares are approximate: they are not official data from the bus companies.</string>
+    <string name="about_contact">Write to us</string>
+    <string name="saved_place_tap_hint">Tap the map where your %1$s is to save it</string>
+    <string name="saved_place_map_point">Point on the map</string>
+    <string name="saved_place_full">Couldn\'t save %1$s: you reached the favorites limit</string>
 </resources>

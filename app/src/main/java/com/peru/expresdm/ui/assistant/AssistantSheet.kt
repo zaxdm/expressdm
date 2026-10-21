@@ -5,21 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.peru.expresdm.R
 import com.peru.expresdm.data.AppSettings
@@ -36,17 +35,18 @@ import com.peru.expresdm.voice.VoiceOrbView
 import kotlinx.coroutines.launch
 
 /**
- * Chat con el asistente, abierto desde la burbuja del mapa.
+ * Chat con el asistente: una pantalla más, encima del mapa, con la barra de
+ * abajo a la vista (no una ventana emergente). Se cierra con la X o con atrás.
  *
- * La conversación vive en un ViewModel de la Activity: cerrar la burbuja y
- * volver a abrirla no borra lo que ya se habló. "Ver ruta" cierra el chat y
+ * La conversación vive en un ViewModel de la Activity: cerrar el chat y
+ * volver a abrirlo no borra lo que ya se habló. "Ver ruta" cierra el chat y
  * traza la ruta en el mapa.
  *
  * Con Premium también se le habla: el micrófono escucha la pregunta, la
  * respuesta se lee en voz alta y, al terminar, vuelve a escuchar, para seguir
  * la conversación sin tocar la pantalla. Se corta al callar o al escribir.
  */
-class AssistantSheet : BottomSheetDialogFragment() {
+class AssistantSheet : Fragment() {
 
     private var _binding: FragmentAssistantBinding? = null
     private val binding get() = _binding!!
@@ -84,6 +84,16 @@ class AssistantSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Es una pantalla: lo que se toque aquí no llega al mapa de debajo.
+        binding.root.isClickable = true
+        // Atrás cierra el chat antes que cualquier cosa del mapa.
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() = dismiss()
+            }
+        )
+
         binding.messagesRecycler.layoutManager = LinearLayoutManager(requireContext()).apply {
             stackFromEnd = true
         }
@@ -117,22 +127,14 @@ class AssistantSheet : BottomSheetDialogFragment() {
         }
     }
 
-    /** Fondo arena, como en la maqueta: la burbuja y las filas blancas resaltan. */
-    override fun getTheme(): Int = R.style.ThemeOverlay_Alertas_BottomSheetDialog
-
-    override fun onStart() {
-        super.onStart()
-        // El teclado empuja la caja de texto hacia arriba en lugar de taparla.
-        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-
-        val sheet = dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet) ?: return
-        sheet.layoutParams = sheet.layoutParams.apply {
-            height = (resources.displayMetrics.heightPixels * SHEET_HEIGHT_RATIO).toInt()
-        }
-        BottomSheetBehavior.from(sheet).apply {
-            skipCollapsed = true
-            state = BottomSheetBehavior.STATE_EXPANDED
-        }
+    /** Cierra el chat y deja otra vez el mapa a la vista. */
+    fun dismiss() {
+        if (!isAdded || parentFragmentManager.isStateSaved) return
+        hideKeyboard()
+        parentFragmentManager.beginTransaction()
+            .setCustomAnimations(0, R.anim.assistant_out)
+            .remove(this)
+            .commit()
     }
 
     override fun onStop() {
@@ -362,19 +364,25 @@ class AssistantSheet : BottomSheetDialogFragment() {
         const val RESULT_SAID = "said"
         private const val ARG_VOICE = "voice"
         private const val ARG_QUESTION = "question"
-        private const val SHEET_HEIGHT_RATIO = 0.88
 
         /**
          * Abre el chat, salvo que ya esté abierto (dos toques rápidos a la
          * burbuja). Con [voice] se abre escuchando o, si ya se dijo la pregunta
          * al llamarlo ([question]), contestándola.
+         *
+         * [fragmentManager] es el del mapa: el chat se pone en su
+         * `assistantContainer`, que ocupa toda la pantalla del mapa.
          */
         fun show(fragmentManager: FragmentManager, voice: Boolean = false, question: String? = null) {
-            if (fragmentManager.findFragmentByTag(TAG) == null) {
-                AssistantSheet().apply {
-                    arguments = bundleOf(ARG_VOICE to voice, ARG_QUESTION to question)
-                }.show(fragmentManager, TAG)
-            }
+            if (fragmentManager.findFragmentByTag(TAG) != null || fragmentManager.isStateSaved) return
+            fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.assistant_in, 0)
+                .add(
+                    R.id.assistantContainer,
+                    AssistantSheet().apply { arguments = bundleOf(ARG_VOICE to voice, ARG_QUESTION to question) },
+                    TAG
+                )
+                .commit()
         }
     }
 }
