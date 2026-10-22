@@ -32,20 +32,13 @@
             tools:text="Para llegar a Huanchaco toma la ruta A California." />
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Atajo a la ruta que el asistente recomienda -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnOpenRoute"
-        style="@style/Widget.Expresdm.ButtonPrimary"
+    <!-- Atajos a las rutas que el asistente recomienda, uno por ruta -->
+    <LinearLayout
+        android:id="@+id/routeButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:minHeight="44dp"
+        android:orientation="vertical"
         android:visibility="gone"
-        app:cornerRadius="100dp"
-        app:icon="@drawable/alertas_ic_arrow"
-        app:iconGravity="end"
-        app:iconSize="18dp"
-        tools:text="Ver California"
         tools:visibility="visible" />
 
 </LinearLayout>

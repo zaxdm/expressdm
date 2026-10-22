@@ -10,10 +10,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.Locale
 
-/** Lo que el asistente responde: un texto y, si aplica, la ruta recomendada. */
+/** Lo que el asistente responde: un texto y las rutas que recomienda, si las hay. */
 data class AssistantAnswer(
     val text: String,
-    val suggestedRoute: BusRoute?
+    val suggestedRoutes: List<BusRoute> = emptyList()
 )
 
 /** Resultado de una consulta al asistente, con el motivo si algo falló. */
@@ -90,27 +90,33 @@ Reglas:
             )
             .put("required", JSONArray().put("respuesta"))
 
-    suspend fun ask(question: String, history: List<GeminiClient.Turn>): AssistantResult =
-        if (ApiClient.isConfigured) askServer(question) else askGemini(question, history)
+    /**
+     * [here] es dónde está quien pregunta (latitud y longitud), si se sabe: con
+     * eso el servidor contesta «cómo llego a…» partiendo de ahí.
+     */
+    suspend fun ask(
+        question: String,
+        history: List<GeminiClient.Turn>,
+        here: Pair<Double, Double>? = null
+    ): AssistantResult =
+        if (ApiClient.isConfigured) askServer(question, history, here) else askGemini(question, history)
 
-    /** Vía servidor: la clave de Gemini no sale de allí. */
-    private suspend fun askServer(question: String): AssistantResult {
+    /**
+     * Vía servidor: allí se contesta primero con reglas y preguntas frecuentes,
+     * que no gastan IA, y solo lo desconocido pasa a Gemini, cuya clave no sale de allí.
+     */
+    private suspend fun askServer(
+        question: String,
+        history: List<GeminiClient.Turn>,
+        here: Pair<Double, Double>?
+    ): AssistantResult {
         if (!AccountRepository.isSignedIn) return AssistantResult.NeedsAccount
 
-        val body = JSONObject()
-            .put("question", question)
-            .put("language", Locale.getDefault().language)
-
+        val body = serverBody(question, history, here, Locale.getDefault().language)
         return when (val result = ApiClient.post("/api/assistant", body, AccountRepository.token)) {
-            is ApiResult.Success -> {
-                val text = result.data.optString("answer").trim()
-                val routeId = result.data.optString("routeId").trim()
-                if (text.isEmpty()) {
-                    AssistantResult.Failure(GeminiResult.Reason.MALFORMED)
-                } else {
-                    AssistantResult.Success(AssistantAnswer(text, RouteRepository.byId(routeId)))
-                }
-            }
+            is ApiResult.Success -> parseServerAnswer(result.data, RouteRepository::byId)
+                ?.let { AssistantResult.Success(it) }
+                ?: AssistantResult.Failure(GeminiResult.Reason.MALFORMED)
 
             is ApiResult.Failure -> when (result.reason) {
                 ApiFailure.UNAUTHORIZED -> AssistantResult.NeedsAccount
@@ -165,6 +171,46 @@ Reglas:
             "Recibí una respuesta que no supe leer. Vuelve a intentarlo."
     }
 
+    /** Lo que se manda al servidor; la conversación va con la forma `{mine, text}` que espera. */
+    internal fun serverBody(
+        question: String,
+        history: List<GeminiClient.Turn>,
+        here: Pair<Double, Double>?,
+        language: String
+    ): JSONObject = JSONObject()
+        .put("question", question)
+        .put("language", language)
+        .put(
+            "history",
+            JSONArray().apply {
+                history.forEach { put(JSONObject().put("mine", it.fromUser).put("text", it.text)) }
+            }
+        )
+        .apply {
+            if (here != null) {
+                put("latitude", here.first)
+                put("longitude", here.second)
+            }
+        }
+
+    /**
+     * La respuesta del servidor. Trae `routeIds` con todas las rutas que sirven;
+     * un servidor sin actualizar manda solo `routeId`. Se descartan los ids que
+     * el teléfono no conoce.
+     */
+    internal fun parseServerAnswer(data: JSONObject, byId: (String) -> BusRoute?): AssistantAnswer? {
+        val text = data.optString("answer").trim()
+        if (text.isEmpty()) return null
+        val ids = data.optJSONArray("routeIds")
+            ?.let { array -> (0 until array.length()).map { array.optString(it).trim() } }
+            ?: listOf(data.optString("routeId").trim())
+        val routes = ids.filter { it.isNotEmpty() }.distinct().mapNotNull(byId).take(MAX_SUGGESTED_ROUTES)
+        return AssistantAnswer(text, routes)
+    }
+
+    /** Las mismas que el servidor puede recomendar a la vez. */
+    private const val MAX_SUGGESTED_ROUTES = 4
+
     private fun parseAnswer(json: String): AssistantAnswer? = try {
         val obj = JSONObject(json)
         val text = obj.optString("respuesta").trim()
@@ -174,7 +220,7 @@ Reglas:
             null
         } else {
             // Solo aceptamos ids que existan de verdad en el catálogo.
-            AssistantAnswer(text, RouteRepository.byId(routeId))
+            AssistantAnswer(text, listOfNotNull(RouteRepository.byId(routeId)))
         }
     } catch (e: org.json.JSONException) {
         null

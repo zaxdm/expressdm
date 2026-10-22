@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.peru.expresdm.R
 import com.peru.expresdm.data.BusRoute
 import com.peru.expresdm.databinding.ItemAssistantMessageBinding
@@ -77,17 +78,15 @@ class AssistantAdapter(
                 }
             }
 
-            val route = message.suggestedRoute
-            if (route == null) {
-                binding.btnOpenRoute.visibility = View.GONE
-                binding.btnOpenRoute.setOnClickListener(null)
-            } else {
-                binding.btnOpenRoute.visibility = View.VISIBLE
-                binding.btnOpenRoute.text = context.getString(
-                    R.string.assistant_see_route,
-                    "${route.letter} · ${route.name}"
-                )
-                binding.btnOpenRoute.setOnClickListener { onRouteClick(route) }
+            val buttons = binding.routeButtons
+            buttons.removeAllViews()
+            buttons.visibility = if (message.suggestedRoutes.isEmpty()) View.GONE else View.VISIBLE
+            message.suggestedRoutes.forEach { route ->
+                val button = LayoutInflater.from(context)
+                    .inflate(R.layout.item_assistant_route, buttons, false) as MaterialButton
+                button.text = context.getString(R.string.assistant_see_route, "${route.letter} · ${route.name}")
+                button.setOnClickListener { onRouteClick(route) }
+                buttons.addView(button)
             }
         }
 

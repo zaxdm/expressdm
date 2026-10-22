@@ -9,6 +9,8 @@ import com.peru.expresdm.ai.AssistantResult
 import com.peru.expresdm.ai.GeminiClient
 import com.peru.expresdm.data.BusRoute
 import com.peru.expresdm.data.net.ApiClient
+import com.peru.expresdm.ui.LastPosition
+import com.peru.expresdm.ui.currentLocation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +21,7 @@ data class ChatMessage(
     val id: Long,
     val text: String,
     val fromUser: Boolean,
-    val suggestedRoute: BusRoute? = null,
+    val suggestedRoutes: List<BusRoute> = emptyList(),
     val isError: Boolean = false
 )
 
@@ -74,12 +76,12 @@ class AssistantViewModel(app: Application) : AndroidViewModel(app) {
         _isThinking.value = true
 
         viewModelScope.launch {
-            val message = when (val result = AssistantRepository.ask(text, history)) {
+            val message = when (val result = AssistantRepository.ask(text, history, whereAmI())) {
                 is AssistantResult.Success -> ChatMessage(
                     id = nextId++,
                     text = result.answer.text,
                     fromUser = false,
-                    suggestedRoute = result.answer.suggestedRoute
+                    suggestedRoutes = result.answer.suggestedRoutes
                 )
 
                 is AssistantResult.Failure -> ChatMessage(
@@ -114,6 +116,17 @@ class AssistantViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /**
+     * Dónde está quien pregunta, para que el asistente parta de ahí. Solo si ya
+     * dio permiso de ubicación: no se le pide por preguntar, y si el GPS tarda
+     * vale la última posición conocida.
+     */
+    private suspend fun whereAmI(): Pair<Double, Double>? {
+        val app = getApplication<Application>()
+        val fix = app.currentLocation(timeoutMs = LOCATION_WAIT_MS)
+        return fix?.let { it.latitude to it.longitude } ?: LastPosition.get(app)
+    }
+
     private fun append(message: ChatMessage) {
         _messages.value = _messages.value + message
     }
@@ -121,5 +134,8 @@ class AssistantViewModel(app: Application) : AndroidViewModel(app) {
     private companion object {
         /** Suficiente contexto para seguir el hilo sin encarecer cada consulta. */
         const val MAX_HISTORY_TURNS = 8
+
+        /** Lo que se espera al GPS antes de preguntar sin él: la respuesta no debe tardar. */
+        const val LOCATION_WAIT_MS = 3_000L
     }
 }
