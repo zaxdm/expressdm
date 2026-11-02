@@ -225,6 +225,9 @@ class RoutesFragment : Fragment() {
      */
     private var showAllRoutes = false
 
+    /** Qué página de las rutas cercanas se ve: van de cinco en cinco. */
+    private var nearbyPage = 0
+
     /** "Atrás" cierra primero la ruta elegida y después la búsqueda, antes de salir. */
     private val backHandler = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -580,11 +583,15 @@ class RoutesFragment : Fragment() {
         binding.btnStatusAction.setOnClickListener { onStatusAction() }
         binding.btnWalkAction.setOnClickListener { onStatusAction() }
         binding.btnCloseRoute.setOnClickListener { viewModel.clearSelection() }
+        binding.btnNearbyPrev.setOnClickListener { turnNearbyPage(-1) }
+        binding.btnNearbyNext.setOnClickListener { turnNearbyPage(1) }
         binding.btnClosePlace.setOnClickListener { clearSearch() }
         binding.alertsOnRoute.setOnClickListener { openAlertsTab() }
         // Al tocar una ruta, su ficha sale en el mismo panel; ahí "Compartir"
         // manda el viaje, que dice además dónde se baja uno.
-        routeInfo = RouteInfoPanel(this, binding.routeInfo, ::showLongMessage, onShare = ::shareTrip)
+        routeInfo = RouteInfoPanel(
+            this, binding.routeInfo, ::showLongMessage, onShare = ::shareTrip, onDirection = ::selectRoute
+        )
         binding.btnJourneyArrival.setOnClickListener { onJourneyArrival() }
         binding.btnJourneyDetail.setOnClickListener {
             pickRide(R.string.journey_detail_which) { ride -> openRouteDetail(ride.route) }
@@ -997,6 +1004,7 @@ class RoutesFragment : Fragment() {
             journeyAdapter.submitList(state.journeys)
         } else {
             if (recycler.adapter !== routeAdapter) recycler.adapter = routeAdapter
+            renderNearbyPager(state)
             val items = shownRoutes(state)
             val previousFirst = routeAdapter.currentList.firstOrNull()?.route?.id
             routeAdapter.submitList(items) {
@@ -1040,8 +1048,40 @@ class RoutesFragment : Fragment() {
         state.mode == HomeMode.NEARBY || state.mode == HomeMode.NONE_NEARBY
 
     /** Las rutas que enseña la lista: las del estado o, con "Todas", el catálogo entero. */
-    private fun shownRoutes(state: HomeState): List<RouteListItem> =
-        if (showAllRoutes && located(state)) RouteRepository.all().map { RouteListItem(it) } else state.items
+    private fun shownRoutes(state: HomeState): List<RouteListItem> = when {
+        showAllRoutes && located(state) -> RouteRepository.all().map { RouteListItem(it) }
+        // Las cercanas, de cinco en cinco.
+        state.mode == HomeMode.NEARBY -> NearbyRoutes.page(state.items, nearbyPage)
+        else -> state.items
+    }
+
+    /** "6–10 de 14", con flechas a las anteriores y a las siguientes, si hay más de cinco cerca. */
+    private fun renderNearbyPager(state: HomeState) {
+        val binding = _binding ?: return
+        val total = state.items.size
+        val paged = state.mode == HomeMode.NEARBY && !showAllRoutes && total > NearbyRoutes.PAGE_SIZE
+        binding.nearbyPager.isVisible = paged
+        if (!paged) {
+            nearbyPage = 0
+            return
+        }
+        // Al moverse el usuario pueden quedar menos rutas: no se pasa de la última página.
+        val pages = NearbyRoutes.pageCount(total)
+        nearbyPage = nearbyPage.coerceIn(0, pages - 1)
+        val first = nearbyPage * NearbyRoutes.PAGE_SIZE + 1
+        val last = minOf(first + NearbyRoutes.PAGE_SIZE - 1, total)
+        binding.nearbyPageLabel.text = getString(R.string.nearby_page_range, first, last, total)
+        binding.btnNearbyPrev.visibility = if (nearbyPage > 0) View.VISIBLE else View.INVISIBLE
+        binding.btnNearbyNext.visibility = if (nearbyPage < pages - 1) View.VISIBLE else View.INVISIBLE
+        binding.btnNearbyNext.text =
+            getString(R.string.nearby_page_next, minOf(NearbyRoutes.PAGE_SIZE, total - last))
+    }
+
+    private fun turnNearbyPage(step: Int) {
+        nearbyPage += step
+        lastState?.let { renderList(it) }
+        _binding?.routesRecycler?.scrollToPosition(0)
+    }
 
     /**
      * Encabezado de la hoja como en el diseño: "Rutas" o "Líneas que pasan
@@ -1118,6 +1158,7 @@ class RoutesFragment : Fragment() {
             }
             if (wantsAll == showAllRoutes) return@setOnCheckedStateChangeListener
             showAllRoutes = wantsAll
+            nearbyPage = 0
             renderList(state)
         }
     }

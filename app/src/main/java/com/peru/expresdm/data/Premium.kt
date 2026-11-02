@@ -24,6 +24,17 @@ object Premium {
     fun isActive(session: Session?, now: Long = System.currentTimeMillis()): Boolean =
         (session?.premiumUntil ?: 0L) > now
 
+    /** Con cuántos días de antelación el perfil avisa de que Premium vence. */
+    const val EXPIRY_NOTICE_DAYS = 3
+
+    private const val DAY_MS = 24L * 60 * 60 * 1000
+
+    /** Premium sigue activo pero vence en [EXPIRY_NOTICE_DAYS] días o menos: toca renovarlo. */
+    fun expiresSoon(session: Session?, now: Long = System.currentTimeMillis()): Boolean {
+        val until = session?.premiumUntil ?: return false
+        return until > now && until - now <= EXPIRY_NOTICE_DAYS * DAY_MS
+    }
+
     /**
      * Solo para la compilación de pruebas: trata la cuenta como Premium, para
      * probar sus funciones sin activarla en el servidor. Lo que el servidor

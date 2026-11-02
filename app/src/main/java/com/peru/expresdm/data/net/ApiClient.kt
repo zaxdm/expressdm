@@ -95,7 +95,7 @@ object ApiClient {
 
         var connection: HttpURLConnection? = null
         try {
-            connection = (URL(baseUrl + path).openConnection() as HttpURLConnection).apply {
+            connection = (URL(urlFor(baseUrl, path)).openConnection() as HttpURLConnection).apply {
                 requestMethod = method
                 connectTimeout = TIMEOUT_MS
                 readTimeout = TIMEOUT_MS
@@ -131,6 +131,24 @@ object ApiClient {
         } finally {
             connection?.disconnect()
         }
+    }
+
+    /**
+     * La base de datos está en Canadá; si el servidor corre en otra región,
+     * cada consulta cruza el continente y tarda segundos de más. Por eso toda
+     * llamada a nuestro servidor le pide que corra allí mismo.
+     */
+    const val REGION_PARAM = "forceFunctionRegion=ca-central-1"
+
+    /** La dirección completa de [path] en el servidor [base], con la región pedida. */
+    fun urlFor(base: String, path: String): String {
+        val url = base + path
+        // Un ancla al final (#...) no se manda al servidor: el parámetro va antes.
+        val hash = url.indexOf('#')
+        val (main, anchor) = if (hash >= 0) url.substring(0, hash) to url.substring(hash) else url to ""
+        if (main.contains(REGION_PARAM)) return url
+        val separator = if (main.contains('?')) "&" else "?"
+        return main + separator + REGION_PARAM + anchor
     }
 
     private fun reasonFor(code: Int): ApiFailure = when (code) {

@@ -38,4 +38,16 @@ class PremiumTest {
         assertEquals(Premium.FREE_FAVORITE_PLACES, Premium.favoritePlacesLimit(premium = false))
         assertEquals(Int.MAX_VALUE, Premium.favoritePlacesLimit(premium = true))
     }
+
+    @Test
+    fun `avisa de que vence solo en los ultimos tres dias`() {
+        val day = 24L * 60 * 60 * 1000
+        assertFalse(Premium.expiresSoon(null, now))
+        assertFalse(Premium.expiresSoon(session(null), now))
+        assertFalse(Premium.expiresSoon(session(now + 4 * day), now))
+        assertTrue(Premium.expiresSoon(session(now + 3 * day), now))
+        assertTrue(Premium.expiresSoon(session(now + 60_000), now))
+        // Ya vencido: no hay nada que renovar a tiempo, la tarjeta invita de nuevo.
+        assertFalse(Premium.expiresSoon(session(now - 1), now))
+    }
 }

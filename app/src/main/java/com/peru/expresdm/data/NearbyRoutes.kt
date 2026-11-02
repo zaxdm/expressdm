@@ -52,8 +52,11 @@ object NearbyRoutes {
     /** Hasta dónde consideramos que una ruta "pasa cerca": unos 20 minutos a pie. */
     const val RADIUS_METERS = 1_500.0
 
-    /** Más rutas que estas no caben de un vistazo en la hoja del inicio. */
-    const val MAX_RESULTS = 5
+    /**
+     * Más rutas que estas no caben de un vistazo en la hoja del inicio: se ven
+     * de cinco en cinco, con una flecha para las siguientes.
+     */
+    const val PAGE_SIZE = 5
 
     /** Si nada cae dentro del radio, cuántas rutas mostramos igualmente. */
     const val FALLBACK_RESULTS = 3
@@ -85,7 +88,7 @@ object NearbyRoutes {
         return NearbyRoute(route, nearest, if (atStop) distanceMeters(position, nearest) else meters, boarding)
     }
 
-    /** Rutas cercanas a [position], de la más próxima a la más lejana. */
+    /** Todas las rutas cercanas a [position], de la más próxima a la más lejana. */
     fun find(position: UserPosition, routes: List<BusRoute> = RouteRepository.all()): NearbySearch {
         val measured = routes
             .filter { it.stops.isNotEmpty() }
@@ -95,10 +98,19 @@ object NearbyRoutes {
         val inside = measured.filter { it.distanceMeters <= RADIUS_METERS }
 
         return if (inside.isNotEmpty()) {
-            NearbySearch(inside.take(MAX_RESULTS), anyWithinRadius = true)
+            NearbySearch(inside, anyWithinRadius = true)
         } else {
             NearbySearch(measured.take(FALLBACK_RESULTS), anyWithinRadius = false)
         }
+    }
+
+    /** Cuántas páginas de [PAGE_SIZE] hacen falta para [total] rutas; al menos una. */
+    fun pageCount(total: Int): Int = ((total + PAGE_SIZE - 1) / PAGE_SIZE).coerceAtLeast(1)
+
+    /** La página [index] (desde cero) de [items]; si ya no existe, la última. */
+    fun <T> page(items: List<T>, index: Int): List<T> {
+        val start = index.coerceIn(0, pageCount(items.size) - 1) * PAGE_SIZE
+        return items.drop(start).take(PAGE_SIZE)
     }
 
     /** Radio para decir que un micro "pasa por" un lugar buscado. */

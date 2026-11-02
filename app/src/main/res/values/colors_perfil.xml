@@ -30,6 +30,8 @@
 
     <!-- Cerrar sesión -->
     <color name="perfil_danger">#C2410C</color>
+    <!-- Fondo suave de lo rechazado: un pago, por ejemplo -->
+    <color name="perfil_danger_soft">#FBE4D8</color>
 
     <!-- Fondo arena de las hojas (en una hoja, colorBackground no es la arena) -->
     <color name="perfil_sand">@color/stone_50</color>

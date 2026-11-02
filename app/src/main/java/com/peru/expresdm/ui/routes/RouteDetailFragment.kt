@@ -38,6 +38,8 @@ class RouteDetailFragment : Fragment() {
     private var _binding: FragmentRouteDetailBinding? = null
     private val binding get() = _binding!!
 
+    private var info: RouteInfoPanel? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -61,8 +63,19 @@ class RouteDetailFragment : Fragment() {
         render(route)
         drawMap(route)
         // Solo la primera vez: girar la pantalla no es volver a abrir la ficha.
-        RouteInfoPanel(this, binding.routeInfo, ::showMessage)
-            .show(route, countView = savedInstanceState == null)
+        info = RouteInfoPanel(this, binding.routeInfo, ::showMessage, onDirection = ::showDirection)
+            .also { it.show(route, countView = savedInstanceState == null) }
+    }
+
+    /** Ida o vuelta: la misma pantalla pasa a enseñar el otro sentido de la línea. */
+    private fun showDirection(route: BusRoute) {
+        // Al girar la pantalla se sigue viendo el sentido elegido.
+        requireArguments().putString(ARG_ROUTE_ID, route.id)
+        render(route)
+        binding.detailMap.overlays.clear()
+        drawMap(route)
+        info?.show(route)
+        binding.detailScroll.smoothScrollTo(0, 0)
     }
 
     private fun render(route: BusRoute) {
@@ -122,11 +135,18 @@ class RouteDetailFragment : Fragment() {
         }
 
         // Encuadra el recorrido en la parte del mapa que no tapa la hoja.
-        map.addOnFirstLayoutListener { _, _, _, _, _ ->
+        val frame = {
             val box = BoundingBox.fromGeoPointsSafe(points)
             val visible = (resources.getDimensionPixelSize(R.dimen.ficha_map_visible)).coerceAtMost(map.height)
             map.setMapCenterOffset(0, (visible - map.height) / 2)
             map.zoomToBoundingBox(box.increaseByScale(1.25f), false, (28 * density).toInt())
+        }
+        // Al cambiar de sentido el mapa ya está en pantalla: se encuadra al momento.
+        if (map.isLaidOut && map.height > 0) {
+            frame()
+            map.invalidate()
+        } else {
+            map.addOnFirstLayoutListener { _, _, _, _, _ -> frame() }
         }
     }
 
@@ -160,6 +180,7 @@ class RouteDetailFragment : Fragment() {
 
     override fun onDestroyView() {
         _binding?.detailMap?.onDetach()
+        info = null
         _binding = null
         super.onDestroyView()
     }

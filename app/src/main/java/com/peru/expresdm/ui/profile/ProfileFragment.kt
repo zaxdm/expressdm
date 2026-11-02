@@ -40,6 +40,9 @@ import com.peru.expresdm.ui.Initials
 import com.peru.expresdm.ui.RouteImages
 import com.peru.expresdm.ui.account.AccountSheet
 import com.peru.expresdm.ui.account.PremiumSheet
+import com.peru.expresdm.ui.account.PurchasesSheet
+import android.text.format.DateUtils
+import java.util.Locale
 import com.peru.expresdm.ui.showRouteOnMap
 import kotlinx.coroutines.launch
 
@@ -96,6 +99,8 @@ class ProfileFragment : Fragment() {
         binding.profileFooter.text = getString(R.string.perfil_footer, BuildConfig.VERSION_NAME)
 
         binding.rowPremium.setOnClickListener { PremiumSheet.show(childFragmentManager) }
+        binding.premiumExpiring.setOnClickListener { PremiumSheet.show(childFragmentManager) }
+        binding.rowPurchases.setOnClickListener { PurchasesSheet.show(childFragmentManager) }
 
         // Ajustes ya está en la rueda de arriba: aquí va Nosotros.
         binding.rowAbout.setOnClickListener {
@@ -172,6 +177,10 @@ class ProfileFragment : Fragment() {
         val signedIn = session != null
         binding.rowSignOut.isVisible = signedIn
         binding.signOutDivider.isVisible = signedIn
+        // Las compras van con la cuenta: sin servidor o sin sesión no hay ninguna.
+        val purchases = signedIn && ApiClient.isConfigured
+        binding.rowPurchases.isVisible = purchases
+        binding.purchasesDivider.isVisible = purchases
         // Sin servidor no hay cuentas que abrir: el botón solo estorbaría.
         binding.btnAccount.isVisible = !signedIn && ApiClient.isConfigured
 
@@ -210,6 +219,26 @@ class ProfileFragment : Fragment() {
             )
             else -> getString(R.string.perfil_premium_invite)
         }
+
+        // A tres días o menos de vencer, un aviso para renovarlo a tiempo.
+        val expiring = Premium.expiresSoon(session)
+        binding.premiumExpiring.isVisible = expiring
+        if (expiring) {
+            val until = session!!.premiumUntil!!
+            binding.premiumExpiringText.text = if (DateUtils.isToday(until)) {
+                getString(R.string.perfil_premium_expired_today)
+            } else {
+                val pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "dMMMM")
+                getString(R.string.perfil_premium_expiring, DateFormat.format(pattern, until))
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // De vuelta del navegador (Mercado Pago) o tras un rato fuera: Premium
+        // pudo activarse o renovarse en el servidor.
+        viewLifecycleOwner.lifecycleScope.launch { AccountRepository.refresh() }
     }
 
     /** La foto tapa las iniciales; sin foto, se ven ellas. */

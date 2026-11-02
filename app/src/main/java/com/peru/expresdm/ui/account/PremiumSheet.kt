@@ -1,5 +1,7 @@
 package com.peru.expresdm.ui.account
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
@@ -35,10 +37,11 @@ import java.util.Date
 /**
  * Subo Premium: qué trae de más, si la cuenta ya lo tiene y cómo pagarlo.
  *
- * Premium va con la cuenta, así que primero hay que tener una. Se paga por
- * Yape: aquí se enseña el QR y lo que cuesta cada plan, y la persona sube la
- * captura del pago. El administrador la confirma y la app se entera sola la
- * próxima vez que pregunta por la sesión.
+ * Premium va con la cuenta, así que primero hay que tener una. Se paga con
+ * Mercado Pago, en su página (al volver a la app se pregunta por la sesión y
+ * Premium aparece solo), o por Yape: aquí se enseña el QR y lo que cuesta cada
+ * plan, y la persona sube la captura del pago. El administrador la confirma y
+ * la app se entera sola la próxima vez que pregunta por la sesión.
  *
  * Si el administrador todavía no puso su QR, queda lo de antes: pedirlo deja un
  * mensaje en el buzón y él lo activa a mano.
@@ -55,10 +58,20 @@ class PremiumSheet : BottomSheetDialogFragment() {
         val plans: List<Plan>,
         /** PENDING, APPROVED o REJECTED; `null` si nunca subió ninguno. */
         val status: String?,
-        val note: String?
+        val note: String?,
+        /** YAPE o MERCADOPAGO: cómo se hizo ese último pago. */
+        val method: String? = null,
+        /** El servidor tiene Mercado Pago listo para cobrar. */
+        val mercadoPago: Boolean = false
     ) {
         /** El administrador ya dejó todo listo para cobrar por Yape. */
         val isOffered: Boolean get() = qrUrl != null && plans.isNotEmpty()
+
+        /** Se puede pagar aquí mismo, de una forma u otra. */
+        val canPay: Boolean get() = isOffered || (mercadoPago && plans.isNotEmpty())
+
+        /** Hay una captura de Yape esperando a que la revisen. */
+        val yapePending: Boolean get() = status == STATUS_PENDING && method != METHOD_MERCADOPAGO
     }
 
     private var _binding: SheetPremiumBinding? = null
@@ -74,6 +87,12 @@ class PremiumSheet : BottomSheetDialogFragment() {
 
     /** Lo último que salió mal al pagar, para decirlo junto al botón. */
     private var problem: String? = null
+
+    /** Se está pidiendo el enlace de pago de Mercado Pago. */
+    private var checkingOut = false
+
+    /** Se fue a pagar a Mercado Pago: al volver se pregunta si ya es Premium. */
+    private var wentToCheckout = false
 
     /** Solo imágenes: el selector de Android no deja elegir otra cosa. */
     private val pickProof = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -97,7 +116,9 @@ class PremiumSheet : BottomSheetDialogFragment() {
             binding.benefits.addView(row.root)
         }
 
+        wentToCheckout = savedInstanceState?.getBoolean(STATE_CHECKOUT) ?: false
         binding.btnPremiumAction.setOnClickListener { onAction() }
+        binding.btnMercadoPago.setOnClickListener { checkout() }
         binding.btnPremiumBack.setOnClickListener { dismiss() }
         // La voz y el aviso de llegada se ajustan en Ajustes, desde el perfil.
         binding.btnPremiumSettings.setOnClickListener {
@@ -119,6 +140,17 @@ class PremiumSheet : BottomSheetDialogFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 AccountRepository.session.collect { render(it) }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // De vuelta de la página de Mercado Pago: la web ya confirmó el pago.
+        if (!wentToCheckout) return
+        wentToCheckout = false
+        viewLifecycleOwner.lifecycleScope.launch {
+            AccountRepository.refresh()
+            loadPayment()
         }
     }
 
@@ -185,7 +217,9 @@ class PremiumSheet : BottomSheetDialogFragment() {
                 Plan(plan.optInt("days"), plan.optDouble("price"))
             }.filter { it.days > 0 && it.price > 0 },
             status = mine?.optString("status")?.takeIf { it.isNotBlank() },
-            note = mine?.takeUnless { it.isNull("note") }?.optString("note")?.takeIf { it.isNotBlank() }
+            note = mine?.takeUnless { it.isNull("note") }?.optString("note")?.takeIf { it.isNotBlank() },
+            method = mine?.optString("method")?.takeIf { it.isNotBlank() },
+            mercadoPago = data.optBoolean("mercadoPago")
         )
     }
 
@@ -224,9 +258,11 @@ class PremiumSheet : BottomSheetDialogFragment() {
         val binding = _binding ?: return
         val active = Premium.isActive(session)
         val payment = payment
-        val pending = payment?.status == STATUS_PENDING
-        // Se paga por Yape si hay sesión, no es ya Premium y el QR está puesto.
-        val paying = !active && session != null && payment?.isOffered == true
+        val pending = payment?.yapePending == true
+        // Se paga aquí si hay sesión, no es ya Premium y hay QR o Mercado Pago.
+        val paying = !active && session != null && payment?.canPay == true
+        val yape = paying && payment?.isOffered == true
+        val mercadoPago = paying && payment?.mercadoPago == true
 
         binding.premiumActiveDot.isVisible = active
         // Con Premium activo, lo que queda es ajustarlo; sin él, el botón principal invita a tenerlo.
@@ -243,15 +279,23 @@ class PremiumSheet : BottomSheetDialogFragment() {
 
         // Con la captura en revisión ya no hace falta el QR: solo esperar.
         binding.paymentSection.isVisible = paying && !pending
-        if (paying && !pending) {
+        binding.mercadoPagoSection.isVisible = mercadoPago
+        binding.btnMercadoPago.isEnabled = !checkingOut && !uploading
+        binding.btnMercadoPago.setText(if (checkingOut) R.string.premium_mp_opening else R.string.premium_mp_action)
+        // Con Mercado Pago arriba, Yape queda como la otra forma de pagar.
+        binding.paymentTitle.setText(if (mercadoPago) R.string.premium_pay_choose_title else R.string.premium_pay_title)
+        binding.yapeTitle.isVisible = mercadoPago
+        binding.yapeSection.isVisible = yape
+        if (yape && !pending) {
             RouteImages.show(binding.qrImage, payment?.qrUrl, getString(R.string.premium_pay_qr))
             binding.yapeHolder.isVisible = payment?.holder?.isNotBlank() == true
             binding.yapeHolder.text = getString(R.string.premium_pay_holder, payment?.holder.orEmpty())
         }
 
-        binding.btnPremiumAction.isVisible = !active
+        // Solo Mercado Pago: su botón ya es el principal.
+        binding.btnPremiumAction.isVisible = !active && !(paying && !yape)
         binding.btnPremiumAction.isEnabled = when {
-            paying -> !pending && !uploading
+            paying -> !pending && !uploading && !checkingOut
             else -> !requested
         }
         binding.btnPremiumAction.setText(
@@ -265,16 +309,52 @@ class PremiumSheet : BottomSheetDialogFragment() {
             }
         )
 
-        binding.premiumHow.isVisible = !active
-        binding.premiumHow.text = when {
+        val how = when {
             session == null -> getString(R.string.premium_how_sign_in)
             problem != null -> problem
             paying && pending -> getString(R.string.premium_pay_pending)
             paying && payment?.status == STATUS_REJECTED ->
                 getString(R.string.premium_pay_rejected, payment.note ?: getString(R.string.premium_pay_rejected_plain))
-            paying -> getString(R.string.premium_pay_only_images)
+            yape -> getString(R.string.premium_pay_only_images)
+            paying -> null
             requested -> getString(R.string.premium_how_requested)
             else -> getString(R.string.premium_how_request)
+        }
+        binding.premiumHow.isVisible = !active && how != null
+        binding.premiumHow.text = how
+    }
+
+    /**
+     * Pide al servidor el enlace de pago del plan elegido y lo abre en el
+     * navegador. Al terminar, la persona llega a la web, que confirma el pago.
+     */
+    private fun checkout() {
+        val plan = selectedPlan() ?: payment?.plans?.firstOrNull() ?: return
+        if (checkingOut) return
+        checkingOut = true
+        problem = null
+        render(AccountRepository.session.value)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val body = JSONObject().put("days", plan.days)
+            val result = ApiClient.post("/api/premium/checkout", body, AccountRepository.token)
+            checkingOut = false
+            if (_binding == null) return@launch
+            val url = (result as? ApiResult.Success)?.data?.optString("url")?.takeIf { it.startsWith("https://") }
+            when {
+                url != null -> {
+                    val opened = runCatching {
+                        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    }.isSuccess
+                    if (opened) wentToCheckout = true else problem = getString(R.string.premium_mp_failed)
+                }
+                (result as? ApiResult.Failure)?.code == ERROR_NO_MERCADO_PAGO -> {
+                    // Lo apagaron mientras tanto: queda Yape, si está puesto.
+                    payment = payment?.copy(mercadoPago = false)
+                    problem = getString(R.string.premium_mp_unavailable)
+                }
+                else -> problem = getString(R.string.premium_mp_failed)
+            }
+            render(AccountRepository.session.value)
         }
     }
 
@@ -317,7 +397,7 @@ class PremiumSheet : BottomSheetDialogFragment() {
                 }
             uploading = false
             if (failure == null) {
-                payment = payment?.copy(status = STATUS_PENDING, note = null)
+                payment = payment?.copy(status = STATUS_PENDING, note = null, method = METHOD_YAPE)
             } else {
                 // El motivo que da el servidor ("eso no es un pago") ya viene listo para mostrar.
                 problem = failure.message?.takeIf { failure.reason == ApiFailure.REJECTED }
@@ -355,6 +435,7 @@ class PremiumSheet : BottomSheetDialogFragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(STATE_REQUESTED, requested)
+        outState.putBoolean(STATE_CHECKOUT, wentToCheckout)
     }
 
     override fun onDestroyView() {
@@ -367,6 +448,10 @@ class PremiumSheet : BottomSheetDialogFragment() {
         private const val STATE_REQUESTED = "requested"
         private const val STATUS_PENDING = "PENDING"
         private const val STATUS_REJECTED = "REJECTED"
+        private const val METHOD_YAPE = "YAPE"
+        private const val METHOD_MERCADOPAGO = "MERCADOPAGO"
+        private const val STATE_CHECKOUT = "went_to_checkout"
+        private const val ERROR_NO_MERCADO_PAGO = "sin_mercado_pago"
 
         fun show(manager: FragmentManager) {
             if (manager.findFragmentByTag(TAG) == null) PremiumSheet().show(manager, TAG)

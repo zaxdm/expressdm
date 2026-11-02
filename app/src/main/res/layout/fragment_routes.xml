@@ -538,6 +538,43 @@
                         tools:text="Todas (133)" />
                 </com.google.android.material.chip.ChipGroup>
 
+                <!-- Más de cinco rutas cerca: se ven de cinco en cinco, con flechas -->
+                <LinearLayout
+                    android:id="@+id/nearbyPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnNearbyPrev"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/nearby_page_prev"
+                        app:icon="@drawable/ic_arrow_back" />
+
+                    <TextView
+                        android:id="@+id/nearbyPageLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.Rutas.Support"
+                        tools:text="6–10 de 14" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnNearbyNext"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:icon="@drawable/ic_arrow_right"
+                        app:iconGravity="end"
+                        tools:text="Ver 5 más" />
+                </LinearLayout>
+
                 <!--
                   Con un destino elegido (tocando el mapa o buscándolo): lo mismo
                   que ofrece el panel de una ruta, para el viaje que se ve en el

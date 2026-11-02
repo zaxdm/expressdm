@@ -473,7 +473,6 @@
 
     <!-- Alertas de un micro, con foto y con autor -->
     <string name="create_alert_route">¿De qué micro? (opcional)</string>
-    <string name="create_alert_route_item">%1$s · %2$s</string>
     <string name="create_alert_photo">Foto de la alerta</string>
     <string name="create_alert_photo_add">Agregar foto</string>
     <string name="create_alert_photo_take">Tomar foto</string>
@@ -761,4 +760,44 @@
     <string name="saved_place_tap_hint">Toca el mapa donde queda tu %1$s para guardarlo</string>
     <string name="saved_place_map_point">Punto en el mapa</string>
     <string name="saved_place_full">No se pudo guardar %1$s: llegaste al tope de favoritos</string>
+    <!-- Ida y vuelta en la ficha de una ruta -->
+    <string name="route_direction_ida">Ida</string>
+    <string name="route_direction_vuelta">Vuelta</string>
+    <string name="route_direction_showing_ida">Ida: %1$s → %2$s</string>
+    <string name="route_direction_showing_vuelta">Vuelta: %1$s → %2$s</string>
+
+    <!-- Rutas cercanas de cinco en cinco -->
+    <string name="nearby_page_range">%1$d–%2$d de %3$d</string>
+    <string name="nearby_page_next">Ver %1$d más</string>
+    <string name="nearby_page_prev">Anteriores</string>
+
+    <!-- Crear reporte: de qué micro -->
+    <string name="create_alert_route_none">No sé / ninguna</string>
+
+    <!-- Premium: Mercado Pago, aviso de vencimiento e historial de compras -->
+    <string name="premium_pay_choose_title">ELIGE TU PLAN</string>
+    <string name="premium_mp_action">Pagar con Mercado Pago</string>
+    <string name="premium_mp_opening">Abriendo Mercado Pago…</string>
+    <string name="premium_mp_note">Con tarjeta, Yape o banca por internet. Al terminar, vuelve a la app: Premium se activa solo.</string>
+    <string name="premium_mp_failed">No se pudo abrir el pago. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="premium_mp_unavailable">El pago con Mercado Pago no está disponible ahora. Puedes pagar por Yape.</string>
+    <string name="premium_pay_or_yape">O PAGA CON YAPE</string>
+    <string name="perfil_premium_expiring">Tu Premium vence el %1$s · Renovar</string>
+    <string name="perfil_premium_expired_today">Tu Premium vence hoy · Renovar</string>
+    <string name="perfil_purchases">Historial de compras</string>
+    <string name="purchases_title">Historial de compras</string>
+    <string name="purchases_empty">Aún no tienes compras. Cuando pagues Subo Premium, aparecerán aquí.</string>
+    <string name="purchases_failed">No se pudo cargar tu historial. Revisa tu conexión e inténtalo de nuevo.</string>
+    <string name="purchases_item_title">Subo Premium · %1$s</string>
+    <string name="purchases_days">%1$d días</string>
+    <string name="purchases_amount">S/ %1$s</string>
+    <string name="purchases_method_yape">Yape</string>
+    <string name="purchases_method_mercadopago">Mercado Pago</string>
+    <string name="purchases_status_approved">Aprobado</string>
+    <string name="purchases_status_pending">En revisión</string>
+    <string name="purchases_status_rejected">Rechazado</string>
+    <string name="purchases_note">Motivo: %1$s</string>
+    <string name="purchases_receipt">Comprobante %1$s</string>
+    <string name="premium_channel_name">Subo Premium</string>
+    <string name="premium_channel_description">Cuando se confirma tu pago o tu Premium está por vencer</string>
 </resources>

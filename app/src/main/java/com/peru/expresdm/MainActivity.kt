@@ -24,9 +24,11 @@ import com.peru.expresdm.data.net.AccountRepository
 import com.peru.expresdm.databinding.ActivityMainBinding
 import com.peru.expresdm.tracking.ArrivalAlarmService
 import com.peru.expresdm.tracking.BackgroundAccess
+import com.peru.expresdm.tracking.PremiumNotifier
 import com.peru.expresdm.tracking.PushRegistration
 import com.peru.expresdm.tracking.UpdateWatchWorker
 import com.peru.expresdm.ui.UpdatePrompt
+import com.peru.expresdm.ui.account.PremiumSheet
 import com.peru.expresdm.ui.assistant.AssistantSheet
 import com.peru.expresdm.ui.routes.REQUEST_OPEN_ASSISTANT
 import com.peru.expresdm.ui.routes.RouteDetailFragment
@@ -76,6 +78,7 @@ class MainActivity : AppCompatActivity() {
 
         // Al girar la pantalla el enlace ya se atendió: la ficha sigue abierta.
         if (savedInstanceState == null) openSharedRoute(intent)
+        if (savedInstanceState == null) openPremium(intent)
 
         // Premium y el permiso de administrador se activan en el servidor: al
         // abrir la app se pregunta cómo está la cuenta.
@@ -107,6 +110,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         openSharedRoute(intent)
+        openPremium(intent)
         if (intent.getBooleanExtra(UpdateWatchWorker.EXTRA_OFFER_UPDATE, false)) offerUpdate(asked = true)
     }
 
@@ -119,6 +123,18 @@ class MainActivity : AppCompatActivity() {
             val update = AppUpdates.check() ?: return@launch
             if (asked || AppUpdates.shouldOffer(this@MainActivity, update)) UpdatePrompt.offer(this@MainActivity, update)
         }
+    }
+
+    /** Se tocó un aviso de Premium: el perfil, con la hoja de Premium encima. */
+    private fun openPremium(intent: Intent?) {
+        if (intent?.getBooleanExtra(PremiumNotifier.EXTRA_OPEN_PREMIUM, false) != true) return
+        intent.removeExtra(PremiumNotifier.EXTRA_OPEN_PREMIUM)
+        if (navController.currentDestination?.id != R.id.profileFragment) {
+            binding.bottomNav.selectedItemId = R.id.profileFragment
+        }
+        // Se pregunta por la sesión: el pago pudo confirmarse mientras tanto.
+        lifecycleScope.launch { AccountRepository.refresh() }
+        PremiumSheet.show(supportFragmentManager)
     }
 
     /** Si la app se abrió desde un enlace compartido, enseña la ficha de ese micro. */

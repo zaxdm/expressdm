@@ -45,9 +45,32 @@ class NearbyRoutesTest {
     }
 
     @Test
-    fun `nunca devuelve mas rutas del maximo`() {
-        // Desde el centro las seis rutas caen dentro del radio.
-        assertEquals(NearbyRoutes.MAX_RESULTS, NearbyRoutes.find(plazaDeArmas).routes.size)
+    fun `devuelve todas las rutas dentro del radio y no solo las primeras`() {
+        // Desde el centro las seis rutas caen dentro del radio: la hoja las pagina de cinco en cinco.
+        val inside = RouteRepository.all().count {
+            NearbyRoutes.measure(it, plazaDeArmas).distanceMeters <= NearbyRoutes.RADIUS_METERS
+        }
+        assertTrue(inside > NearbyRoutes.PAGE_SIZE)
+        assertEquals(inside, NearbyRoutes.find(plazaDeArmas).routes.size)
+    }
+
+    @Test
+    fun `las paginas van de cinco en cinco`() {
+        val items = (1..14).toList()
+
+        assertEquals(3, NearbyRoutes.pageCount(items.size))
+        assertEquals(listOf(1, 2, 3, 4, 5), NearbyRoutes.page(items, 0))
+        assertEquals(listOf(6, 7, 8, 9, 10), NearbyRoutes.page(items, 1))
+        assertEquals(listOf(11, 12, 13, 14), NearbyRoutes.page(items, 2))
+    }
+
+    @Test
+    fun `una pagina que ya no existe da la ultima`() {
+        // Al moverse el usuario pueden quedar menos rutas que antes.
+        assertEquals(listOf(6, 7), NearbyRoutes.page((1..7).toList(), 4))
+        assertEquals(listOf(1, 2), NearbyRoutes.page(listOf(1, 2), -1))
+        assertEquals(1, NearbyRoutes.pageCount(0))
+        assertTrue(NearbyRoutes.page(emptyList<Int>(), 0).isEmpty())
     }
 
     @Test

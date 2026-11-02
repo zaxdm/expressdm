@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
  * Recibe los avisos al momento: el servidor manda uno en cuanto alguien publica
  * una alerta cerca de donde anda este teléfono o en una ruta que usa, y cuando
  * cambia una ruta que el usuario tiene guardada (Premium). También cuando sale
- * una versión nueva de la app.
+ * una versión nueva de la app, y con lo de Subo Premium: pago confirmado o
+ * rechazado, y que está por vencer.
  *
  * Llegan solo los datos; la notificación se arma aquí, en el idioma del
  * teléfono y respetando lo que el usuario eligió en Ajustes.
@@ -29,6 +30,11 @@ class PushService : FirebaseMessagingService() {
         val data = message.data
         if (data["kind"] == KIND_ROUTE_CHANGE) {
             onRouteChanged(data)
+            return
+        }
+        val kind = data["kind"].orEmpty()
+        if (kind in PremiumNotifier.KINDS) {
+            PremiumNotifier.handle(this, kind, data)
             return
         }
         if (data["kind"] == KIND_APP_UPDATE) {

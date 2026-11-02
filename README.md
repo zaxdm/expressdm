@@ -54,6 +54,8 @@ es la primera pantalla:
 - **Encima del mapa**, el buscador de lugares y una hoja deslizable con las
   **rutas cercanas**: las que tienen una parada a menos de 1,5 km, ordenadas por
   distancia y con cuánto se tarda a pie ("350 m · 5 min a pie · Av. España").
+  Se ven de 5 en 5: si hay más, una flecha enseña las 5 siguientes ("6–10 de 14")
+  y otra vuelve a las anteriores.
 - Si ninguna ruta pasa a menos de 1,5 km, se muestran igualmente las 3 más
   próximas y la hoja lo advierte. Sin permiso de ubicación se muestran todas,
   con un botón para activarla.

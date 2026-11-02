@@ -65,6 +65,16 @@ class SessionStore private constructor(context: Context) {
         if (previous != session.userId) userListeners.forEach { it(session.userId) }
     }
 
+    /**
+     * Pone al día hasta cuándo es Premium, sin tocar lo demás: llega por el
+     * aviso de pago confirmado, antes de volver a preguntar por la sesión.
+     */
+    fun updatePremiumUntil(until: Long) {
+        val current = _session.value ?: return
+        if (current.premiumUntil == until) return
+        save(current.copy(premiumUntil = until))
+    }
+
     fun clear() {
         val previous = _session.value?.userId
         prefs.edit().clear().apply()

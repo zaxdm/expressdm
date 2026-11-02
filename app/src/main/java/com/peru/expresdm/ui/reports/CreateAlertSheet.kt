@@ -34,6 +34,8 @@ import com.peru.expresdm.data.AppUpdates
 import com.peru.expresdm.data.PlaceSearch
 import com.peru.expresdm.data.PublishResult
 import com.peru.expresdm.data.RoadAlert
+import com.peru.expresdm.data.RouteChoice
+import com.peru.expresdm.data.RouteChoices
 import com.peru.expresdm.data.RouteRepository
 import com.peru.expresdm.data.net.AccountRepository
 import com.peru.expresdm.data.net.ApiClient
@@ -226,13 +228,25 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         if (!publishing) binding.btnPublish.setText(AlertStyle.publishLabel(selectedType))
     }
 
-    /** La lista de micros, para decir de cuál se habla. */
+    /**
+     * La lista de micros, para decir de cuál se habla: una fila por línea, en
+     * orden de código, y se filtra escribiendo el código o un barrio.
+     */
     private fun buildRouteChoices() {
-        val routes = RouteRepository.all().sortedBy { it.name.lowercase() }
-        val labels = routes.map { getString(R.string.create_alert_route_item, it.name, it.subtitle) }
-        binding.routeInput.setSimpleItems(labels.toTypedArray())
-        binding.routeInput.setOnItemClickListener { _, _, position, _ ->
-            selectedRouteId = routes.getOrNull(position)?.id
+        val none = RouteChoice(null, getString(R.string.create_alert_route_none), "")
+        val choices = listOf(none) + RouteChoices.build(RouteRepository.all())
+        val input = binding.routeInput
+        input.setAdapter(RouteChoiceAdapter(requireContext(), choices))
+        input.threshold = 1
+        // Que la lista no tape toda la hoja: se ve un trozo y se desplaza.
+        input.dropDownHeight = (DROPDOWN_HEIGHT_DP * resources.displayMetrics.density).toInt()
+        input.setOnItemClickListener { parent, _, position, _ ->
+            selectedRouteId = (parent.getItemAtPosition(position) as? RouteChoice)?.routeId
+        }
+        // Lo escrito a mano no es una ruta: hasta elegir una de la lista, no se manda ninguna.
+        input.doAfterTextChanged { text ->
+            val picked = choices.firstOrNull { it.routeId == selectedRouteId }
+            if (picked != null && picked.label != text?.toString()) selectedRouteId = null
         }
     }
 
@@ -464,7 +478,45 @@ class CreateAlertSheet : BottomSheetDialogFragment() {
         super.onDestroyView()
     }
 
+    /**
+     * Las filas de la lista de micros. El filtro es propio: el de Android solo
+     * mira el principio del texto, y aquí se busca también por barrio.
+     * "No sé / ninguna" se ve siempre, arriba.
+     */
+    private class RouteChoiceAdapter(
+        context: android.content.Context,
+        private val all: List<RouteChoice>
+    ) : android.widget.ArrayAdapter<RouteChoice>(
+        context, com.google.android.material.R.layout.m3_auto_complete_simple_item, all.toMutableList()
+    ) {
+        private val filter = object : android.widget.Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val query = constraint?.toString().orEmpty()
+                val found = all.filterIndexed { index, choice -> index == 0 || RouteChoices.matches(choice, query) }
+                return FilterResults().apply {
+                    values = found
+                    count = found.size
+                }
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                clear()
+                addAll(results?.values as? List<RouteChoice> ?: all)
+                notifyDataSetChanged()
+            }
+
+            override fun convertResultToString(resultValue: Any?): CharSequence =
+                (resultValue as? RouteChoice)?.label.orEmpty()
+        }
+
+        override fun getFilter(): android.widget.Filter = filter
+    }
+
     companion object {
+        /** Alto de la lista de micros: unas seis filas. */
+        private const val DROPDOWN_HEIGHT_DP = 300
+
         private const val TAG = "create_alert"
         private const val STATE_TYPE = "type"
         private const val STATE_CAMERA_TARGET = "camera_target"

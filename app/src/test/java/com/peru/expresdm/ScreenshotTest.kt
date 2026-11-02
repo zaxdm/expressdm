@@ -448,6 +448,101 @@ class ScreenshotTest {
         }
     }
 
+    /** La ficha de una línea con ida y vuelta: el selector de sentido, en los dos. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura la ida y la vuelta de una ruta`() {
+        val ida = com.peru.expresdm.data.RouteRepository.byId(fichaRouteId())!!
+        val vuelta = ida.copy(
+            id = "vuelta-de-prueba",
+            origin = ida.destination,
+            destination = ida.origin,
+            stops = ida.stops.reversed(),
+            createdByUser = false
+        )
+        com.peru.expresdm.data.RouteRepository.add(vuelta)
+        try {
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                scenario.onActivity { activity ->
+                    val navHost = activity.supportFragmentManager
+                        .findFragmentById(R.id.navHost) as NavHostFragment
+                    navHost.navController.navigate(R.id.routeDetailFragment, RouteDetailFragment.args(ida.id))
+                    idle()
+                    capture(activity, "30-ficha-ida")
+                    activity.findViewById<View>(R.id.btnDirectionVuelta).performClick()
+                    idle()
+                    capture(activity, "31-ficha-vuelta")
+                }
+            }
+        } finally {
+            com.peru.expresdm.data.RouteRepository.remove(vuelta.id)
+        }
+    }
+
+    /** El perfil con Premium a punto de vencer, el historial de compras y el micro de un reporte. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura el aviso de vencimiento y el historial de compras`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val session = Session(
+            token = "token-de-prueba",
+            userId = "usuario-3",
+            email = "ana.quispe@ejemplo.pe",
+            displayName = "Ana María Quispe",
+            premiumUntil = System.currentTimeMillis() + 2L * 24 * 60 * 60 * 1000
+        )
+        SessionStore.get(context).save(session)
+        try {
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                scenario.onActivity { activity ->
+                    selectTab(activity, R.id.profileFragment)
+                    keepSession(context, session)
+                    capture(activity, "32-perfil-premium-vence")
+                    activity.findViewById<View>(R.id.rowPremium).performClick()
+                    idle()
+                    Thread.sleep(3_000)
+                    idle()
+                    keepSession(context, session.copy(premiumUntil = null))
+                    val premium = ShadowDialog.getLatestDialog().window!!.decorView
+                    // Mercado Pago depende del servidor: aquí se enseña a mano para ver cómo queda.
+                    premium.findViewById<View>(R.id.paymentSection).visibility = View.VISIBLE
+                    premium.findViewById<View>(R.id.mercadoPagoSection).visibility = View.VISIBLE
+                    premium.findViewById<View>(R.id.yapeTitle).visibility = View.VISIBLE
+                    premium.findViewById<ViewGroup>(R.id.paymentSection).let { card ->
+                        (premium.findViewById<View>(R.id.paymentSection).parent as View).let { content ->
+                            (content.parent as? ViewGroup)?.scrollTo(0, card.top)
+                        }
+                    }
+                    idle()
+                    capture(activity, "35-premium-mercado-pago", premium)
+                    ShadowDialog.getLatestDialog().dismiss()
+                    keepSession(context, session)
+                    idle()
+                    activity.findViewById<View>(R.id.rowPurchases).performClick()
+                    idle()
+                    Thread.sleep(3_000)
+                    idle()
+                    val sheet = ShadowDialog.getLatestDialog().window!!.decorView
+                    capture(activity, "33-historial-compras", sheet)
+                    ShadowDialog.getLatestDialog().dismiss()
+                    idle()
+
+                    selectTab(activity, R.id.reportsFragment)
+                    activity.findViewById<View>(R.id.btnReport).performClick()
+                    idle()
+                    val report = ShadowDialog.getLatestDialog().window!!.decorView
+                    // "Cobro de más", que pregunta de qué micro.
+                    val grid = report.findViewById<ViewGroup>(R.id.typeGrid)
+                    (grid.getChildAt(1) as ViewGroup).getChildAt(0).performClick()
+                    idle()
+                    capture(activity, "34-reporte-micro", report)
+                }
+            }
+        } finally {
+            SessionStore.get(context).clear()
+        }
+    }
+
     private fun selectTab(activity: Activity, itemId: Int) {
         activity.findViewById<BottomNavigationView>(R.id.bottomNav).selectedItemId = itemId
         idle()

@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Todo el tráfico va cifrado (HTTPS), salvo el servidor de pruebas que corre en
-  la PC de desarrollo dentro de la red local. Cuando el servidor se publique en
-  internet con HTTPS, estas excepciones se borran.
+  Todo el tráfico va cifrado (HTTPS). Las excepciones para el servidor de
+  pruebas en la PC de desarrollo viven solo en la compilación de pruebas
+  (src/debug/res/xml/network_security_config.xml).
 -->
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <!-- La PC de desarrollo en la red local -->
-        <domain includeSubdomains="false">192.168.15.2</domain>
-        <!-- El emulador de Android hablando con la PC que lo aloja -->
-        <domain includeSubdomains="false">10.0.2.2</domain>
-        <!-- Con "adb reverse", el teléfono alcanza la PC por localhost -->
-        <domain includeSubdomains="false">localhost</domain>
-        <domain includeSubdomains="false">127.0.0.1</domain>
-    </domain-config>
+    <base-config cleartextTrafficPermitted="false" />
 </network-security-config>

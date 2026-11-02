@@ -475,7 +475,6 @@
 
     <!-- Alertas de un micro, con foto y con autor -->
     <string name="create_alert_route">Which bus? (optional)</string>
-    <string name="create_alert_route_item">%1$s · %2$s</string>
     <string name="create_alert_photo">Alert photo</string>
     <string name="create_alert_photo_add">Add photo</string>
     <string name="create_alert_photo_take">Take photo</string>
@@ -763,4 +762,44 @@
     <string name="saved_place_tap_hint">Tap the map where your %1$s is to save it</string>
     <string name="saved_place_map_point">Point on the map</string>
     <string name="saved_place_full">Couldn\'t save %1$s: you reached the favorites limit</string>
+    <!-- Outbound and return on a route's card -->
+    <string name="route_direction_ida">Outbound</string>
+    <string name="route_direction_vuelta">Return</string>
+    <string name="route_direction_showing_ida">Outbound: %1$s → %2$s</string>
+    <string name="route_direction_showing_vuelta">Return: %1$s → %2$s</string>
+
+    <!-- Nearby routes, five at a time -->
+    <string name="nearby_page_range">%1$d–%2$d of %3$d</string>
+    <string name="nearby_page_next">See %1$d more</string>
+    <string name="nearby_page_prev">Previous</string>
+
+    <!-- Create report: which bus -->
+    <string name="create_alert_route_none">I don\'t know / none</string>
+
+    <!-- Premium: Mercado Pago, expiry notice and purchase history -->
+    <string name="premium_pay_choose_title">CHOOSE YOUR PLAN</string>
+    <string name="premium_mp_action">Pay with Mercado Pago</string>
+    <string name="premium_mp_opening">Opening Mercado Pago…</string>
+    <string name="premium_mp_note">With a card, Yape or online banking. When you\'re done, come back to the app: Premium turns on by itself.</string>
+    <string name="premium_mp_failed">Couldn\'t open the payment. Check your connection and try again.</string>
+    <string name="premium_mp_unavailable">Paying with Mercado Pago isn\'t available right now. You can pay with Yape.</string>
+    <string name="premium_pay_or_yape">OR PAY WITH YAPE</string>
+    <string name="perfil_premium_expiring">Your Premium ends on %1$s · Renew</string>
+    <string name="perfil_premium_expired_today">Your Premium ends today · Renew</string>
+    <string name="perfil_purchases">Purchase history</string>
+    <string name="purchases_title">Purchase history</string>
+    <string name="purchases_empty">No purchases yet. When you pay for Subo Premium, they\'ll show up here.</string>
+    <string name="purchases_failed">Couldn\'t load your history. Check your connection and try again.</string>
+    <string name="purchases_item_title">Subo Premium · %1$s</string>
+    <string name="purchases_days">%1$d days</string>
+    <string name="purchases_amount">S/ %1$s</string>
+    <string name="purchases_method_yape">Yape</string>
+    <string name="purchases_method_mercadopago">Mercado Pago</string>
+    <string name="purchases_status_approved">Approved</string>
+    <string name="purchases_status_pending">Under review</string>
+    <string name="purchases_status_rejected">Rejected</string>
+    <string name="purchases_note">Reason: %1$s</string>
+    <string name="purchases_receipt">Receipt %1$s</string>
+    <string name="premium_channel_name">Subo Premium</string>
+    <string name="premium_channel_description">When your payment is confirmed or your Premium is about to end</string>
 </resources>

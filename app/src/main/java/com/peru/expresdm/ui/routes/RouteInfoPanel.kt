@@ -16,6 +16,8 @@ import com.peru.expresdm.data.FareTable
 import com.peru.expresdm.data.Premium
 import com.peru.expresdm.data.RouteCommunity
 import com.peru.expresdm.data.RouteCommunityRepository
+import com.peru.expresdm.data.RouteDirections
+import com.peru.expresdm.data.RouteRepository
 import com.peru.expresdm.data.SavedRoutes
 import com.peru.expresdm.data.SharedLink
 import com.peru.expresdm.data.net.AccountRepository
@@ -44,17 +46,26 @@ import java.util.Locale
  * @param showMessage cómo enseña mensajes quien la aloja.
  * @param onShare si se da, sustituye a compartir la ficha: en el mapa se
  *   comparte el viaje, que dice además dónde se baja uno.
+ * @param onDirection si se da, la ficha ofrece ver el otro sentido de la línea
+ *   (ida o vuelta), y quien la aloja enseña la ruta que recibe.
  */
 class RouteInfoPanel(
     private val fragment: Fragment,
     private val binding: ViewRouteInfoBinding,
     private val showMessage: (String) -> Unit,
-    private val onShare: ((BusRoute) -> Unit)? = null
+    private val onShare: ((BusRoute) -> Unit)? = null,
+    private val onDirection: ((BusRoute) -> Unit)? = null
 ) {
 
     private var route: BusRoute? = null
     private var community: RouteCommunity? = null
     private var loadJob: Job? = null
+
+    /** El sentido de la ruta que se ve y su pareja; `null` si la línea no tiene otro. */
+    private var directions: RouteDirections.Directions? = null
+
+    /** Se está marcando el sentido desde el código, no lo tocó el usuario. */
+    private var markingDirection = false
 
     private val context get() = binding.root.context
 
@@ -63,6 +74,12 @@ class RouteInfoPanel(
         binding.btnShare.setOnClickListener { route?.let { onShare?.invoke(it) ?: share(it) } }
         binding.btnSaveOffline.setOnClickListener { route?.let { toggleSaved(it) } }
         binding.btnRate.setOnClickListener { route?.let { askForRating(it) } }
+        binding.directionToggle.addOnButtonCheckedListener { _, id, checked ->
+            val found = directions
+            if (!checked || markingDirection || found == null) return@addOnButtonCheckedListener
+            val wantsIda = id == R.id.btnDirectionIda
+            if (wantsIda != (found.way == RouteDirections.Way.IDA)) onDirection?.invoke(found.partner)
+        }
     }
 
     /**
@@ -113,6 +130,7 @@ class RouteInfoPanel(
     }
 
     private fun render(route: BusRoute) {
+        renderDirection(route)
         val color = ContextCompat.getColor(context, RouteAccent.colorFor(route.accentIndex))
 
         // La foto solo sale si alguien la subió; sin ella, la ficha va directa a los datos.
@@ -150,6 +168,23 @@ class RouteInfoPanel(
         binding.fareRegular.text = formatFare(fares.regular)
         // Sin ninguno de los dos, una sola fila que dice que aún no se sabe.
         binding.rowFareReduced.isVisible = fares.school == null && fares.university == null
+    }
+
+    /** "Ida | Vuelta" y cuál se está viendo, si la línea tiene los dos sentidos. */
+    private fun renderDirection(route: BusRoute) {
+        val found = onDirection?.let { RouteDirections.of(route, RouteRepository.all()) }
+        directions = found
+        binding.directionRow.isVisible = found != null
+        if (found == null) return
+        val ida = found.way == RouteDirections.Way.IDA
+        markingDirection = true
+        binding.directionToggle.check(if (ida) R.id.btnDirectionIda else R.id.btnDirectionVuelta)
+        markingDirection = false
+        binding.directionLabel.text = context.getString(
+            if (ida) R.string.route_direction_showing_ida else R.string.route_direction_showing_vuelta,
+            route.origin,
+            route.destination
+        )
     }
 
     private fun formatFare(amount: Double): String =
