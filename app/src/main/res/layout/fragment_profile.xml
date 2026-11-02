@@ -595,6 +595,43 @@
                         android:textAppearance="@style/TextAppearance.Perfil.RowText"
                         android:textColor="@color/perfil_danger" />
                 </LinearLayout>
+
+                <!-- Borrar la cuenta: al final y en rojo, como pide Google Play. -->
+                <View
+                    android:id="@+id/deleteAccountDivider"
+                    style="@style/Widget.Expresdm.SettingsDivider"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <LinearLayout
+                    android:id="@+id/rowDeleteAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:minHeight="56dp"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="14dp"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <ImageView
+                        style="@style/Widget.Perfil.MenuIcon"
+                        android:src="@drawable/ic_delete"
+                        app:tint="@color/perfil_danger" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="14dp"
+                        android:text="@string/delete_account"
+                        android:textAppearance="@style/TextAppearance.Perfil.RowText"
+                        android:textColor="@color/perfil_danger" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

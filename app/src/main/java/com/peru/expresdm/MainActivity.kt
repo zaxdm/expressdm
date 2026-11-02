@@ -100,6 +100,14 @@ class MainActivity : AppCompatActivity() {
                 .collect { PushRegistration.sync(this@MainActivity) }
         }
 
+        // Si el servidor dejó de aceptar la sesión (se cambió la contraseña en
+        // otro teléfono), ya se cerró: se dice por qué y que vuelva a entrar.
+        lifecycleScope.launch {
+            AccountRepository.sessionExpired.collect {
+                Toast.makeText(this@MainActivity, R.string.profile_name_session_expired, Toast.LENGTH_LONG).show()
+            }
+        }
+
         // Y sabe qué rutas tiene guardadas, para avisarle si cambian.
         lifecycleScope.launch {
             SavedRoutes.get(this@MainActivity).ids.drop(1)

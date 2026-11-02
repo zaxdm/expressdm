@@ -218,6 +218,40 @@ class ScreenshotTest {
         }
     }
 
+    /** La hoja para borrar la cuenta, vacía y con el aviso de la palabra que falta. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura eliminar mi cuenta`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val session = Session(
+            token = "token-de-prueba",
+            userId = "usuario-4",
+            email = "ana.quispe@ejemplo.pe",
+            displayName = "Ana María Quispe"
+        )
+        SessionStore.get(context).save(session)
+        try {
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                scenario.onActivity { activity ->
+                    selectTab(activity, R.id.profileFragment)
+                    keepSession(context, session)
+                    activity.findViewById<View>(R.id.rowDeleteAccount).performClick()
+                    idle()
+                    val sheet = ShadowDialog.getLatestDialog().window!!.decorView
+                    capture(activity, "36-eliminar-cuenta", sheet)
+                    // Sin escribir ELIMINAR, el botón no llama al servidor: avisa en el campo.
+                    sheet.findViewById<View>(R.id.btnDeleteAccount).performClick()
+                    idle()
+                    capture(activity, "37-eliminar-cuenta-sin-palabra", sheet)
+                    ShadowDialog.getLatestDialog().dismiss()
+                    idle()
+                }
+            }
+        } finally {
+            SessionStore.get(context).clear()
+        }
+    }
+
     /** El perfil y la hoja de Subo Premium de una cuenta que ya lo tiene activo. */
     @Test
     @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")

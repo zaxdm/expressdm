@@ -1,7 +1,11 @@
 package com.peru.expresdm.data.net
 
 import android.content.Context
+import com.peru.expresdm.data.AccountPrefs
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import org.json.JSONObject
 import androidx.credentials.CredentialManager
 import androidx.credentials.ClearCredentialStateRequest
@@ -31,9 +35,28 @@ object AccountRepository {
 
     val isSignedIn: Boolean get() = store.token != null
 
+    private val _sessionExpired = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    /**
+     * Avisa cuando el servidor dejó de aceptar la sesión y se cerró sola: así
+     * la pantalla pide volver a entrar en vez de enseñar un error cualquiera.
+     */
+    val sessionExpired: SharedFlow<Unit> = _sessionExpired.asSharedFlow()
+
     fun init(context: Context) {
         appContext = context.applicationContext
         if (!::store.isInitialized) store = SessionStore.get(context)
+        // Cualquier petición con la sesión que reciba un 401 la cierra aquí:
+        // pasa si se cambió la contraseña en otro teléfono o se borró la cuenta.
+        ApiClient.onUnauthorized = { rejected ->
+            scope.launch {
+                // Solo si sigue siendo la misma: mientras tanto pudo entrar otra cuenta.
+                if (store.token == rejected) {
+                    signOut()
+                    _sessionExpired.tryEmit(Unit)
+                }
+            }
+        }
     }
 
     /**
@@ -91,6 +114,26 @@ object AccountRepository {
     }
 
     /**
+     * Borra la cuenta en el servidor, con todo lo suyo, y cierra la sesión en
+     * este teléfono igual que [signOut]. [password] va vacía si la cuenta entra
+     * solo con Google; [confirm] es la palabra que el usuario escribió.
+     */
+    suspend fun deleteAccount(password: String, confirm: String): ApiResult<Unit> {
+        val current = session.value ?: return ApiResult.Failure(ApiFailure.UNAUTHORIZED)
+        val body = JSONObject().put("password", password).put("confirm", confirm)
+        return when (val result = ApiClient.delete("/api/me", current.token, body)) {
+            is ApiResult.Failure -> result
+            is ApiResult.Success -> {
+                // Lo guardado en este teléfono para esa cuenta también se va.
+                // Va antes de cerrar la sesión, que es cuando aún se sabe de quién es.
+                AccountPrefs.wipe(appContext, current.userId)
+                signOut()
+                ApiResult.Success(Unit)
+            }
+        }
+    }
+
+    /**
      * Cambia el nombre con el que se ve al usuario en alertas y rutas.
      *
      * El servidor manda el nombre ya limpio (sin espacios de sobra), y ese es
@@ -119,13 +162,15 @@ object AccountRepository {
     suspend fun refresh() {
         if (!isSignedIn || !ApiClient.isConfigured) return
         when (val result = ApiClient.get("/api/me", token)) {
-            is ApiResult.Failure -> if (result.reason == ApiFailure.UNAUTHORIZED) signOut()
+            // Un 401 ya cerró la sesión en ApiClient.onUnauthorized, con su aviso.
+            is ApiResult.Failure -> Unit
             is ApiResult.Success -> {
                 // El permiso de administrador y Premium se dan y se quitan en el
                 // servidor: aquí se ponen al día sin obligar a cerrar sesión.
                 val current = session.value ?: return
                 val updated = current.copy(
                     isAdmin = isAdminRole(result.data),
+                    isSuperAdmin = isSuperAdminRole(result.data),
                     avatarUrl = avatarOf(result.data),
                     premiumUntil = premiumOf(result.data),
                     alertsPublished = result.data.optInt("alertsPublished", current.alertsPublished)
@@ -172,6 +217,8 @@ object AccountRepository {
     /** El servidor manda `role`: client, contributor, admin o super_admin. Los tres últimos graban rutas. */
     private fun isAdminRole(user: JSONObject): Boolean = user.optString("role") in ROUTE_ROLES
 
+    private fun isSuperAdminRole(user: JSONObject): Boolean = user.optString("role") == "super_admin"
+
     private fun avatarOf(user: JSONObject): String? =
         if (user.isNull("avatarUrl")) null else user.optString("avatarUrl").takeIf { it.isNotBlank() }
 
@@ -197,6 +244,7 @@ object AccountRepository {
             email = user.optString("email"),
             displayName = user.optString("displayName"),
             isAdmin = isAdminRole(user),
+            isSuperAdmin = isSuperAdminRole(user),
             avatarUrl = avatarOf(user),
             premiumUntil = premiumOf(user)
         )

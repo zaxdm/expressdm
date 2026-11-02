@@ -72,8 +72,17 @@ object ApiClient {
     suspend fun post(path: String, body: JSONObject, token: String? = null): ApiResult<JSONObject> =
         request("POST", path, body, token)
 
-    suspend fun delete(path: String, token: String? = null): ApiResult<JSONObject> =
-        request("DELETE", path, body = null, token = token)
+    /** [body] hace falta pocas veces, como al borrar la cuenta, que pide la contraseña. */
+    suspend fun delete(path: String, token: String? = null, body: JSONObject? = null): ApiResult<JSONObject> =
+        request("DELETE", path, body = body, token = token)
+
+    /**
+     * Se llama cuando el servidor rechaza con 401 un token que se le mandó: la
+     * sesión ya no vale (cambió la contraseña en otro teléfono, se borró la
+     * cuenta). Lo pone [AccountRepository] para cerrar la sesión en el acto.
+     */
+    @Volatile
+    var onUnauthorized: ((token: String) -> Unit)? = null
 
     /** Sube un archivo tal cual (una foto), no un JSON. */
     suspend fun postBytes(
@@ -116,6 +125,7 @@ object ApiClient {
             val code = connection.responseCode
             if (code !in 200..299) {
                 val error = connection.errorStream?.bufferedReader()?.use(BufferedReader::readText)
+                if (code == 401 && token != null) onUnauthorized?.invoke(token)
                 return@withContext ApiResult.Failure(reasonFor(code), fieldOf(error, "message"), fieldOf(error, "error"))
             }
 

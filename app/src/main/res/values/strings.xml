@@ -289,6 +289,18 @@
     <string name="account_why">Con tu cuenta, las alertas y las rutas que publiques las ven los demás usuarios.</string>
     <string name="account_welcome">Hola, %1$s</string>
     <string name="account_signed_out">Sesión cerrada</string>
+    <!-- Borrar la cuenta (lo pide Google Play). La palabra la exige el servidor tal cual. -->
+    <string name="delete_account">Eliminar mi cuenta</string>
+    <string name="delete_account_title">Eliminar tu cuenta</string>
+    <string name="delete_account_warning">Se borran tu cuenta, tus alertas, tus compras y tus datos. No se puede deshacer. Si tienes Premium, lo pierdes.</string>
+    <string name="delete_account_password">Contraseña</string>
+    <string name="delete_account_password_help">Si entras solo con Google, déjalo vacío</string>
+    <string name="delete_account_word" translatable="false">ELIMINAR</string>
+    <string name="delete_account_confirm_hint">Escribe ELIMINAR</string>
+    <string name="delete_account_confirm_wrong">Escribe ELIMINAR para confirmar</string>
+    <string name="delete_account_action">Eliminar para siempre</string>
+    <string name="delete_account_done">Tu cuenta y tus datos se eliminaron</string>
+    <string name="delete_account_failed">No se pudo eliminar la cuenta. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="account_offline">No pudimos conectar con el servidor. Revisa tu conexión.</string>
     <string name="account_no_server">Esta versión no tiene servidor configurado: todo se guarda en tu teléfono.</string>
     <string name="account_email_invalid">Escribe un correo válido</string>

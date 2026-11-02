@@ -39,6 +39,7 @@ import com.peru.expresdm.databinding.FragmentProfileBinding
 import com.peru.expresdm.ui.Initials
 import com.peru.expresdm.ui.RouteImages
 import com.peru.expresdm.ui.account.AccountSheet
+import com.peru.expresdm.ui.account.DeleteAccountSheet
 import com.peru.expresdm.ui.account.PremiumSheet
 import com.peru.expresdm.ui.account.PurchasesSheet
 import android.text.format.DateUtils
@@ -118,6 +119,7 @@ class ProfileFragment : Fragment() {
         binding.avatarFrame.setOnClickListener { onAvatarClick() }
         binding.identityRow.setOnClickListener { onAvatarClick() }
         binding.rowSignOut.setOnClickListener { signOut() }
+        binding.rowDeleteAccount.setOnClickListener { DeleteAccountSheet.show(childFragmentManager) }
 
         childFragmentManager.setFragmentResultListener(AccountSheet.RESULT_KEY, viewLifecycleOwner) { _, _ ->
             // Con la sesión recién abierta, el catálogo compartido puede traer
@@ -177,6 +179,10 @@ class ProfileFragment : Fragment() {
         val signedIn = session != null
         binding.rowSignOut.isVisible = signedIn
         binding.signOutDivider.isVisible = signedIn
+        // Borrar la cuenta va con el servidor; la cuenta principal no se puede borrar.
+        val canDelete = signedIn && ApiClient.isConfigured && session?.isSuperAdmin != true
+        binding.rowDeleteAccount.isVisible = canDelete
+        binding.deleteAccountDivider.isVisible = canDelete
         // Las compras van con la cuenta: sin servidor o sin sesión no hay ninguna.
         val purchases = signedIn && ApiClient.isConfigured
         binding.rowPurchases.isVisible = purchases

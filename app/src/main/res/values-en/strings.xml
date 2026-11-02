@@ -291,6 +291,16 @@
     <string name="account_why">With an account, the alerts and routes you post are seen by other users.</string>
     <string name="account_welcome">Hi, %1$s</string>
     <string name="account_signed_out">Signed out</string>
+    <string name="delete_account">Delete my account</string>
+    <string name="delete_account_title">Delete your account</string>
+    <string name="delete_account_warning">Your account, alerts, purchases and data will be deleted. This can\'t be undone. If you have Premium, you lose it.</string>
+    <string name="delete_account_password">Password</string>
+    <string name="delete_account_password_help">If you only sign in with Google, leave it empty</string>
+    <string name="delete_account_confirm_hint">Type ELIMINAR</string>
+    <string name="delete_account_confirm_wrong">Type ELIMINAR to confirm</string>
+    <string name="delete_account_action">Delete forever</string>
+    <string name="delete_account_done">Your account and your data were deleted</string>
+    <string name="delete_account_failed">Couldn\'t delete the account. Check your connection and try again.</string>
     <string name="account_offline">We couldn\'t reach the server. Check your connection.</string>
     <string name="account_no_server">This build has no server configured: everything stays on your phone.</string>
     <string name="account_email_invalid">Enter a valid email</string>

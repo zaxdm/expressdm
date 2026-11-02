@@ -17,6 +17,11 @@ data class Session(
      * manda de verdad es el servidor, que vuelve a comprobarlo en cada petición.
      */
     val isAdmin: Boolean = false,
+    /**
+     * Es el administrador principal. Esa cuenta no se puede borrar desde la
+     * app, así que a ella no se le ofrece.
+     */
+    val isSuperAdmin: Boolean = false,
     /** Foto de perfil guardada en el servidor, para verla en cualquier teléfono. */
     val avatarUrl: String? = null,
     /** Hasta cuándo es Premium la cuenta, en milisegundos; `null` si es gratuita. */
@@ -57,6 +62,7 @@ class SessionStore private constructor(context: Context) {
             .putString(KEY_EMAIL, session.email)
             .putString(KEY_NAME, session.displayName)
             .putBoolean(KEY_ADMIN, session.isAdmin)
+            .putBoolean(KEY_SUPER_ADMIN, session.isSuperAdmin)
             .putString(KEY_AVATAR, session.avatarUrl)
             .putLong(KEY_PREMIUM_UNTIL, session.premiumUntil ?: 0L)
             .putInt(KEY_ALERTS_PUBLISHED, session.alertsPublished)
@@ -90,6 +96,7 @@ class SessionStore private constructor(context: Context) {
             email = prefs.getString(KEY_EMAIL, "").orEmpty(),
             displayName = prefs.getString(KEY_NAME, "").orEmpty(),
             isAdmin = prefs.getBoolean(KEY_ADMIN, false),
+            isSuperAdmin = prefs.getBoolean(KEY_SUPER_ADMIN, false),
             avatarUrl = prefs.getString(KEY_AVATAR, null),
             premiumUntil = prefs.getLong(KEY_PREMIUM_UNTIL, 0L).takeIf { it > 0L },
             alertsPublished = prefs.getInt(KEY_ALERTS_PUBLISHED, 0)
@@ -103,6 +110,7 @@ class SessionStore private constructor(context: Context) {
         private const val KEY_EMAIL = "email"
         private const val KEY_NAME = "display_name"
         private const val KEY_ADMIN = "is_admin"
+        private const val KEY_SUPER_ADMIN = "is_super_admin"
         private const val KEY_AVATAR = "avatar_url"
         private const val KEY_PREMIUM_UNTIL = "premium_until"
         private const val KEY_ALERTS_PUBLISHED = "alerts_published"

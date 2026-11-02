@@ -18,6 +18,10 @@ internal class AccountPrefs(context: Context, private val baseName: String) {
     private val appContext = context.applicationContext
     private val sessions = SessionStore.get(appContext)
 
+    init {
+        synchronized(knownBaseNames) { knownBaseNames += baseName }
+    }
+
     /** Las de la cuenta abierta, o las del teléfono si no hay ninguna. */
     var current: SharedPreferences = open(sessions.session.value?.userId)
         private set
@@ -40,6 +44,37 @@ internal class AccountPrefs(context: Context, private val baseName: String) {
             device.edit().clear().apply()
         }
         return own
+    }
+
+    companion object {
+        /**
+         * Los almacenes que guardan cosas por cuenta. Están escritos aquí y no
+         * solo apuntados al crearse, porque al borrar la cuenta alguno puede no
+         * haberse abierto todavía.
+         */
+        private val knownBaseNames = mutableSetOf(
+            "expresdm_saved_routes",
+            "expresdm_route_usage",
+            "saved_places",
+            "recent_places"
+        )
+
+        /**
+         * Borra del teléfono todo lo guardado para [userId]: rutas guardadas,
+         * lugares, las más usadas… Solo al eliminar la cuenta; al cerrar sesión
+         * se conserva, para encontrarlo al volver a entrar.
+         */
+        fun wipe(context: Context, userId: String) {
+            if (userId.isBlank()) return
+            val app = context.applicationContext
+            synchronized(knownBaseNames) { knownBaseNames.toList() }.forEach { baseName ->
+                val name = "${baseName}_$userId"
+                // Se vacía primero: Android guarda una copia en memoria que el
+                // borrado del archivo no toca.
+                app.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit()
+                app.deleteSharedPreferences(name)
+            }
+        }
     }
 
     private fun copy(from: SharedPreferences, to: SharedPreferences) {
