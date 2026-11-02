@@ -49,9 +49,16 @@ class RouteDirectionsTest {
     }
 
     @Test
-    fun `el nombre se compara sin mayusculas ni adornos`() {
-        val adornada = vuelta.copy(name = "virgen de la puerta  b (m-23)♡")
-        assertEquals("vuelta", RouteDirections.of(ida, listOf(ida, adornada))!!.partner.id)
+    fun `el nombre se compara sin mayusculas ni signos`() {
+        val escrita = vuelta.copy(name = "virgen de la puerta  b (m-23).")
+        assertEquals("vuelta", RouteDirections.of(ida, listOf(ida, escrita))!!.partner.id)
+    }
+
+    @Test
+    fun `la letra con corazon es otro ramal, no la vuelta`() {
+        // C1♡ es un ramal oficial propio: no se junta con C1 aunque vaya al revés.
+        val corazon = vuelta.copy(id = "corazon", letter = "${vuelta.letter}♡", name = "${vuelta.name}♡")
+        assertNull(RouteDirections.of(ida, listOf(ida, corazon)))
     }
 
     @Test

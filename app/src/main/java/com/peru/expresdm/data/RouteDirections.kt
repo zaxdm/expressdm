@@ -21,8 +21,15 @@ object RouteDirections {
     fun plain(text: String): String =
         text.lowercase().replace(Regex("[^\\p{L}\\p{N}]+"), " ").trim()
 
+    /**
+     * Como [plain], pero el «♡» cuenta: en Trujillo la letra «con corazón» es
+     * un ramal oficial propio (C1♡ no es la vuelta de C1).
+     */
+    private fun lineText(text: String): String =
+        text.lowercase().replace(Regex("[^\\p{L}\\p{N}♡]+"), " ").trim()
+
     /** Empresa y letra: las rutas con la misma clave son una sola línea. */
-    fun lineKey(route: BusRoute): String = "${plain(route.name)}|${plain(route.letter)}"
+    fun lineKey(route: BusRoute): String = "${lineText(route.name)}|${lineText(route.letter)}"
 
     /**
      * El sentido de [route] y su pareja en [routes], o `null` si la línea no
