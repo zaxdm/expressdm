@@ -577,6 +577,102 @@ class ScreenshotTest {
         }
     }
 
+    /** Formas de llegar con transbordo: la foto de cada micro, mitad y mitad; y una sin foto en una mitad. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura el viaje con transbordo`() {
+        // Fotos de mentira, ya en la memoria de RouteImages, para no ir a la red.
+        val cacheField = com.peru.expresdm.ui.RouteImages::class.java.getDeclaredField("cache").apply { isAccessible = true }
+        @Suppress("UNCHECKED_CAST")
+        val cache = cacheField.get(com.peru.expresdm.ui.RouteImages) as android.util.LruCache<String, Bitmap>
+        fun photo(url: String, top: Int, bottom: Int) {
+            val bitmap = Bitmap.createBitmap(600, 400, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            val paint = android.graphics.Paint().apply {
+                shader = android.graphics.LinearGradient(0f, 0f, 600f, 400f, top, bottom, android.graphics.Shader.TileMode.CLAMP)
+            }
+            canvas.drawRect(0f, 0f, 600f, 400f, paint)
+            // Un "micro" en el centro, para ver que se recorta al medio.
+            canvas.drawRect(200f, 140f, 400f, 260f, android.graphics.Paint().apply { color = android.graphics.Color.WHITE })
+            cache.put(url, bitmap)
+        }
+        photo("https://fotos.test/a.jpg", 0xFF1E88E5.toInt(), 0xFF0D47A1.toInt())
+        photo("https://fotos.test/b.jpg", 0xFFE53935.toInt(), 0xFFFFB300.toInt())
+
+        val all = com.peru.expresdm.data.RouteRepository.all()
+        val first = all[0].copy(imageUrl = "https://fotos.test/a.jpg", vehicleName = "Señor de los Milagros")
+        val second = all[1].copy(imageUrl = "https://fotos.test/b.jpg", vehicleName = "Huanchaco")
+        fun journey(vararg routes: com.peru.expresdm.data.BusRoute) = com.peru.expresdm.data.Journey(
+            legs = listOf(com.peru.expresdm.data.JourneyLeg.Walk(120.0, 2)) + routes.map {
+                com.peru.expresdm.data.JourneyLeg.Ride(it, it.stops.first(), it.stops.last(), 15)
+            },
+            totalMinutes = 42, walkMeters = 120.0, fare = 5.5
+        )
+        val journeys = listOf(
+            journey(first, second),
+            journey(first, second.copy(id = "sin-foto", imageUrl = null)),
+            journey(first)
+        )
+
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            scenario.onActivity { activity ->
+                for (carousel in listOf(true, false)) {
+                    val adapter = com.peru.expresdm.ui.routes.JourneyAdapter {}.apply { this.carousel = carousel }
+                    val recycler = androidx.recyclerview.widget.RecyclerView(activity).apply {
+                        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(
+                            activity,
+                            if (carousel) androidx.recyclerview.widget.RecyclerView.HORIZONTAL
+                            else androidx.recyclerview.widget.RecyclerView.VERTICAL,
+                            false
+                        )
+                        this.adapter = adapter
+                        setPadding(dp(activity, 12), dp(activity, 40), dp(activity, 12), 0)
+                        clipToPadding = false
+                    }
+                    val dialog = android.app.Dialog(activity, android.R.style.Theme_DeviceDefault_Light_NoActionBar)
+                    dialog.setContentView(recycler)
+                    dialog.show()
+                    adapter.submitList(journeys)
+                    idle()
+                    capture(activity, if (carousel) "40-transbordo-carrusel" else "41-transbordo-lista", dialog.window!!.decorView)
+                    if (carousel) {
+                        recycler.scrollBy(dp(activity, 500), 0)
+                        capture(activity, "40b-transbordo-carrusel-sin-foto", dialog.window!!.decorView)
+                    }
+                    dialog.dismiss()
+                    idle()
+                }
+            }
+        }
+    }
+
+    /** La ventana del pago con Mercado Pago dentro de la app, cargando y con el aviso de error. */
+    @Test
+    @Config(qualifiers = "es-rPE-w411dp-h891dp-xhdpi")
+    fun `captura el pago dentro de la app`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val session = Session(
+            token = "token-de-prueba", userId = "usuario-4", email = "ana@ejemplo.pe", displayName = "Ana"
+        )
+        SessionStore.get(context).save(session)
+        try {
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+                scenario.onActivity { activity ->
+                    keepSession(context, session)
+                    com.peru.expresdm.ui.account.PremiumPayDialog.show(activity.supportFragmentManager, 30)
+                    idle()
+                    val window = ShadowDialog.getLatestDialog().window!!.decorView
+                    capture(activity, "42-pago-en-la-app", window)
+                    window.findViewById<View>(R.id.payProgress).visibility = View.GONE
+                    window.findViewById<View>(R.id.payError).visibility = View.VISIBLE
+                    capture(activity, "43-pago-en-la-app-error", window)
+                }
+            }
+        } finally {
+            SessionStore.get(context).clear()
+        }
+    }
+
     private fun selectTab(activity: Activity, itemId: Int) {
         activity.findViewById<BottomNavigationView>(R.id.bottomNav).selectedItemId = itemId
         idle()

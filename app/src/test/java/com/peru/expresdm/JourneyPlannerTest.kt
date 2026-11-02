@@ -298,4 +298,21 @@ class JourneyPlannerTest {
         // Del kilómetro 0 al 4: unos 41 puntos de los 81 del recorrido.
         assertTrue("recorto ${linea.size} puntos", linea.size in 35..45)
     }
+
+    @Test
+    fun `con transbordo hay una foto por micro y sin foto queda el hueco`() {
+        val centro = parada("Centro", 4_000.0, 0.0)
+        fun viaje(vararg rutas: BusRoute) = com.peru.expresdm.data.Journey(
+            legs = rutas.map { JourneyLeg.Ride(it, centro, centro, 10) },
+            totalMinutes = 20, walkMeters = 0.0, fare = 3.5
+        )
+        val conFoto = lineaNorte.copy(imageUrl = "https://fotos/norte.jpg")
+        // Un solo micro: la foto de siempre, sin partir.
+        assertTrue(viaje(conFoto).splitPhotos.isEmpty())
+        // Dos micros: mitad y mitad, en el orden en que se toman.
+        assertEquals(listOf("https://fotos/norte.jpg", null), viaje(conFoto, lineaEste).splitPhotos)
+        // Una dirección que no es https no se carga.
+        assertEquals(listOf(null, "https://fotos/norte.jpg"),
+            viaje(lineaEste.copy(imageUrl = "http://inseguro"), conFoto).splitPhotos)
+    }
 }

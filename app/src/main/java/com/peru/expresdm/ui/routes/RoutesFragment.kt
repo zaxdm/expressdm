@@ -991,6 +991,9 @@ class RoutesFragment : Fragment() {
 
     private fun renderList(state: HomeState) {
         val recycler = binding.routesRecycler
+        // Siempre, en cualquier modo: así las flechas se esconden al pasar a
+        // "Cómo llegar" o a una búsqueda, y no se quedan con la cuenta de las cercanas.
+        renderNearbyPager(state)
 
         if (state.mode == HomeMode.PLACE_RESULTS) {
             if (recycler.adapter !== placeAdapter) recycler.adapter = placeAdapter
@@ -1004,7 +1007,6 @@ class RoutesFragment : Fragment() {
             journeyAdapter.submitList(state.journeys)
         } else {
             if (recycler.adapter !== routeAdapter) recycler.adapter = routeAdapter
-            renderNearbyPager(state)
             val items = shownRoutes(state)
             val previousFirst = routeAdapter.currentList.firstOrNull()?.route?.id
             routeAdapter.submitList(items) {
@@ -1059,7 +1061,7 @@ class RoutesFragment : Fragment() {
     private fun renderNearbyPager(state: HomeState) {
         val binding = _binding ?: return
         val total = state.items.size
-        val paged = state.mode == HomeMode.NEARBY && !showAllRoutes && total > NearbyRoutes.PAGE_SIZE
+        val paged = NearbyRoutes.showsPager(state.mode == HomeMode.NEARBY && !showAllRoutes, total)
         binding.nearbyPager.isVisible = paged
         if (!paged) {
             nearbyPage = 0

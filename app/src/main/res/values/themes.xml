@@ -97,4 +97,12 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <!-- Ventana a pantalla completa, como la del pago con Mercado Pago -->
+    <style name="Theme.Expresdm.FullScreenDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@color/perfil_ink_card</item>
+        <item name="android:statusBarColor">@color/perfil_ink_card</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
 </resources>

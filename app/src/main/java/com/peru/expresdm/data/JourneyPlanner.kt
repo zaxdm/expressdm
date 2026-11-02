@@ -61,6 +61,16 @@ data class Journey(
      * el usuario, cambien sus metros y sus minutos.
      */
     val key: List<String> get() = rides.map { it.route.id }
+
+    /**
+     * Con transbordo, la foto de cada micro, en orden, para enseñarlas mitad y
+     * mitad; `null` si ese micro no tiene foto. Con un solo micro (o andando),
+     * vacía: se usa la foto de siempre.
+     */
+    val splitPhotos: List<String?>
+        get() = rides.takeIf { it.size > 1 }
+            ?.map { ride -> ride.route.imageUrl?.takeIf { it.startsWith("https://") } }
+            .orEmpty()
 }
 
 /**

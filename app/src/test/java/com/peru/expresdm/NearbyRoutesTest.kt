@@ -65,6 +65,14 @@ class NearbyRoutesTest {
     }
 
     @Test
+    fun `las flechas solo salen en la lista de cercanas y con mas de cinco`() {
+        assertTrue(NearbyRoutes.showsPager(nearbyList = true, total = 125))
+        assertFalse(NearbyRoutes.showsPager(nearbyList = true, total = 5))
+        // En "Cómo llegar", en una búsqueda o en "Todas", nunca.
+        assertFalse(NearbyRoutes.showsPager(nearbyList = false, total = 125))
+    }
+
+    @Test
     fun `una pagina que ya no existe da la ultima`() {
         // Al moverse el usuario pueden quedar menos rutas que antes.
         assertEquals(listOf(6, 7), NearbyRoutes.page((1..7).toList(), 4))

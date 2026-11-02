@@ -107,6 +107,13 @@ object NearbyRoutes {
     /** Cuántas páginas de [PAGE_SIZE] hacen falta para [total] rutas; al menos una. */
     fun pageCount(total: Int): Int = ((total + PAGE_SIZE - 1) / PAGE_SIZE).coerceAtLeast(1)
 
+    /**
+     * Las flechas "Anteriores · 1–5 de 14 · Ver 5 más" solo van en la lista de
+     * rutas cercanas ([nearbyList]) y solo si no caben en una página. En "Cómo
+     * llegar", en una búsqueda o en "Todas" no se ven.
+     */
+    fun showsPager(nearbyList: Boolean, total: Int): Boolean = nearbyList && total > PAGE_SIZE
+
     /** La página [index] (desde cero) de [items]; si ya no existe, la última. */
     fun <T> page(items: List<T>, index: Int): List<T> {
         val start = index.coerceIn(0, pageCount(items.size) - 1) * PAGE_SIZE

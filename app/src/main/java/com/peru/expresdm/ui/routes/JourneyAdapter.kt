@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -86,9 +87,12 @@ class JourneyAdapter(
 
             // El color y la foto son los del primer micro; andando, el de la marca.
             binding.journeyCard.setCardBackgroundColor(accentOf(context, first))
-            RouteImages.show(
-                binding.journeyImage, first?.route?.imageUrl, first?.route?.let { it.vehicleName.ifBlank { it.name } }.orEmpty()
-            )
+            // Con transbordo, la foto de cada micro, mitad y mitad.
+            if (!fillSplit(binding.journeySplit, binding.journeyImage, journey)) {
+                RouteImages.show(
+                    binding.journeyImage, first?.route?.imageUrl, first?.route?.let { it.vehicleName.ifBlank { it.name } }.orEmpty()
+                )
+            }
 
             fillChain(binding.journeyChain, rides)
 
@@ -126,14 +130,19 @@ class JourneyAdapter(
 
             val first = journey.rides.firstOrNull()
             binding.journeyHeader.setBackgroundColor(accentOf(context, first))
-            // La foto del primer micro va en la cabecera; con ella, la cabecera es más alta para que se vea.
+            // La foto va en la cabecera (con transbordo, la de cada micro, mitad y
+            // mitad); con foto, la cabecera es más alta para que se vea.
+            val split = fillSplit(binding.journeySplit, binding.journeyHeaderImage, journey)
             val headerPhoto = first?.route?.imageUrl?.takeIf { it.startsWith("https://") }
-            binding.journeyHeader.minimumHeight = if (headerPhoto != null) dp(150) else 0
-            RouteImages.show(
-                binding.journeyHeaderImage,
-                headerPhoto,
-                first?.route?.let { it.vehicleName.ifBlank { it.name } }.orEmpty()
-            )
+            val withPhoto = if (split) journey.splitPhotos.any { it != null } else headerPhoto != null
+            binding.journeyHeader.minimumHeight = if (withPhoto) dp(150) else 0
+            if (!split) {
+                RouteImages.show(
+                    binding.journeyHeaderImage,
+                    headerPhoto,
+                    first?.route?.let { it.vehicleName.ifBlank { it.name } }.orEmpty()
+                )
+            }
             fillChain(binding.journeyChain, journey.rides)
             binding.journeyTitle.text = titleOf(context, journey)
             binding.journeyTime.text = context.getString(R.string.duration_minutes, journey.totalMinutes)
@@ -151,17 +160,8 @@ class JourneyAdapter(
             }
 
             buildSteps(journey)
+            // Las fotos de todos los micros ya van en la cabecera: abajo no se repiten.
             binding.journeyPhotos.removeAllViews()
-            // Abajo, solo las fotos de los micros del transbordo: la del primero ya está en la cabecera.
-            journey.rides.drop(1).filter { !it.route.imageUrl.isNullOrBlank() }.forEach { ride ->
-                val image = ImageView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(120))
-                        .apply { bottomMargin = dp(10) }
-                    scaleType = ImageView.ScaleType.CENTER_CROP
-                }
-                binding.journeyPhotos.addView(image)
-                RouteImages.show(image, ride.route.imageUrl, ride.route.vehicleName.ifBlank { ride.route.name })
-            }
             binding.journeyCard.strokeWidth = dp(if (journey.key == selectedKey) 2 else 1)
             binding.journeyCard.strokeColor = context.themeColor(
                 if (journey.key == selectedKey) com.google.android.material.R.attr.colorPrimary
@@ -245,6 +245,41 @@ class JourneyAdapter(
 
         private fun dp(value: Int) =
             (value * binding.root.resources.displayMetrics.density).toInt()
+    }
+
+    /**
+     * Con transbordo, una franja por micro, a partes iguales y de izquierda a
+     * derecha en el orden en que se toman: su foto recortada al centro o, si no
+     * tiene, su color. El velo oscuro y las letras siguen encima. Devuelve
+     * `false` con un solo micro: entonces va la foto de siempre en [single].
+     */
+    private fun fillSplit(split: LinearLayout, single: ImageView, journey: Journey): Boolean {
+        val photos = journey.splitPhotos
+        split.removeAllViews()
+        split.isVisible = photos.isNotEmpty()
+        if (photos.isEmpty()) return false
+        // La foto única se esconde, y se olvida para que una descarga atrasada no la vuelva a enseñar.
+        RouteImages.show(single, null, "")
+        val context = split.context
+        fun dp(value: Int) = (value * context.resources.displayMetrics.density).toInt()
+        journey.rides.forEachIndexed { index, ride ->
+            val half = FrameLayout(context).apply {
+                setBackgroundColor(accentOf(context, ride))
+                layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+                    .apply { if (index > 0) marginStart = dp(2) }
+            }
+            val image = ImageView(context).apply {
+                scaleType = ImageView.ScaleType.CENTER_CROP
+                importantForAccessibility = ViewGroup.IMPORTANT_FOR_ACCESSIBILITY_NO
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            }
+            half.addView(image)
+            split.addView(half)
+            RouteImages.show(image, photos[index], ride.route.vehicleName.ifBlank { ride.route.name })
+        }
+        return true
     }
 
     /** El color del micro; andando, el de la marca. */

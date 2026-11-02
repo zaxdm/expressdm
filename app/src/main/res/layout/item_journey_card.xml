@@ -28,6 +28,15 @@
         android:scaleType="centerCrop"
         android:visibility="gone" />
 
+    <!-- Con transbordo: la foto de cada micro, mitad y mitad -->
+    <LinearLayout
+        android:id="@+id/journeySplit"
+        android:background="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:visibility="gone" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -791,8 +791,16 @@
     <string name="premium_mp_action">Pagar con Mercado Pago</string>
     <string name="premium_mp_opening">Abriendo Mercado Pago…</string>
     <string name="premium_mp_note">Con tarjeta, Yape o banca por internet. Al terminar, vuelve a la app: Premium se activa solo.</string>
+    <string name="premium_mp_note_inline">Con tarjeta de crédito o débito, aquí mismo, sin salir de Subo. Premium se activa al momento.</string>
     <string name="premium_mp_failed">No se pudo abrir el pago. Revisa tu conexión e inténtalo de nuevo.</string>
     <string name="premium_mp_unavailable">El pago con Mercado Pago no está disponible ahora. Puedes pagar por Yape.</string>
+    <string name="premium_pay_screen_title">Pagar Subo Premium</string>
+    <string name="premium_pay_close">Cerrar</string>
+    <string name="premium_pay_load_failed">No se pudo cargar el pago. Revisa tu conexión.</string>
+    <string name="premium_pay_retry">Reintentar</string>
+    <string name="premium_pay_done_approved">¡Listo! Tu Subo Premium está activo.</string>
+    <string name="premium_pay_done_pending">Tu pago se está procesando. Te avisamos cuando se confirme.</string>
+    <string name="premium_pay_done_rejected">El pago no se aprobó. No se te cobró nada.</string>
     <string name="premium_pay_or_yape">O PAGA CON YAPE</string>
     <string name="perfil_premium_expiring">Tu Premium vence el %1$s · Renovar</string>
     <string name="perfil_premium_expired_today">Tu Premium vence hoy · Renovar</string>

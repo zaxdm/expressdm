@@ -29,13 +29,22 @@
             android:layout_height="wrap_content"
             tools:background="@color/route_accent_2">
 
-            <!-- La foto del primer micro, debajo del velo oscuro, como en la tarjeta del carrusel -->
+            <!-- La foto del micro, debajo del velo oscuro, como en la tarjeta del carrusel -->
             <ImageView
                 android:id="@+id/journeyHeaderImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <!-- Con transbordo: la foto de cada micro, mitad y mitad -->
+            <LinearLayout
+                android:id="@+id/journeySplit"
+                android:background="@android:color/black"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
                 android:visibility="gone" />
 
             <View

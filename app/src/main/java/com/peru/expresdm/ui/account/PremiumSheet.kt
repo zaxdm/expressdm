@@ -8,6 +8,7 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
@@ -21,6 +22,7 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import com.peru.expresdm.BuildConfig
 import com.peru.expresdm.R
 import com.peru.expresdm.data.Premium
+import com.peru.expresdm.data.PremiumCheckout
 import com.peru.expresdm.data.net.AccountRepository
 import com.peru.expresdm.data.net.ApiClient
 import com.peru.expresdm.data.net.ApiFailure
@@ -38,8 +40,9 @@ import java.util.Date
  * Subo Premium: qué trae de más, si la cuenta ya lo tiene y cómo pagarlo.
  *
  * Premium va con la cuenta, así que primero hay que tener una. Se paga con
- * Mercado Pago, en su página (al volver a la app se pregunta por la sesión y
- * Premium aparece solo), o por Yape: aquí se enseña el QR y lo que cuesta cada
+ * Mercado Pago, dentro de la app ([PremiumPayDialog]) si el servidor da su
+ * clave pública, o si no en su página (al volver a la app se pregunta por la
+ * sesión y Premium aparece solo), o por Yape: aquí se enseña el QR y lo que cuesta cada
  * plan, y la persona sube la captura del pago. El administrador la confirma y
  * la app se entera sola la próxima vez que pregunta por la sesión.
  *
@@ -62,7 +65,9 @@ class PremiumSheet : BottomSheetDialogFragment() {
         /** YAPE o MERCADOPAGO: cómo se hizo ese último pago. */
         val method: String? = null,
         /** El servidor tiene Mercado Pago listo para cobrar. */
-        val mercadoPago: Boolean = false
+        val mercadoPago: Boolean = false,
+        /** Con ella se paga dentro de la app; sin ella, en la página de Mercado Pago. */
+        val mpPublicKey: String? = null
     ) {
         /** El administrador ya dejó todo listo para cobrar por Yape. */
         val isOffered: Boolean get() = qrUrl != null && plans.isNotEmpty()
@@ -131,6 +136,11 @@ class PremiumSheet : BottomSheetDialogFragment() {
                 R.id.settingsFragment -> Unit
                 else -> nav.navigate(R.id.settingsFragment)
             }
+        }
+
+        // Vuelta del pago dentro de la app.
+        childFragmentManager.setFragmentResultListener(PremiumPayDialog.REQUEST_KEY, viewLifecycleOwner) { _, result ->
+            onPaid(PremiumPayDialog.outcomeOf(result))
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -219,7 +229,8 @@ class PremiumSheet : BottomSheetDialogFragment() {
             status = mine?.optString("status")?.takeIf { it.isNotBlank() },
             note = mine?.takeUnless { it.isNull("note") }?.optString("note")?.takeIf { it.isNotBlank() },
             method = mine?.optString("method")?.takeIf { it.isNotBlank() },
-            mercadoPago = data.optBoolean("mercadoPago")
+            mercadoPago = data.optBoolean("mercadoPago"),
+            mpPublicKey = if (data.isNull("mpPublicKey")) null else data.optString("mpPublicKey").takeIf { it.isNotBlank() }
         )
     }
 
@@ -282,6 +293,10 @@ class PremiumSheet : BottomSheetDialogFragment() {
         binding.mercadoPagoSection.isVisible = mercadoPago
         binding.btnMercadoPago.isEnabled = !checkingOut && !uploading
         binding.btnMercadoPago.setText(if (checkingOut) R.string.premium_mp_opening else R.string.premium_mp_action)
+        // Con el formulario integrado se paga con tarjeta sin salir de la app.
+        binding.mercadoPagoNote.setText(
+            if (payment?.mpPublicKey != null) R.string.premium_mp_note_inline else R.string.premium_mp_note
+        )
         // Con Mercado Pago arriba, Yape queda como la otra forma de pagar.
         binding.paymentTitle.setText(if (mercadoPago) R.string.premium_pay_choose_title else R.string.premium_pay_title)
         binding.yapeTitle.isVisible = mercadoPago
@@ -325,12 +340,19 @@ class PremiumSheet : BottomSheetDialogFragment() {
     }
 
     /**
-     * Pide al servidor el enlace de pago del plan elegido y lo abre en el
-     * navegador. Al terminar, la persona llega a la web, que confirma el pago.
+     * Paga el plan elegido. Con la clave pública de Mercado Pago, dentro de la
+     * app. Si no, pide al servidor el enlace de pago y lo abre en el navegador:
+     * al terminar, la persona llega a la web, que confirma el pago.
      */
     private fun checkout() {
         val plan = selectedPlan() ?: payment?.plans?.firstOrNull() ?: return
         if (checkingOut) return
+        if (payment?.mpPublicKey != null && AccountRepository.token != null) {
+            problem = null
+            render(AccountRepository.session.value)
+            PremiumPayDialog.show(childFragmentManager, plan.days)
+            return
+        }
         checkingOut = true
         problem = null
         render(AccountRepository.session.value)
@@ -355,6 +377,25 @@ class PremiumSheet : BottomSheetDialogFragment() {
                 else -> problem = getString(R.string.premium_mp_failed)
             }
             render(AccountRepository.session.value)
+        }
+    }
+
+    /**
+     * Terminó el pago dentro de la app: se pregunta otra vez por la sesión y por
+     * el pago (como al volver de la página de Mercado Pago) y se dice cómo fue.
+     * Cancelado no dice nada, pero también se pregunta: pudo pagar antes de cerrar.
+     */
+    private fun onPaid(outcome: PremiumCheckout.Outcome) {
+        val message = when (outcome) {
+            PremiumCheckout.Outcome.APPROVED -> R.string.premium_pay_done_approved
+            PremiumCheckout.Outcome.PENDING -> R.string.premium_pay_done_pending
+            PremiumCheckout.Outcome.REJECTED -> R.string.premium_pay_done_rejected
+            PremiumCheckout.Outcome.CANCELLED -> null
+        }
+        message?.let { Toast.makeText(requireContext().applicationContext, it, Toast.LENGTH_LONG).show() }
+        viewLifecycleOwner.lifecycleScope.launch {
+            AccountRepository.refresh()
+            loadPayment()
         }
     }
 

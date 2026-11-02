@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pagar Subo Premium con Mercado Pago dentro de la app: barra negra con la X
+  para cerrar, la barra de carga y la página de pago. Si no carga, un aviso
+  con "Reintentar".
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/payToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/perfil_ink_card"
+        app:navigationContentDescription="@string/premium_pay_close"
+        app:navigationIcon="@drawable/ic_close"
+        app:navigationIconTint="@color/perfil_on_ink"
+        app:title="@string/premium_pay_screen_title"
+        app:titleTextColor="@color/perfil_on_ink" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/payProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:indicatorColor="@color/brand"
+        app:trackThickness="3dp" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <WebView
+            android:id="@+id/payWeb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:id="@+id/payError"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/colorBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/premium_pay_load_failed"
+                android:textAppearance="@style/TextAppearance.Expresdm.BodyLarge"
+                android:textColor="?attr/colorOnSurface" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPayRetry"
+                style="@style/Widget.Expresdm.ButtonPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/premium_pay_retry" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

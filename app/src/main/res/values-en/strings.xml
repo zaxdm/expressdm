@@ -791,8 +791,16 @@
     <string name="premium_mp_action">Pay with Mercado Pago</string>
     <string name="premium_mp_opening">Opening Mercado Pago…</string>
     <string name="premium_mp_note">With a card, Yape or online banking. When you\'re done, come back to the app: Premium turns on by itself.</string>
+    <string name="premium_mp_note_inline">With a credit or debit card, right here, without leaving Subo. Premium turns on right away.</string>
     <string name="premium_mp_failed">Couldn\'t open the payment. Check your connection and try again.</string>
     <string name="premium_mp_unavailable">Paying with Mercado Pago isn\'t available right now. You can pay with Yape.</string>
+    <string name="premium_pay_screen_title">Pay for Subo Premium</string>
+    <string name="premium_pay_close">Close</string>
+    <string name="premium_pay_load_failed">Couldn\'t load the payment. Check your connection.</string>
+    <string name="premium_pay_retry">Retry</string>
+    <string name="premium_pay_done_approved">All set! Your Subo Premium is active.</string>
+    <string name="premium_pay_done_pending">Your payment is being processed. We\'ll let you know when it\'s confirmed.</string>
+    <string name="premium_pay_done_rejected">The payment wasn\'t approved. You weren\'t charged.</string>
     <string name="premium_pay_or_yape">OR PAY WITH YAPE</string>
     <string name="perfil_premium_expiring">Your Premium ends on %1$s · Renew</string>
     <string name="perfil_premium_expired_today">Your Premium ends today · Renew</string>
